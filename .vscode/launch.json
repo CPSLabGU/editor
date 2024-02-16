@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "Launch via NPM",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "dev"
+            ],
+            "port": 5173,
+            "console": "integratedTerminal"
+        }
+    ]
+}
