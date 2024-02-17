@@ -4,6 +4,7 @@ import State from './views/State'
 import { v4 as uuidv4 } from 'uuid';
 import StateInformation from './models/StateInformation';
 import Point2D from './models/Point2D';
+import Positionable from './views/Positionable';
 
 const initialStates: [StateInformation] = [
   {
@@ -47,13 +48,15 @@ function App() {
   // }, [counter, setCounter]);
   return (
     <div id="canvas">
-      {states.map((state) => {
-        const stateStyle = {
-          left: state.position.x,
-          top: state.position.y,
-        };
-        return <div key={state.id} className='state' style={stateStyle}><State {...state.properties}></State></div>
-      })}
+      {
+        states.map((state) => {
+          return <div key={state.id}>
+            <Positionable position={state.position}>
+              <State {...state.properties} />
+            </Positionable>
+          </div>
+        })
+      }
     </div>
   )
 }
