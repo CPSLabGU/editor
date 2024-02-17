@@ -1,5 +1,7 @@
-import {useCallback, useState, DragEvent, MouseEvent, useEffect, useMemo} from 'react';
+import {useCallback, useState, MouseEvent, useEffect, useMemo} from 'react';
 import Point2D from '../models/Point2D';
+import Grip from './Grip';
+import '../styles/Positionable.css';
 
 function Positionable({position, setPosition, children}) {
   const [isDragging, setIsDragging] = useState(false);
@@ -39,18 +41,12 @@ function Positionable({position, setPosition, children}) {
     position: 'absolute'
   };
   const dragStyle = {
-    cursor: isDragging ? 'grabbing' : 'grab',
-    height: '20px',
-    width: '20px',
-    backgroundColor: 'black',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    clear: 'both'
+    cursor: isDragging ? 'grabbing' : 'grab'
   };
   return (
     <div style={positionStyle}>
-      <div draggable={true} onMouseDown={mouseDown}>
-        <div style={dragStyle}></div>
+      <div className='drag'>
+        <div onMouseDown={mouseDown} style={dragStyle}><Grip /></div>
       </div>
       {children}
     </div>

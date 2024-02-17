@@ -1,0 +1,15 @@
+.drag {
+    height: 20px;
+}
+
+.drag > div {
+    height: 20px;
+    width: 20px;
+    float: right;
+}
+
+.drag::after {
+    content: "";
+    clear: both;
+    display: table;
+}
