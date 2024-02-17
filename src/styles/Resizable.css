@@ -2,6 +2,10 @@
     position: absolute;
 }
 
+.resizable-content {
+    overflow: hidden;
+}
+
 .top-left {
     float: left;
     width: 10%;
@@ -78,9 +82,9 @@
     cursor: se-resize;
 }
 
-.resize-border {
+/* .resize-border {
     background-color: black;
-}
+} */
 
 .clear {
     clear: both

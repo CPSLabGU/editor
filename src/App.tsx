@@ -69,7 +69,7 @@ function App() {
                 dimensions={
                   {
                     dimensions: new Point2D(state.properties.w, state.properties.h),
-                    minDimensions: new Point2D(50, 50),
+                    minDimensions: new Point2D(200, 100),
                     maxDimensions: new Point2D(400, 400)
                   }
                 }

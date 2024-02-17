@@ -43,7 +43,7 @@ function Resizable({dimensions, setDimensions, children}) {
                 <div className='resize-border bottom-middle'></div>
                 <div className='resize-border bottom-right'></div>
             </div>
-            <div style={handles}>
+            <div style={handles} className='resizable-content'>
                 {children}
             </div>
         </div>
