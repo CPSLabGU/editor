@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react'
 import './App.css'
-import State from './State'
+import State from './views/State'
 import { v4 as uuidv4 } from 'uuid';
-import StateInformation from './StateInformation';
+import StateInformation from './models/StateInformation';
 
 const initialStates: [StateInformation] = [
   {

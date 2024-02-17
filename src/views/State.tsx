@@ -1,5 +1,5 @@
-import StateInformation from './StateInformation';
-import StateProperties from './StateProperties';
+import StateInformation from '../models/StateInformation';
+import StateProperties from '../models/StateProperties';
 
 function State({id, properties, expanded}: StateInformation) {
   return expanded ? <ExpandedState {...properties} /> : <CollapsedState {...properties} />
