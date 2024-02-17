@@ -1,0 +1,9 @@
+.state {
+    height: 100px;
+    font-size: 2rem;
+    color: #fff;
+    background-color: #333;
+    border: 2px solid #000;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #000;
+}
