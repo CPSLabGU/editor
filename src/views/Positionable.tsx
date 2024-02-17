@@ -1,20 +1,20 @@
-import {useCallback, useState, DragEvent, MouseEvent, useEffect} from 'react';
+import {useCallback, useState, DragEvent, MouseEvent, useEffect, useMemo} from 'react';
 import Point2D from '../models/Point2D';
 
 function Positionable({position, setPosition, children}) {
   const [isDragging, setIsDragging] = useState(false);
   const [mousePosition, setMousePosition] = useState(position);
-  const currentPosition = new Point2D(position.x, position.y);
-  const updatePosition = (e) => {
+  const currentPosition = useMemo(() => (new Point2D(position.x, position.y)), [position]);
+  const updatePosition = useCallback((e) => {
     if (!isDragging) return;
     currentPosition.x += e.movementX;
     currentPosition.y += e.movementY;
     setMousePosition(new Point2D(currentPosition.x, currentPosition.y));
-  };
-  const endDrag = (e) => {
+  }, [isDragging, currentPosition, setMousePosition]);
+  const endDrag = useCallback((e) => {
     setIsDragging(false);
     setPosition(new Point2D(currentPosition.x, currentPosition.y));
-  };
+  }, [setIsDragging, setPosition, currentPosition]);
   useEffect(() => {
     if (isDragging) {
       window.addEventListener('mousemove', updatePosition);
@@ -27,7 +27,7 @@ function Positionable({position, setPosition, children}) {
       window.removeEventListener('mousemove', updatePosition);
       window.removeEventListener('mouseup', endDrag);
     };
-  }, [position, isDragging, setMousePosition, setPosition]);
+  }, [updatePosition, endDrag, isDragging]);
   const mouseDown = useCallback((e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
