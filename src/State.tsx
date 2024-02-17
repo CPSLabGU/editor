@@ -1,15 +1,7 @@
-interface StateInformation {
-    properties: StateProperties
-    expanded: boolean;
-}
+import StateInformation from './StateInformation';
+import StateProperties from './StateProperties';
 
-interface StateProperties {
-    name: string;
-    w: number;
-    h: number;
-}
-
-function State({properties, expanded}: StateInformation) {
+function State({id, properties, expanded}: StateInformation) {
   return expanded ? <ExpandedState {...properties} /> : <CollapsedState {...properties} />
 }
 
