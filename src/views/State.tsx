@@ -7,7 +7,7 @@ function State(properties: StateProperties) {
 
 function CollapsedState({name, w, h, expanded}: StateProperties) {
     return (
-        <div>
+        <div className='padding'>
             {name}!
         </div>
     )
@@ -15,7 +15,7 @@ function CollapsedState({name, w, h, expanded}: StateProperties) {
 
 function ExpandedState({name, w, h, expanded}: StateProperties) {
     return (
-        <div>
+        <div className='padding'>
             {name}!
         </div>
     )

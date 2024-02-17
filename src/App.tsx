@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import StateInformation from './models/StateInformation';
 import Point2D from './models/Point2D';
 import Positionable from './views/Positionable';
+import Resizable from './views/Resizable';
 
 const initialStates: [StateInformation] = [
   {
@@ -64,7 +65,32 @@ function App() {
           };
           return <div key={state.id}>
             <Positionable position={state.position} setPosition={setPosition}>
-              <State {...state.properties} />
+              <Resizable
+                dimensions={
+                  {
+                    dimensions: new Point2D(state.properties.w, state.properties.h),
+                    minDimensions: new Point2D(50, 50),
+                    maxDimensions: new Point2D(400, 400)
+                  }
+                }
+                setDimensions={(newDimensions: Point2D)=> {
+                  setStates( (states) => states.map((s, i) => {
+                    if (i !== index) return s;
+                    return {
+                      id: s.id,
+                      properties: {
+                        name: s.properties.name,
+                        w: newDimensions.x,
+                        h: newDimensions.y,
+                        expanded: s.properties.expanded
+                      },
+                      position: s.position
+                    };
+                  }) as [StateInformation]);
+                }}
+              >
+                <State {...state.properties} />
+              </Resizable>
             </Positionable>
           </div>
         })
