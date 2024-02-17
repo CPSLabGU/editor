@@ -7,7 +7,14 @@ import Point2D from './models/Point2D';
 import Positionable from './views/Positionable';
 import Resizable from './views/Resizable';
 
-const initialStates: [StateInformation] = [
+const initialStates: { [id: string]: StateInformation} = {};
+
+function addState(...states: StateInformation[]) {
+  for (let i = 0; i < states.length; i++) {
+    initialStates[states[i].id] = states[i];
+  }
+}
+addState(
   {
     id: uuidv4(),
     properties: {
@@ -38,7 +45,7 @@ const initialStates: [StateInformation] = [
     },
     position: new Point2D(60, 60)
   }
-]
+);
 
 function App() {
   // const [counter, setCounter] = useState(0);
@@ -50,18 +57,24 @@ function App() {
   return (
     <div id="canvas">
       {
-        states.map((state, index) => {
+        Object.keys(states).map((id) => {
+          const state = states[id];
           const setPosition = (newPosition: Point2D) => {
-            setStates( (states) => states.map((s, i) => {
-              if (i == index) {
-                return {
-                  id: states[i].id,
-                  properties: states[i].properties,
-                  position: newPosition
-                };
-              }
-              return s;
-            }) as [StateInformation]);
+            setStates( (states) => {
+              const newStates: { [id: string]: StateInformation} = {};
+              Object.keys(states).forEach((id2) => {
+                if (id == id2) {
+                  newStates[id2] = {
+                    id: id2,
+                    properties: states[id2].properties,
+                    position: newPosition
+                  };
+                } else {
+                  newStates[id2] = states[id2];
+                }
+              });
+              return newStates;
+            });
           };
           return <div key={state.id}>
             <Positionable position={state.position} setPosition={setPosition}>
@@ -74,19 +87,26 @@ function App() {
                   }
                 }
                 setDimensions={(newPosition: Point2D, newDimensions: Point2D)=> {
-                  setStates( (states) => states.map((s, i) => {
-                    if (i !== index) return s;
-                    return {
-                      id: s.id,
-                      properties: {
-                        name: s.properties.name,
-                        w: newDimensions.x,
-                        h: newDimensions.y,
-                        expanded: s.properties.expanded
-                      },
-                      position: newPosition
-                    };
-                  }) as [StateInformation]);
+                  setStates( (states) => {
+                    const newStates: { [id: string]: StateInformation} = {};
+                    Object.keys(states).forEach((id2) => {
+                      if (id != id2) {
+                        newStates[id2] = states[id2];
+                        return;
+                      }
+                      newStates[id2] = {
+                        id: id2,
+                        properties: {
+                          name: states[id2].properties.name,
+                          w: newDimensions.x,
+                          h: newDimensions.y,
+                          expanded: states[id2].properties.expanded
+                        },
+                        position: newPosition
+                      };
+                    })
+                    return newStates;
+                  });
                 }}
                 position={state.position}
               >
