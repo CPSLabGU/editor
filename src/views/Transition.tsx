@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import TransitionProperties from "../models/TransitionProperties";
 import BezierPath from "../models/BezierPath";
+import ControlPoint from "./ControlPoint";
 
-function Transition({source, target, condition, path, color}: TransitionProperties) {
+function Transition({properties, setPath}: {properties: TransitionProperties, setPath: (newPath: BezierPath) => void}): JSX.Element {
+    const path = properties.path
+    const condition = properties.condition
+    const color = properties.color
     const [isFocused, setIsFocused] = useState(false);
     const focus = useCallback((e) => {
         e.preventDefault();
@@ -39,7 +43,7 @@ function Transition({source, target, condition, path, color}: TransitionProperti
     }
     return (
         <div>
-            <div class='transition-condition' style={conditionStyle}>
+            <div className='transition-condition' style={conditionStyle}>
                 {condition}
             </div>
             <svg style={svgStyle}>
@@ -57,26 +61,54 @@ function Transition({source, target, condition, path, color}: TransitionProperti
                     strokeWidth={2}
                     strokeLinejoin={'round'}
                     strokeLinecap={'round'}
-                    marker-end='url(#head)'
+                    markerEnd='url(#head)'
                     onClick={focus}
                 />
-                <ControlPoints curve={path} isFocused={isFocused}></ControlPoints>
             </svg>
+            <ControlPoints curve={path} isFocused={isFocused} setCurve={setPath}></ControlPoints>
         </div>
     );
 }
 
-function ControlPoints({curve, isFocused}: {curve: BezierPath, isFocused: boolean}): JSX.Element {
+function ControlPoints({curve, isFocused, setCurve}: {curve: BezierPath, isFocused: boolean, setCurve: (newCurve: BezierPath) => void}): JSX.Element {
     if (!isFocused) {
         return <></>;
     }
     return (
-        <>
-            <circle cx={curve.source.x} cy={curve.source.y} r={5} stroke='red' fillOpacity='0'></circle>
-            <circle cx={curve.target.x} cy={curve.target.y} r={5} stroke='yellow' fillOpacity='0'></circle>
-            <circle cx={curve.control0.x} cy={curve.control0.y} r={5} fill='green'></circle>
-            <circle cx={curve.control1.x} cy={curve.control1.y} r={5} fill='green'></circle>
-        </>
+        <div>
+            <ControlPoint
+                position={curve.source}
+                color='red'
+                isFilled={false}
+                setPosition={(newPosition) => {
+                    setCurve(new BezierPath(newPosition, curve.target, curve.control0, curve.control1))
+                }}
+            ></ControlPoint>
+            <ControlPoint
+                position={curve.target}
+                color='yellow'
+                isFilled={false}
+                setPosition={(newPosition) => {
+                    setCurve(new BezierPath(curve.source, newPosition, curve.control0, curve.control1))
+                }}
+            ></ControlPoint>
+            <ControlPoint
+                position={curve.control0}
+                color='green'
+                isFilled={true}
+                setPosition={(newPosition) => {
+                    setCurve(new BezierPath(curve.source, curve.target, newPosition, curve.control1))
+                }}
+            ></ControlPoint>
+            <ControlPoint
+                position={curve.control1}
+                color='green'
+                isFilled={true}
+                setPosition={(newPosition) => {
+                    setCurve(new BezierPath(curve.source, curve.target, curve.control0, newPosition))
+                }}
+            ></ControlPoint>
+        </div>
     );
 }
 
