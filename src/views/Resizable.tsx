@@ -92,21 +92,26 @@ function Resizable({dimensions, setDimensions, position, children}) {
         let newW = Math.max(Math.min(tempW, _dimensions.maxDimensions.x), _dimensions.minDimensions.x);
         const newH = Math.max(Math.min(tempH, _dimensions.maxDimensions.y), _dimensions.minDimensions.y);
         let newX = _position.x + dx;
-        let newY = _position.y;
+        let newY = _position.y + dy;
         if (dw != 0 && dx != 0) {
             const width = Math.abs(tempW - dx);
             if (width > _dimensions.maxDimensions.x) {
-                console.log(dx, dy, dw, dh, newX, newY, tempW, tempH, newW, newH, width);
                 const overflow = width - _dimensions.maxDimensions.x;
-                console.log(overflow);
                 newX += overflow / 2;
             } else if (width < _dimensions.minDimensions.x) {
                 const underflow = _dimensions.minDimensions.x - width;
                 newX -= underflow / 2;
             }
         }
-        if (tempH == newH) {
-            newY += dy;
+        if (dh != 0 && dy != 0) {
+            const height = Math.abs(tempH - dy);
+            if (height > _dimensions.maxDimensions.y) {
+                const overflow = height - _dimensions.maxDimensions.y;
+                newY += overflow / 2;
+            } else if (height < _dimensions.minDimensions.y) {
+                const underflow = _dimensions.minDimensions.y - height;
+                newY -= underflow / 2;
+            }
         }
         _setDimensions(new Point2D(newX, newY), new Point2D(newW, newH));
     }, [_position, _setDimensions, isDraggingRight, isDraggingLeft, isDraggingTop, isDraggingBottom, _dimensions]);
