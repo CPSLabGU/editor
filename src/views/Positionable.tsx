@@ -38,16 +38,17 @@ function Positionable({position, setPosition, children}) {
   const positionStyle = {
     left: isDragging ? mousePosition.x : position.x,
     top: isDragging ? mousePosition.y : position.y,
-    position: 'absolute'
+    position: 'absolute',
+    cursor: isDragging ? 'grabbing' : 'grab'
   };
   const dragStyle = {
     cursor: isDragging ? 'grabbing' : 'grab'
   };
   return (
-    <div style={positionStyle}>
-      <div className='drag'>
-        <div onMouseDown={mouseDown} style={dragStyle}><Grip /></div>
-      </div>
+    <div style={positionStyle} onMouseDown={mouseDown}>
+      {/* <div className='drag'>
+        <div><Grip /></div>
+      </div> */}
       {children}
     </div>
   );
