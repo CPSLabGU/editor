@@ -58,6 +58,13 @@ function App() {
   // }, [counter, setCounter]);
   return (
     <div id="canvas">
+      <Transition
+        source={uuidv4()}
+        target={uuidv4}
+        condition='true'
+        path={new BezierPath(new Point2D(0, 0), new Point2D(100, 100), new Point2D(50, 0), new Point2D(50, 25))}
+        color='white'
+      ></Transition>
       {
         Object.keys(states).map((id) => {
           const state = states[id];
@@ -118,13 +125,6 @@ function App() {
           </div>
         })
       }
-      <Transition
-        source={uuidv4()}
-        target={uuidv4}
-        condition='true'
-        path={new BezierPath(new Point2D(0, 0), new Point2D(100, 100), new Point2D(50, 0), new Point2D(50, 25))}
-        color='white'
-      ></Transition>
     </div>
   )
 }
