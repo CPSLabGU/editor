@@ -49,9 +49,21 @@ function App() {
   return (
     <div id="canvas">
       {
-        states.map((state) => {
+        states.map((state, index) => {
+          const setPosition = (newPosition: Point2D) => {
+            setStates( (states) => states.map((s, i) => {
+              if (i == index) {
+                return {
+                  id: states[i].id,
+                  properties: states[i].properties,
+                  position: newPosition
+                };
+              }
+              return s;
+            }) as [StateInformation]);
+          };
           return <div key={state.id}>
-            <Positionable position={state.position}>
+            <Positionable position={state.position} setPosition={setPosition}>
               <State {...state.properties} />
             </Positionable>
           </div>

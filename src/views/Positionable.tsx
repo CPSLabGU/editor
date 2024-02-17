@@ -1,34 +1,41 @@
-import {useCallback, useState, DragEvent, MouseEvent} from 'react';
+import {useCallback, useState, DragEvent, MouseEvent, useEffect} from 'react';
+import Point2D from '../models/Point2D';
 
-function Positionable({position, children}) {
+function Positionable({position, setPosition, children}) {
   const [isDragging, setIsDragging] = useState(false);
-  const dragStart = useCallback((e: DragEvent) => {
+  const [mousePosition, setMousePosition] = useState(position);
+  useEffect(() => {
+    console.log("useEffect called!");
+    if (isDragging) {
+      const currentPosition = new Point2D(position.x, position.y);
+      window.addEventListener('mousemove', (e) => {
+        currentPosition.x += e.movementX;
+        currentPosition.y += e.movementY;
+        setMousePosition(new Point2D(currentPosition.x, currentPosition.y));
+      });
+    } else {
+      window.removeEventListener('mousemove', () => {});
+    }
+    return () => {
+      window.removeEventListener('mousemove', () => {});
+    };
+  }, [position, isDragging, setMousePosition]);
+  const mouseDown = useCallback((e: MouseEvent) => {
     e.preventDefault();
     setIsDragging(true);
     console.log(e);
     console.log("Drag start!");
   }, [setIsDragging]);
-  const dragEnd = useCallback((e: DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    console.log(e);
-    console.log("Drag end!");
-  }, [setIsDragging]);
-  const drag = useCallback((e: DragEvent) => {
-    e.preventDefault();
-    console.log(e);
-    console.log(isDragging);
-    console.log("Dragging!");
-  }, [isDragging]);
   const mouseUp = useCallback((e: MouseEvent) => {
     e.preventDefault();
     console.log(e);
     console.log("Mouse up!");
     setIsDragging(false);
-  }, [setIsDragging]);
+    setPosition(mousePosition);
+  }, [setIsDragging, setPosition, mousePosition]);
   const positionStyle = {
-    left: position.x,
-    top: position.y,
+    left: isDragging ? mousePosition.x : position.x,
+    top: isDragging ? mousePosition.y : position.y,
     position: 'absolute'
   };
   const dragStyle = {
@@ -42,7 +49,9 @@ function Positionable({position, children}) {
   };
   return (
     <div style={positionStyle}>
-      <div style={dragStyle} onDragStart={dragStart} onDrag={drag} onDragEnd={dragEnd} onMouseUp={mouseUp}></div>
+      <div draggable={true} onMouseDown={mouseDown} onMouseUp={mouseUp}>
+        <div style={dragStyle}></div>
+      </div>
       {children}
     </div>
   );
