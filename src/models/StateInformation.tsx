@@ -1,7 +1,8 @@
+import Point2D from './Point2D';
 import StateProperties from './StateProperties';
 
 export default interface StateInformation {
     id: string;
-    properties: StateProperties
-    expanded: boolean;
+    properties: StateProperties;
+    position: Point2D;
 }

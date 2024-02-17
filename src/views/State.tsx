@@ -1,16 +1,15 @@
-import StateInformation from '../models/StateInformation';
 import StateProperties from '../models/StateProperties';
 import '../styles/State.css';
 
-function State({id, properties, expanded}: StateInformation) {
+function State(properties: StateProperties) {
   return (
     <div className='state'>
-        {expanded ? <ExpandedState  {...properties} /> : <CollapsedState {...properties} />}
+        {properties.expanded ? <ExpandedState  {...properties} /> : <CollapsedState {...properties} />}
     </div>
   )
 }
 
-function CollapsedState({name, w, h}: StateProperties) {
+function CollapsedState({name, w, h, expanded}: StateProperties) {
     return (
         <div>
             {name}!
@@ -18,7 +17,7 @@ function CollapsedState({name, w, h}: StateProperties) {
     )
 }
 
-function ExpandedState({name, w, h}: StateProperties) {
+function ExpandedState({name, w, h, expanded}: StateProperties) {
     return (
         <div>
             {name}!
