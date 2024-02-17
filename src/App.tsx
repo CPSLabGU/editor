@@ -24,7 +24,7 @@ const initialStates: [StateInformation] = [
       h: 100,
       expanded: false,
     },
-    position: new Point2D(100, 100)
+    position: new Point2D(30, 30)
   },
   {
     id: uuidv4(),
@@ -34,22 +34,26 @@ const initialStates: [StateInformation] = [
       h: 100,
       expanded: false,
     },
-    position: new Point2D(200, 200)
+    position: new Point2D(60, 60)
   }
 ]
 
 function App() {
-  const [counter, setCounter] = useState(0);
+  // const [counter, setCounter] = useState(0);
   const [states, setStates] = useState(initialStates);
-  const clickMeCB = useCallback(() => {
-    setCounter(counter + 1);
-    console.log(`clicked me ${counter} times!`)
-  }, [counter, setCounter]);
+  // const clickMeCB = useCallback(() => {
+  //   setCounter(counter + 1);
+  //   console.log(`clicked me ${counter} times!`)
+  // }, [counter, setCounter]);
   return (
-    <div>
-      <div>Hello</div>
-      <button onClick={clickMeCB}>Click me {counter}</button>
-      {states.map((state) => <State key={state.id} {...state.properties}></State>)}
+    <div id="canvas">
+      {states.map((state) => {
+        const stateStyle = {
+          left: state.position.x,
+          top: state.position.y,
+        };
+        return <div key={state.id} className='state' style={stateStyle}><State {...state.properties}></State></div>
+      })}
     </div>
   )
 }
