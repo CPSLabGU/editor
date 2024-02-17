@@ -8,14 +8,14 @@ interface ResizableDimensions {
     maxDimensions: Point2D;
 }
 
-function Resizable({dimensions, setDimensions, children}) {
+function Resizable({dimensions, setDimensions, position, children}) {
     const _dimensions = dimensions as ResizableDimensions;
-    const _setDimensions = setDimensions as (dimensions: Point2D) => void;
+    const _setDimensions = setDimensions as (position: Point2D, dimensions: Point2D) => void;
+    const _position = position as Point2D;
     const [isDraggingRight, setIsDraggingRight] = useState(false);
     const [isDraggingLeft, setIsDraggingLeft] = useState(false);
     const [isDraggingTop, setIsDraggingTop] = useState(false);
     const [isDraggingBottom, setIsDraggingBottom] = useState(false);
-    const currentDimensions = useMemo(() => (new Point2D(dimensions.dimensions.x, dimensions.dimensions.y)), [dimensions]);
     const isDragging = useCallback(() => isDraggingRight || isDraggingLeft || isDraggingTop || isDraggingBottom, [isDraggingRight, isDraggingLeft, isDraggingTop, isDraggingBottom]);
     const mouseDownRight = useCallback((e: MouseEvent) => {
         e.preventDefault();
@@ -89,10 +89,27 @@ function Resizable({dimensions, setDimensions, children}) {
         }
         const tempW = dw + _dimensions.dimensions.x;
         const tempH = dh + _dimensions.dimensions.y;
-        const newW = Math.max(Math.min(tempW, _dimensions.maxDimensions.x), _dimensions.minDimensions.x);
+        let newW = Math.max(Math.min(tempW, _dimensions.maxDimensions.x), _dimensions.minDimensions.x);
         const newH = Math.max(Math.min(tempH, _dimensions.maxDimensions.y), _dimensions.minDimensions.y);
-        _setDimensions(new Point2D(newW, newH));
-    }, [_setDimensions, isDraggingRight, isDraggingLeft, isDraggingTop, isDraggingBottom, _dimensions]);
+        let newX = _position.x + dx;
+        let newY = _position.y;
+        if (dw != 0 && dx != 0) {
+            const width = Math.abs(tempW - dx);
+            if (width > _dimensions.maxDimensions.x) {
+                console.log(dx, dy, dw, dh, newX, newY, tempW, tempH, newW, newH, width);
+                const overflow = width - _dimensions.maxDimensions.x;
+                console.log(overflow);
+                newX += overflow / 2;
+            } else if (width < _dimensions.minDimensions.x) {
+                const underflow = _dimensions.minDimensions.x - width;
+                newX -= underflow / 2;
+            }
+        }
+        if (tempH == newH) {
+            newY += dy;
+        }
+        _setDimensions(new Point2D(newX, newY), new Point2D(newW, newH));
+    }, [_position, _setDimensions, isDraggingRight, isDraggingLeft, isDraggingTop, isDraggingBottom, _dimensions]);
     const endDrag = useCallback(() => {
         setIsDraggingRight(false);
         setIsDraggingBottom(false);

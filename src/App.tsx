@@ -73,7 +73,7 @@ function App() {
                     maxDimensions: new Point2D(400, 400)
                   }
                 }
-                setDimensions={(newDimensions: Point2D)=> {
+                setDimensions={(newPosition: Point2D, newDimensions: Point2D)=> {
                   setStates( (states) => states.map((s, i) => {
                     if (i !== index) return s;
                     return {
@@ -84,10 +84,11 @@ function App() {
                         h: newDimensions.y,
                         expanded: s.properties.expanded
                       },
-                      position: s.position
+                      position: newPosition
                     };
                   }) as [StateInformation]);
                 }}
+                position={state.position}
               >
                 <State {...state.properties} />
               </Resizable>
