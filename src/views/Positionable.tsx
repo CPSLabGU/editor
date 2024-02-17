@@ -13,26 +13,25 @@ function Positionable({position, setPosition, children}) {
         currentPosition.y += e.movementY;
         setMousePosition(new Point2D(currentPosition.x, currentPosition.y));
       });
+      window.addEventListener('mouseup', () => {
+        setIsDragging(false);
+        setPosition(new Point2D(currentPosition.x, currentPosition.y))
+      });
     } else {
       window.removeEventListener('mousemove', () => {});
+      window.removeEventListener('mouseup', () => {});
     }
     return () => {
       window.removeEventListener('mousemove', () => {});
+      window.removeEventListener('mouseup', () => {});
     };
-  }, [position, isDragging, setMousePosition]);
+  }, [position, isDragging, setMousePosition, setPosition]);
   const mouseDown = useCallback((e: MouseEvent) => {
     e.preventDefault();
     setIsDragging(true);
     console.log(e);
     console.log("Drag start!");
   }, [setIsDragging]);
-  const mouseUp = useCallback((e: MouseEvent) => {
-    e.preventDefault();
-    console.log(e);
-    console.log("Mouse up!");
-    setIsDragging(false);
-    setPosition(mousePosition);
-  }, [setIsDragging, setPosition, mousePosition]);
   const positionStyle = {
     left: isDragging ? mousePosition.x : position.x,
     top: isDragging ? mousePosition.y : position.y,
@@ -49,7 +48,7 @@ function Positionable({position, setPosition, children}) {
   };
   return (
     <div style={positionStyle}>
-      <div draggable={true} onMouseDown={mouseDown} onMouseUp={mouseUp}>
+      <div draggable={true} onMouseDown={mouseDown}>
         <div style={dragStyle}></div>
       </div>
       {children}
