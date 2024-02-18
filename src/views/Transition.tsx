@@ -96,8 +96,8 @@ function ControlPoints({curve, isFocused, offset, setCurve}: {curve: BezierPath,
                     setCurve(
                         new BezierPath(
                             new Point2D(
-                                newPosition.x - offset.x,
-                                newPosition.y - offset.y
+                                newPosition.x - offset.x + curve.source.x,
+                                newPosition.y - offset.y + curve.source.y
                             ),
                             curve.target,
                             curve.control0,

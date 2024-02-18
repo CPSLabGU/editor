@@ -65,6 +65,19 @@ function App() {
   // const [counter, setCounter] = useState(0);
   const [states, setStates] = useState(initialStates);
   const [transitions, setTransitions] = useState(initialTransitions);
+  const setPath = useCallback((id: string, newPath: BezierPath) => {
+    console.log('setPath', id, newPath);
+    const transition = transitions[id];
+    const newTransitions: { [id: string]: TransitionProperties} = {};
+    Object.keys(transitions).forEach((id2) => {
+      if (id == id2) {
+        newTransitions[id2] = new TransitionProperties(transition.source, transition.target, transition.condition, newPath, transition.color);
+      } else {
+        newTransitions[id2] = transition;
+      }
+    });
+    setTransitions(newTransitions);
+  }, [transitions, setTransitions]);
   // const clickMeCB = useCallback(() => {
   //   setCounter(counter + 1);
   //   console.log(`clicked me ${counter} times!`)
@@ -74,22 +87,11 @@ function App() {
       {
         Object.keys(transitions).map((id) => {
           const transition = transitions[id];
-          const setPath = (newPath: BezierPath) => {
-            const newTransitions: { [id: string]: TransitionProperties} = {};
-            Object.keys(transitions).forEach((id2) => {
-              if (id == id2) {
-                newTransitions[id2] = new TransitionProperties(transition.source, transition.target, transition.condition, newPath, transition.color);
-              } else {
-                newTransitions[id2] = transition;
-              }
-            });
-            return newTransitions;
-          }
           return (
             <div key={id}>
               <Transition
                 properties={transition}
-                setPath={ (newPath: BezierPath) => { setTransitions(setPath(newPath)); } }
+                setPath={ (newPath: BezierPath) => setPath(id, newPath) }
               ></Transition>
             </div>
           );
