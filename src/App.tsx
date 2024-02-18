@@ -10,6 +10,7 @@ import TransitionProperties from './models/TransitionProperties';
 import WindowContextMenu from './views/WindowContextMenu';
 import StateContextMenu from './views/StateContextMenu';
 import StateIdentifier from './models/StateIdentifier';
+import BoundingBox from './models/BoundingBox';
 
 const initialStates: { [id: string]: StateInformation} = {};
 
@@ -190,6 +191,9 @@ function App() {
     deselectAll();
   }, [setStates, setTransitions, deselectAll]);
   const createTransition = useCallback((stateID: string, sourceID: string) => {
+    const sourceState = boundingBox(states[sourceID])
+    const target = boundingBox(states[stateID])
+    const edge = calculateEdge(sourceState, target);
     const newUUID = uuidv4();
     setTransitions((transitions) => {
       const newTransitions = {...transitions};
@@ -197,7 +201,7 @@ function App() {
         sourceID,
         stateID,
         'true',
-        new BezierPath(new Point2D(100, 100), new Point2D(100, 200), new Point2D(100, 135), new Point2D(100, 170)),
+        edge,
         'white'
       );
       return newTransitions;
@@ -208,7 +212,7 @@ function App() {
       return newStates;
     });
     deselectAll();
-  }, [setTransitions, setStates, deselectAll]);
+  }, [setTransitions, setStates, deselectAll, states]);
   return (
     <div id="canvas" onContextMenu={showContextMenu}>
       {
@@ -301,6 +305,47 @@ function App() {
       }
     </div>
   )
+}
+
+function boundingBox(state: StateInformation): BoundingBox {
+  return new BoundingBox(state.position.x, state.position.y, state.properties.w, state.properties.h);
+}
+
+function calculateEdge(source: BoundingBox, target: BoundingBox) {
+  const sourceCentre = new Point2D(source.x + source.width / 2, source.y + source.height / 2);
+  const targetCentre = new Point2D(target.x + target.width / 2, target.y + target.height / 2);
+  const angle = Math.atan2(targetCentre.y - sourceCentre.y, targetCentre.x - sourceCentre.x);
+  const sourcePoint = source.findIntersection(angle);
+  const targetAngle = angle + Math.PI;
+  const targetPoint = target.findIntersection(targetAngle);
+  const dx = targetPoint.x - sourcePoint.x;
+  const dy = targetPoint.y - sourcePoint.y;
+  return new BezierPath(
+    sourcePoint,
+    targetPoint,
+    new Point2D(sourcePoint.x + dx / 3, sourcePoint.y + dy / 3),
+    new Point2D(sourcePoint.x + 2 * dx / 3, sourcePoint.y + 2 * dy / 3)
+  );
+  // let x = 0
+  // let y = 0
+  // const angleR = angle / 180 * Math.PI;
+  // if (angle > 135) {
+  //   x = source.x + source.width;
+  //   y = source.y + source.height * Math.sin(angleR);
+  // } else if (angle > 45) {
+  //   x = source.x + source.width * Math.cos(angleR);
+  //   y = source.y + source.height;
+  // } else if (angle < -135) {
+  //   x = source.x;
+  //   y = source.y + source.height * Math.sin(angleR);
+  // } else if (angle < -45) {
+  //   x = source.x + source.width * Math.cos(angleR);
+  //   y = source.y;
+  // } else {
+  //   x = source.x;
+  //   y = source.y + source.height * Math.sin(angleR);
+  // }
+  // return new Point2D(x, y);
 }
 
 export default App
