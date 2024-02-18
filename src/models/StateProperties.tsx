@@ -4,4 +4,5 @@ export default interface StateProperties {
     h: number;
     expanded: boolean;
     transitions: string[];
+    actions: {[action: string]: string};
 }

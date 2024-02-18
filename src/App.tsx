@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import Canvas from "./views/Canvas";
 import { useState } from "react";
 import './App.css';
+import CodeView from "./views/CodeView";
 
 const initialStates: { [id: string]: StateInformation} = {};
 
@@ -24,7 +25,8 @@ addState(
       w: 200,
       h: 100,
       expanded: false,
-      transitions: []
+      transitions: [],
+      actions: { "onEntry": "", "onExit": "", "Internal": ""}
     },
     position: new Point2D(0, 0)
   },
@@ -35,7 +37,8 @@ addState(
       w: 200,
       h: 100,
       expanded: false,
-      transitions: []
+      transitions: [],
+      actions: { "onEntry": "", "onExit": "", "Internal": ""}
     },
     position: new Point2D(0, 200)
   }
@@ -65,8 +68,9 @@ export default function App() {
   // const [counter, setCounter] = useState(0);
   const [states, setStates] = useState(initialStates);
   const [transitions, setTransitions] = useState(initialTransitions);
-  
+  const firstState = states[Object.keys(states)[0]];
   return (
-    <Canvas states={states} transitions={transitions} setStates={setStates} setTransitions={setTransitions} />
+    // <Canvas states={states} transitions={transitions} setStates={setStates} setTransitions={setTransitions} />
+    <CodeView actions={firstState.properties.actions} language="javascript" state={firstState.properties.name} setActions={(action: string, code: string) => { firstState.properties.actions[action] = code; }} />
   );
 }
