@@ -9,6 +9,7 @@ import Resizable from './views/Resizable';
 import Transition from './views/Transition';
 import BezierPath from './models/BezierPath';
 import TransitionProperties from './models/TransitionProperties';
+import WindowContextMenu from './views/WindowContextMenu';
 
 const initialStates: { [id: string]: StateInformation} = {};
 
@@ -115,6 +116,7 @@ function App() {
   }, [focusedObjects, setStates, setTransitions, setFocusedObjects]);
   const deselectAll = useCallback(() => {
     setFocusedObjects(new Set());
+    setContextMenuPosition(undefined);
   }, [setFocusedObjects]);
   const keyDown = useCallback((e: KeyboardEvent) => {
     if (e.key == 'Escape') {
@@ -124,6 +126,11 @@ function App() {
       deleteSelection();
     }
   }, [deselectAll, deleteSelection]);
+  const [contextMenuPosition, setContextMenuPosition] = useState<Point2D | undefined>(undefined);
+  const showContextMenu = useCallback((e) => {
+    e.preventDefault();
+    setContextMenuPosition(new Point2D(e.clientX, e.clientY));
+  }, [setContextMenuPosition]);
   useEffect(() => {
     window.addEventListener('keydown', keyDown);
     window.addEventListener('click', deselectAll);
@@ -137,8 +144,26 @@ function App() {
   //   setCounter(counter + 1);
   //   console.log(`clicked me ${counter} times!`)
   // }, [counter, setCounter]);
+  const createState = useCallback((position: Point2D) => {
+    setStates((states) => {
+      const newStates = {...states};
+      const newUUID = uuidv4();
+      newStates[newUUID] = {
+        id: newUUID,
+        properties: {
+          name: `State ${Object.keys(states).length}`,
+          w: 200,
+          h: 100,
+          expanded: false,
+          transitions: []
+        },
+        position: position
+      };
+      return newStates;
+    });
+  }, [setStates]);
   return (
-    <div id="canvas">
+    <div id="canvas" onContextMenu={showContextMenu}>
       {
         Object.keys(transitions).map((id) => {
           const transition = transitions[id];
@@ -210,6 +235,11 @@ function App() {
             />
           </div>
         })
+      }
+      {
+        contextMenuPosition !== undefined && (
+          <WindowContextMenu position={contextMenuPosition!} createState={() => createState(contextMenuPosition)} />
+        )
       }
     </div>
   )
