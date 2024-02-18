@@ -24,7 +24,7 @@ addState(
     id: uuidv4(),
     properties: {
       name: "Initial",
-      w: 100,
+      w: 200,
       h: 100,
       expanded: false,
     },
@@ -34,7 +34,7 @@ addState(
     id: uuidv4(),
     properties: {
       name: "Suspended",
-      w: 100,
+      w: 200,
       h: 100,
       expanded: false,
     },
@@ -54,7 +54,7 @@ function createDefaultTransition(): void {
     initialState!,
     suspendedState!,
     'true',
-    new BezierPath(new Point2D(500, 100), new Point2D(500, 200), new Point2D(500, 135), new Point2D(500, 170)),
+    new BezierPath(new Point2D(100, 100), new Point2D(100, 200), new Point2D(100, 135), new Point2D(100, 170)),
     'white'
   );
 }
