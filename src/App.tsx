@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import './App.css'
 import State from './views/State'
 import { v4 as uuidv4 } from 'uuid';
@@ -92,6 +92,22 @@ function App() {
     });
     setTransitions(newTransitions);
   }, [transitions, setTransitions]);
+  const deselectAll = useCallback(() => {
+    setFocusedObjects(new Set());
+  }, [setFocusedObjects]);
+  const keyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key == 'Escape') {
+      deselectAll();
+    }
+  }, [deselectAll]);
+  useEffect(() => {
+    window.addEventListener('keydown', keyDown);
+    window.addEventListener('click', deselectAll);
+    return () => {
+      window.removeEventListener('keydown', keyDown);
+      window.removeEventListener('click', deselectAll);
+    };
+  }, [keyDown, deselectAll]);
   console.log(focusedObjects)
   // const clickMeCB = useCallback(() => {
   //   setCounter(counter + 1);

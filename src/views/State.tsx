@@ -7,6 +7,7 @@ import Resizable from './Resizable';
 
 function State({properties, position, setPosition, setDimensions, isSelected, addSelection, uniqueSelection}: {properties: StateProperties, position: Point2D, setPosition: (newPosition: Point2D) => void, setDimensions: (position: Point2D, dimensions: Point2D) => void, isSelected: boolean, addSelection: () => void, uniqueSelection: () => void}): JSX.Element {
   const focus = useCallback((e) => {
+    e.stopPropagation();
     if (e.shiftKey) {
       addSelection();
     } else {
