@@ -40,6 +40,13 @@ function Transition({properties, isSelected, setPath, addSelection, uniqueSelect
         textAlign: 'center',
         color: isSelected ? 'blue' : color
     }
+    const priority = 5;
+    let str = '';
+    const gap = 2;
+    const max = gap * priority;
+    for (let i = 1; i <= priority; i++) {
+        str += `M${i * gap},${max - i * gap} L${i * gap},${max + i * gap} `
+    }
     const svgStyle = {
         width: `${boundingBox.width + padding}px`,
         height: `${boundingBox.height + padding}px`
@@ -51,11 +58,28 @@ function Transition({properties, isSelected, setPath, addSelection, uniqueSelect
             </div>
             <svg style={svgStyle}>
                 <defs>
-                <marker id='head' orient="auto"
-                    markerWidth='6' markerHeight='8'
-                    refX='0.2' refY='2'>
-                    <path d='M0,0 V4 L4,2 Z' fill={isSelected ? 'blue' : color}/>
-                </marker>
+                    <marker id='strokes' orient="auto"
+                        markerWidth={max * 2 + gap} markerHeight={max * 2 + gap}
+                        refX="0" refY={max}
+                    >
+                        <path d={str} stroke={isSelected ? 'blue' : color} />
+                        {/* <path d='M2,4 L2,8' stroke={isSelected ? 'blue' : color} />
+                        <path d='M4,2 L4,10' stroke={isSelected ? 'blue' : color} />
+                        <path d='M6,0 L6,12' stroke={isSelected ? 'blue' : color} /> */}
+                    </marker>
+                    {/* <marker id='strokes' orient="auto"
+                        markerWidth='12' markerHeight='20'
+                        refX="0" refY={6}
+                    >
+                        <path d='M2,4 L2,8' stroke={isSelected ? 'blue' : color} />
+                        <path d='M4,2 L4,10' stroke={isSelected ? 'blue' : color} />
+                        <path d='M6,0 L6,12' stroke={isSelected ? 'blue' : color} />
+                    </marker> */}
+                    <marker id='head' orient="auto"
+                        markerWidth='6' markerHeight='8'
+                        refX='0.2' refY='2'>
+                        <path d='M0,0 V4 L4,2 Z' fill={isSelected ? 'blue' : color}/>
+                    </marker>
                 </defs>
                 <path
                     d={`M ${relativeCurve.source.x},${relativeCurve.source.y} C ${relativeCurve.control0.x},${relativeCurve.control0.y} ${relativeCurve.control1.x},${relativeCurve.control1.y} ${relativeCurve.target.x},${relativeCurve.target.y}`}
@@ -65,6 +89,7 @@ function Transition({properties, isSelected, setPath, addSelection, uniqueSelect
                     strokeLinejoin={'round'}
                     strokeLinecap={'round'}
                     markerEnd='url(#head)'
+                    markerStart="url(#strokes)"
                 />
             </svg>
             <ControlPoints curve={path} isSelected={isSelected} offset={relativeOffset} setCurve={setPath}></ControlPoints>
