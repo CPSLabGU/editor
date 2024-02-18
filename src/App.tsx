@@ -135,48 +135,39 @@ function App() {
               return newStates;
             });
           };
-          return <div key={state.id}>
-            <Positionable position={state.position} setPosition={setPosition}>
-              <Resizable
-                dimensions={
-                  {
-                    dimensions: new Point2D(state.properties.w, state.properties.h),
-                    minDimensions: new Point2D(200, 100),
-                    maxDimensions: new Point2D(400, 400)
-                  }
+          const setDimensions = (newPosition: Point2D, newDimensions: Point2D) => {
+            setStates( (states) => {
+              const newStates: { [id: string]: StateInformation} = {};
+              Object.keys(states).forEach((id2) => {
+                if (id != id2) {
+                  newStates[id2] = states[id2];
+                  return;
                 }
-                setDimensions={(newPosition: Point2D, newDimensions: Point2D)=> {
-                  setStates( (states) => {
-                    const newStates: { [id: string]: StateInformation} = {};
-                    Object.keys(states).forEach((id2) => {
-                      if (id != id2) {
-                        newStates[id2] = states[id2];
-                        return;
-                      }
-                      newStates[id2] = {
-                        id: id2,
-                        properties: {
-                          name: states[id2].properties.name,
-                          w: newDimensions.x,
-                          h: newDimensions.y,
-                          expanded: states[id2].properties.expanded
-                        },
-                        position: newPosition
-                      };
-                    })
-                    return newStates;
-                  });
-                }}
-                position={state.position}
-              >
-                <State
-                  properties={state.properties}
-                  isSelected={focusedObjects.has(id)}
-                  addSelection={() => addSelection(id)}
-                  uniqueSelection={() => uniqueSelection(id)}
-                />
-              </Resizable>
-            </Positionable>
+                newStates[id2] = {
+                  id: id2,
+                  properties: {
+                    name: states[id2].properties.name,
+                    w: newDimensions.x,
+                    h: newDimensions.y,
+                    expanded: states[id2].properties.expanded,
+                    transitions: states[id2].properties.transitions
+                  },
+                  position: newPosition
+                };
+              })
+              return newStates;
+            });
+          };
+          return <div key={state.id}>
+            <State
+              properties={state.properties}
+              position={state.position}
+              setPosition={setPosition}
+              setDimensions={setDimensions}
+              isSelected={focusedObjects.has(id)}
+              addSelection={() => addSelection(id)}
+              uniqueSelection={() => uniqueSelection(id)}
+            />
           </div>
         })
       }
