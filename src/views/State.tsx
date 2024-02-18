@@ -1,21 +1,16 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback } from 'react';
 import StateProperties from '../models/StateProperties';
 import '../styles/State.css';
 
-function State(properties: StateProperties) {
-  const [isFocused, setIsFocused] = useState(false);
-  const focus = useCallback(() => setIsFocused(true), [setIsFocused]);
-  const unfocus = useCallback(() => setIsFocused(false), [setIsFocused]);
-  console.log(isFocused);
-  useEffect(() => {
-    if (isFocused) {
-      window.addEventListener('mousedown', unfocus);
+function State({properties, isSelected, addSelection, uniqueSelection}: {properties: StateProperties, isSelected: boolean, addSelection: () => void, uniqueSelection: () => void}): JSX.Element {
+  const focus = useCallback((e) => {
+    if (e.shiftKey) {
+      addSelection();
     } else {
-      window.removeEventListener('mousedown', unfocus);
+      uniqueSelection();
     }
-    return () => window.removeEventListener('mousedown', unfocus);
-  });
-  return (<div onClick={focus} className={`state ${isFocused ? 'focused' : ''}`}>{properties.expanded ? <ExpandedState  {...properties} /> : <CollapsedState {...properties} />}</div>);
+  }, [addSelection, uniqueSelection]);
+  return (<div onClick={focus} className={`state ${isSelected ? 'focused' : ''}`}>{properties.expanded ? <ExpandedState  {...properties} /> : <CollapsedState {...properties} />}</div>);
 }
 
 function CollapsedState({name, w, h, expanded}: StateProperties) {

@@ -11,8 +11,12 @@ function Transition({properties, isSelected, setPath, addSelection, uniqueSelect
     const focus = useCallback((e) => {
         e.preventDefault();
         e.stopPropagation();
-        addSelection();
-    }, [addSelection]);
+        if (e.shiftKey) {
+            addSelection();
+        } else {
+            uniqueSelection();
+        }
+    }, [addSelection, uniqueSelection]);
     const boundingBox = path.boundingBox
     const padding = 20;
     const conditionX = path.control0.x + (path.control1.x - path.control0.x) / 2;

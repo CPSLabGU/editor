@@ -92,6 +92,7 @@ function App() {
     });
     setTransitions(newTransitions);
   }, [transitions, setTransitions]);
+  console.log(focusedObjects)
   // const clickMeCB = useCallback(() => {
   //   setCounter(counter + 1);
   //   console.log(`clicked me ${counter} times!`)
@@ -168,7 +169,12 @@ function App() {
                 }}
                 position={state.position}
               >
-                <State {...state.properties} />
+                <State
+                  properties={state.properties}
+                  isSelected={focusedObjects.has(id)}
+                  addSelection={() => addSelection(id)}
+                  uniqueSelection={() => uniqueSelection(id)}
+                />
               </Resizable>
             </Positionable>
           </div>
