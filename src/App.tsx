@@ -326,26 +326,6 @@ function calculateEdge(source: BoundingBox, target: BoundingBox) {
     new Point2D(sourcePoint.x + dx / 3, sourcePoint.y + dy / 3),
     new Point2D(sourcePoint.x + 2 * dx / 3, sourcePoint.y + 2 * dy / 3)
   );
-  // let x = 0
-  // let y = 0
-  // const angleR = angle / 180 * Math.PI;
-  // if (angle > 135) {
-  //   x = source.x + source.width;
-  //   y = source.y + source.height * Math.sin(angleR);
-  // } else if (angle > 45) {
-  //   x = source.x + source.width * Math.cos(angleR);
-  //   y = source.y + source.height;
-  // } else if (angle < -135) {
-  //   x = source.x;
-  //   y = source.y + source.height * Math.sin(angleR);
-  // } else if (angle < -45) {
-  //   x = source.x + source.width * Math.cos(angleR);
-  //   y = source.y;
-  // } else {
-  //   x = source.x;
-  //   y = source.y + source.height * Math.sin(angleR);
-  // }
-  // return new Point2D(x, y);
 }
 
 export default App
