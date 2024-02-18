@@ -68,9 +68,14 @@ export default function App() {
   // const [counter, setCounter] = useState(0);
   const [states, setStates] = useState(initialStates);
   const [transitions, setTransitions] = useState(initialTransitions);
-  const firstState = states[Object.keys(states)[0]];
-  return (
-    // <Canvas states={states} transitions={transitions} setStates={setStates} setTransitions={setTransitions} />
-    <CodeView actions={firstState.properties.actions} language="javascript" state={firstState.properties.name} setActions={(action: string, code: string) => { firstState.properties.actions[action] = code; }} />
-  );
+  const [edittingState, setEdittingState] = useState<string | undefined>(undefined);
+  if (edittingState !== undefined) {
+    return (
+      <CodeView actions={states[edittingState].properties.actions} language="javascript" state={states[edittingState].properties.name} setActions={(action: string, code: string) => { states[edittingState].properties.actions[action] = code; }} />
+    );
+  } else {
+    return (
+      <Canvas states={states} transitions={transitions} setStates={setStates} setTransitions={setTransitions} setEdittingState={setEdittingState} />
+    );
+  }
 }

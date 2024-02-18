@@ -12,7 +12,7 @@ import StateContextMenu from '../views/StateContextMenu';
 import StateIdentifier from '../models/StateIdentifier';
 import BoundingBox from '../models/BoundingBox';
 
-export default function Canvas({states, transitions, setStates, setTransitions}: {states: { [id: string]: StateInformation}, transitions: { [id: string]: TransitionProperties}, setStates: (f: (states: { [id: string]: StateInformation}) => { [id: string]: StateInformation}) => void, setTransitions: (f: (transitions: { [id: string]: TransitionProperties}) => { [id: string]: TransitionProperties}) => void}) {
+export default function Canvas({states, transitions, setStates, setTransitions, setEdittingState}: {states: { [id: string]: StateInformation}, transitions: { [id: string]: TransitionProperties}, setStates: (f: (states: { [id: string]: StateInformation}) => { [id: string]: StateInformation}) => void, setTransitions: (f: (transitions: { [id: string]: TransitionProperties}) => { [id: string]: TransitionProperties}) => void, setEdittingState: (id: string | undefined) => void}) {
     const [focusedObjects, setFocusedObjects] = useState(new Set<string>());
   const [contextState, setContextState] = useState<string | undefined>(undefined);
   const [stateContextMenuPosition, setStateContextMenuPosition] = useState<[Point2D, string] | undefined>(undefined);
@@ -66,7 +66,8 @@ export default function Canvas({states, transitions, setStates, setTransitions}:
     setFocusedObjects(new Set());
     setContextMenuPosition(undefined);
     setStateContextMenuPosition(undefined);
-  }, [setFocusedObjects]);
+    setEdittingState(undefined);
+  }, [setFocusedObjects, setContextMenuPosition, setStateContextMenuPosition, setEdittingState, setContextState]);
   const keyDown = useCallback((e: KeyboardEvent) => {
     if (e.key == 'Escape') {
       deselectAll();
@@ -227,6 +228,7 @@ export default function Canvas({states, transitions, setStates, setTransitions}:
               addSelection={() => addSelection(id)}
               uniqueSelection={() => uniqueSelection(id)}
               showContextMenu={(position: Point2D) => showStateContextMenu(position, id)}
+              onDoubleClick={() => setEdittingState(id)}
             />
           </div>
         })

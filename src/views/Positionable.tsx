@@ -3,31 +3,31 @@ import Point2D from '../models/Point2D';
 import Grip from './Grip';
 import '../styles/Positionable.css';
 
-function Positionable({position, setPosition, enabled=true, onClick=() => {}, onContextMenu=(e) => {}, children}) {
+function Positionable({position, setPosition, enabled=true, onClick=() => {}, onContextMenu=(e) => {}, onDoubleClick = () => {}, children}) {
   if (!enabled) {
     return (
-      <DisabledView position={position} onClick={onClick} onContextMenu={onContextMenu}>
+      <DisabledView position={position} onClick={onClick} onContextMenu={onContextMenu} onDoubleClick={onDoubleClick}>
         {children}
       </DisabledView>
     );
   } else {
     return (
-      <EnabledView position={position} setPosition={setPosition} onClick={onClick} onContextMenu={onContextMenu}>
+      <EnabledView position={position} setPosition={setPosition} onClick={onClick} onContextMenu={onContextMenu} onDoubleClick={onDoubleClick}>
         {children}
       </EnabledView>
     );
   }
 }
 
-function DisabledView({position, onClick=() => {}, onContextMenu=(e) => {}, children}) {
+function DisabledView({position, onClick=() => {}, onContextMenu=(e) => {}, onDoubleClick = () => {}, children}) {
   return (
-    <div style={{position: 'absolute', left: position.x, top: position.y}} onClick={onClick} onContextMenu={onContextMenu}>
+    <div style={{position: 'absolute', left: position.x, top: position.y}} onClick={onClick} onContextMenu={onContextMenu} onDoubleClick={onDoubleClick}>
       {children}
     </div>
   );
 }
 
-function EnabledView({position, setPosition, onClick=() => {}, onContextMenu=(e) => {}, children}) {
+function EnabledView({position, setPosition, onClick=() => {}, onContextMenu=(e) => {}, onDoubleClick = () => {}, children}) {
   const [isDragging, setIsDragging] = useState(false);
   const [mousePosition, setMousePosition] = useState(position);
   const currentPosition = useMemo(() => (new Point2D(position.x, position.y)), [position]);
@@ -67,7 +67,7 @@ function EnabledView({position, setPosition, onClick=() => {}, onContextMenu=(e)
     cursor: isDragging ? 'grabbing' : 'grab'
   };
   return (
-    <div style={positionStyle} onMouseDown={mouseDown} onClick={onClick} onContextMenu={onContextMenu}>
+    <div style={positionStyle} onMouseDown={mouseDown} onClick={onClick} onContextMenu={onContextMenu} onDoubleClick={onDoubleClick}>
       {/* <div className='drag'>
         <div><Grip /></div>
       </div> */}
