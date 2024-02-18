@@ -43,7 +43,7 @@ function Transition({properties, setPath}: {properties: TransitionProperties, se
     };
     const conditionStyle = {
         position: 'absolute',
-        top: `calc(${conditionY + offset.y}px - 1em)`,
+        top: `calc(${conditionY + offset.y}px - 0.5em)`,
         left: conditionX,
         textAlign: 'center',
         color: isFocused ? 'blue' : color,
@@ -55,7 +55,7 @@ function Transition({properties, setPath}: {properties: TransitionProperties, se
         height: `${boundingBox.y + 20 + offset.y}px`
     }
     return (
-        <div style={parentStyle}>
+        <div style={parentStyle} onClick={focus}>
             <div className='transition-condition' style={conditionStyle}>
                 {condition}
             </div>
@@ -75,52 +75,89 @@ function Transition({properties, setPath}: {properties: TransitionProperties, se
                     strokeLinejoin={'round'}
                     strokeLinecap={'round'}
                     markerEnd='url(#head)'
-                    onClick={focus}
                 />
             </svg>
-            <ControlPoints curve={path} isFocused={isFocused} setCurve={setPath}></ControlPoints>
+            <ControlPoints curve={path} isFocused={isFocused} offset={offset} setCurve={setPath}></ControlPoints>
         </div>
     );
 }
 
-function ControlPoints({curve, isFocused, setCurve}: {curve: BezierPath, isFocused: boolean, setCurve: (newCurve: BezierPath) => void}): JSX.Element {
+function ControlPoints({curve, isFocused, offset, setCurve}: {curve: BezierPath, isFocused: boolean, offset: Point2D, setCurve: (newCurve: BezierPath) => void}): JSX.Element {
     if (!isFocused) {
         return <></>;
     }
-    const offsetX = curve.source.x
-    const offsetY = curve.source.y
     return (
         <div>
             <ControlPoint
-                position={new Point2D(0, 0)}
+                position={new Point2D(offset.x, offset.y)}
                 color='red'
                 isFilled={false}
                 setPosition={(newPosition) => {
-                    setCurve(new BezierPath(newPosition, curve.target, curve.control0, curve.control1))
+                    setCurve(
+                        new BezierPath(
+                            new Point2D(
+                                newPosition.x - offset.x,
+                                newPosition.y - offset.y
+                            ),
+                            curve.target,
+                            curve.control0,
+                            curve.control1
+                        )
+                    )
                 }}
             ></ControlPoint>
             <ControlPoint
-                position={new Point2D(curve.target.x - offsetX, curve.target.y - offsetY)}
+                position={new Point2D(curve.target.x - curve.source.x + offset.x, curve.target.y - curve.source.y + offset.y)}
                 color='yellow'
                 isFilled={false}
                 setPosition={(newPosition) => {
-                    setCurve(new BezierPath(curve.source, newPosition, curve.control0, curve.control1))
+                    setCurve(
+                        new BezierPath(
+                            curve.source,
+                            new Point2D(
+                                newPosition.x - offset.x + curve.source.x,
+                                newPosition.y - offset.y + curve.source.y
+                            ),
+                            curve.control0,
+                            curve.control1
+                        )
+                    )
                 }}
             ></ControlPoint>
             <ControlPoint
-                position={new Point2D(curve.control0.x - offsetX, curve.control0.y - offsetY)}
+                position={new Point2D(curve.control0.x - curve.source.x + offset.x, curve.control0.y - curve.source.y + offset.y)}
                 color='green'
                 isFilled={true}
                 setPosition={(newPosition) => {
-                    setCurve(new BezierPath(curve.source, curve.target, newPosition, curve.control1))
+                    setCurve(
+                        new BezierPath(
+                            curve.source,
+                            curve.target,
+                            new Point2D(
+                                newPosition.x - offset.x + curve.source.x,
+                                newPosition.y - offset.y + curve.source.y
+                            ),
+                            curve.control1
+                        )
+                    )
                 }}
             ></ControlPoint>
             <ControlPoint
-                position={new Point2D(curve.control1.x - offsetX, curve.control1.y - offsetY)}
+                position={new Point2D(curve.control1.x - curve.source.x + offset.x, curve.control1.y - curve.source.y + offset.y)}
                 color='green'
                 isFilled={true}
                 setPosition={(newPosition) => {
-                    setCurve(new BezierPath(curve.source, curve.target, curve.control0, newPosition))
+                    setCurve(
+                        new BezierPath(
+                            curve.source,
+                            curve.target,
+                            curve.control0,
+                            new Point2D(
+                                newPosition.x - offset.x + curve.source.x,
+                                newPosition.y - offset.y + curve.source.y
+                            )
+                        )
+                    )
                 }}
             ></ControlPoint>
         </div>

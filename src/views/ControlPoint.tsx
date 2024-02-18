@@ -61,10 +61,13 @@ function ControlPoint({position, color, isFilled, setPosition}: {
     position: Point2D, color: string, isFilled: boolean, setPosition: (newPosition: Point2D) => void
 }) {
     return (
-        <Positionable position={position} setPosition={setPosition}>
-            <svg>
+        <Positionable
+            position={new Point2D(position.x - 5, position.y - 10)}
+            setPosition={(newPosition: Point2D) => new Point2D(newPosition.x + 5, newPosition.y + 10)}
+        >
+            <svg style={{width: 10, height: 10}}>
                 <circle
-                    cx={position.x} cy={position.y}
+                    cx={5} cy={5}
                     r={5}
                     stroke={color}
                     fillOpacity={isFilled ? 100 : 0}
