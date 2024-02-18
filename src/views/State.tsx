@@ -15,7 +15,7 @@ function State({properties, position, setPosition, setDimensions, isSelected, ad
   }, [addSelection, uniqueSelection]);
   const child = <div onClick={focus} className={`state ${isSelected ? 'focused' : ''}`}>{properties.expanded ? <ExpandedState  {...properties} /> : <CollapsedState {...properties} />}</div>;
   return (
-    <Positionable position={position} setPosition={setPosition}>
+    <Positionable position={position} setPosition={setPosition} enabled={isSelected} onClick={focus}>
       <Resizable
         dimensions={
           {

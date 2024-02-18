@@ -1,9 +1,33 @@
-import {useCallback, useState, MouseEvent, useEffect, useMemo} from 'react';
+import {useCallback, useState, MouseEvent, useEffect, useMemo, Children} from 'react';
 import Point2D from '../models/Point2D';
 import Grip from './Grip';
 import '../styles/Positionable.css';
 
-function Positionable({position, setPosition, children}) {
+function Positionable({position, setPosition, enabled=true, onClick=() => {}, children}) {
+  if (!enabled) {
+    return (
+      <DisabledView position={position} onClick={onClick}>
+        {children}
+      </DisabledView>
+    );
+  } else {
+    return (
+      <EnabledView position={position} setPosition={setPosition} onClick={onClick}>
+        {children}
+      </EnabledView>
+    );
+  }
+}
+
+function DisabledView({position, onClick=() => {}, children}) {
+  return (
+    <div style={{position: 'absolute', left: position.x, top: position.y}} onClick={onClick}>
+      {children}
+    </div>
+  );
+}
+
+function EnabledView({position, setPosition, onClick=() => {}, children}) {
   const [isDragging, setIsDragging] = useState(false);
   const [mousePosition, setMousePosition] = useState(position);
   const currentPosition = useMemo(() => (new Point2D(position.x, position.y)), [position]);
