@@ -30,19 +30,10 @@ function Transition({properties, setPath}: {properties: TransitionProperties, se
         };
     }, [isFocused, unfocus]);
     const boundingBox = path.boundingBox
-    console.log('');
-    console.log('Path:', path.source, path.target, path.control0, path.control1)
-    console.log('BoundingBox: ', boundingBox)
     const padding = 20;
-    const width = boundingBox.width + padding;
-    const height = boundingBox.height + padding;
-    const offset = new Point2D(width / 2, height / 2);
     const conditionX = path.control0.x + (path.control1.x - path.control0.x) / 2;
     const conditionY = path.control0.y + (path.control1.y - path.control0.y) / 2;
-    console.log('dimensions: ', width, height)
-    console.log('offset', offset);
     const relativeOffset = new Point2D(-boundingBox.x + padding / 2, -boundingBox.y + padding / 2);
-    console.log('relativeOffset', relativeOffset);
     const relativeCurve = new BezierPath(
         new Point2D(path.source.x + relativeOffset.x, path.source.y + relativeOffset.y),
         new Point2D(path.target.x + relativeOffset.x, path.target.y + relativeOffset.y),
