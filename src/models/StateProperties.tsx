@@ -3,4 +3,5 @@ export default interface StateProperties {
     w: number;
     h: number;
     expanded: boolean;
+    transitions: string[];
 }

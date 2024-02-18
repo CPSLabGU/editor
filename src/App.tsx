@@ -27,6 +27,7 @@ addState(
       w: 200,
       h: 100,
       expanded: false,
+      transitions: []
     },
     position: new Point2D(0, 0)
   },
@@ -37,6 +38,7 @@ addState(
       w: 200,
       h: 100,
       expanded: false,
+      transitions: []
     },
     position: new Point2D(0, 200)
   }
@@ -57,6 +59,7 @@ function createDefaultTransition(): void {
     new BezierPath(new Point2D(100, 100), new Point2D(100, 200), new Point2D(100, 135), new Point2D(100, 170)),
     'white'
   );
+  initialStates[initialState!].properties.transitions = [newUUID];
 }
 
 createDefaultTransition();
