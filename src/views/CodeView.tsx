@@ -30,6 +30,7 @@ export default function CodeView({actions, language, state, setActions, onExit}:
                 readOnly={false}
                 lang={language}
                 height="100%"
+                minHeight="200px"
                 onChange={(val, viewUpdate) => { setActions(action, val); }}
               />
             </div>
