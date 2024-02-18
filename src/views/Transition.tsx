@@ -84,8 +84,7 @@ function ControlPoints({curve, isFocused, setCurve}: {curve: BezierPath, isFocus
                 color='red'
                 isFilled={false}
                 setPosition={(newPosition) => {
-                    const adjustedPosition = new Point2D(newPosition.x - offsetX, newPosition.y - offsetY)
-                    setCurve(new BezierPath(adjustedPosition, curve.target, curve.control0, curve.control1))
+                    setCurve(new BezierPath(newPosition, curve.target, curve.control0, curve.control1))
                 }}
             ></ControlPoint>
             <ControlPoint
@@ -93,8 +92,7 @@ function ControlPoints({curve, isFocused, setCurve}: {curve: BezierPath, isFocus
                 color='yellow'
                 isFilled={false}
                 setPosition={(newPosition) => {
-                    const adjustedPosition = new Point2D(newPosition.x - offsetX, newPosition.y - offsetY)
-                    setCurve(new BezierPath(curve.source, adjustedPosition, curve.control0, curve.control1))
+                    setCurve(new BezierPath(curve.source, newPosition, curve.control0, curve.control1))
                 }}
             ></ControlPoint>
             <ControlPoint
@@ -102,8 +100,7 @@ function ControlPoints({curve, isFocused, setCurve}: {curve: BezierPath, isFocus
                 color='green'
                 isFilled={true}
                 setPosition={(newPosition) => {
-                    const adjustedPosition = new Point2D(newPosition.x - offsetX, newPosition.y - offsetY)
-                    setCurve(new BezierPath(curve.source, curve.target, adjustedPosition, curve.control1))
+                    setCurve(new BezierPath(curve.source, curve.target, newPosition, curve.control1))
                 }}
             ></ControlPoint>
             <ControlPoint
@@ -111,8 +108,7 @@ function ControlPoints({curve, isFocused, setCurve}: {curve: BezierPath, isFocus
                 color='green'
                 isFilled={true}
                 setPosition={(newPosition) => {
-                    const adjustedPosition = new Point2D(newPosition.x - offsetX, newPosition.y - offsetY)
-                    setCurve(new BezierPath(curve.source, curve.target, curve.control0, adjustedPosition))
+                    setCurve(new BezierPath(curve.source, curve.target, curve.control0, newPosition))
                 }}
             ></ControlPoint>
         </div>
