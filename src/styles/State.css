@@ -12,6 +12,11 @@
     margin-right: auto;
 }
 
+.state.focused {
+    color: blue;
+    border-color: blue;
+}
+
 .padding {
     padding: 10px;
 }

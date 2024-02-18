@@ -68,6 +68,17 @@ function App() {
   // const [counter, setCounter] = useState(0);
   const [states, setStates] = useState(initialStates);
   const [transitions, setTransitions] = useState(initialTransitions);
+  const [focusedObjects, setFocusedObjects] = useState(new Set<string>());
+  const addSelection = useCallback((id: string) => {
+    setFocusedObjects((focusedObjects) => {
+      const newFocusedObjects = new Set(focusedObjects);
+      newFocusedObjects.add(id);
+      return newFocusedObjects;
+    });
+  }, [setFocusedObjects]);
+  const uniqueSelection = useCallback((id: string) => {
+    setFocusedObjects(new Set([id]));
+  }, [setFocusedObjects]);
   const setPath = useCallback((id: string, newPath: BezierPath) => {
     console.log('setPath', id, newPath);
     const transition = transitions[id];
@@ -94,7 +105,10 @@ function App() {
             <div key={id}>
               <Transition
                 properties={transition}
+                isSelected={focusedObjects.has(id)}
                 setPath={ (newPath: BezierPath) => setPath(id, newPath) }
+                addSelection={()=> addSelection(id)}
+                uniqueSelection={() => uniqueSelection(id)}
               ></Transition>
             </div>
           );

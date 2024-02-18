@@ -4,31 +4,15 @@ import BezierPath from "../models/BezierPath";
 import ControlPoint from "./ControlPoint";
 import Point2D from "../models/Point2D";
 
-function Transition({properties, setPath}: {properties: TransitionProperties, setPath: (newPath: BezierPath) => void}): JSX.Element {
+function Transition({properties, isSelected, setPath, addSelection, uniqueSelection}: {properties: TransitionProperties, isSelected: boolean, setPath: (newPath: BezierPath) => void, addSelection: () => void, uniqueSelection: () => void}): JSX.Element {
     const path = properties.path
     const condition = properties.condition
     const color = properties.color
-    const [isFocused, setIsFocused] = useState(false);
     const focus = useCallback((e) => {
         e.preventDefault();
         e.stopPropagation();
-        setIsFocused(true);
-    }, [setIsFocused]);
-    const unfocus = useCallback((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsFocused(false);
-    }, [setIsFocused]);
-    useEffect(() => {
-        if (isFocused) {
-            window.addEventListener('mousedown', unfocus);
-        } else {
-            window.removeEventListener('mousedown', unfocus);
-        }
-        return () => {
-            window.removeEventListener('mousedown', unfocus);
-        };
-    }, [isFocused, unfocus]);
+        addSelection();
+    }, [addSelection]);
     const boundingBox = path.boundingBox
     const padding = 20;
     const conditionX = path.control0.x + (path.control1.x - path.control0.x) / 2;
@@ -39,8 +23,7 @@ function Transition({properties, setPath}: {properties: TransitionProperties, se
         new Point2D(path.target.x + relativeOffset.x, path.target.y + relativeOffset.y),
         new Point2D(path.control0.x + relativeOffset.x, path.control0.y + relativeOffset.y),
         new Point2D(path.control1.x + relativeOffset.x, path.control1.y + relativeOffset.y)
-    )
-    console.log('relativeCurve', relativeCurve.source, relativeCurve.target, relativeCurve.control0, relativeCurve.control1);
+    );
     const parentStyle = {
         position: 'absolute',
         left: boundingBox.x - padding / 2,
@@ -51,7 +34,7 @@ function Transition({properties, setPath}: {properties: TransitionProperties, se
         left: `calc(${conditionX + relativeOffset.x}px - 0.2em * ${condition.length})`,
         top: `calc(${conditionY + relativeOffset.y}px - 0.5em)`,
         textAlign: 'center',
-        color: isFocused ? 'blue' : color
+        color: isSelected ? 'blue' : color
     }
     const svgStyle = {
         width: `${boundingBox.width + padding}px`,
@@ -67,12 +50,12 @@ function Transition({properties, setPath}: {properties: TransitionProperties, se
                 <marker id='head' orient="auto"
                     markerWidth='6' markerHeight='8'
                     refX='0.2' refY='2'>
-                    <path d='M0,0 V4 L4,2 Z' fill={isFocused ? 'blue' : color}/>
+                    <path d='M0,0 V4 L4,2 Z' fill={isSelected ? 'blue' : color}/>
                 </marker>
                 </defs>
                 <path
                     d={`M ${relativeCurve.source.x},${relativeCurve.source.y} C ${relativeCurve.control0.x},${relativeCurve.control0.y} ${relativeCurve.control1.x},${relativeCurve.control1.y} ${relativeCurve.target.x},${relativeCurve.target.y}`}
-                    stroke={isFocused ? 'blue' : color}
+                    stroke={isSelected ? 'blue' : color}
                     fill={'transparent'}
                     strokeWidth={2}
                     strokeLinejoin={'round'}
@@ -80,13 +63,13 @@ function Transition({properties, setPath}: {properties: TransitionProperties, se
                     markerEnd='url(#head)'
                 />
             </svg>
-            <ControlPoints curve={path} isFocused={isFocused} offset={relativeOffset} setCurve={setPath}></ControlPoints>
+            <ControlPoints curve={path} isSelected={isSelected} offset={relativeOffset} setCurve={setPath}></ControlPoints>
         </div>
     );
 }
 
-function ControlPoints({curve, isFocused, offset, setCurve}: {curve: BezierPath, isFocused: boolean, offset: Point2D, setCurve: (newCurve: BezierPath) => void}): JSX.Element {
-    if (!isFocused) {
+function ControlPoints({curve, isSelected, offset, setCurve}: {curve: BezierPath, isSelected: boolean, offset: Point2D, setCurve: (newCurve: BezierPath) => void}): JSX.Element {
+    if (!isSelected) {
         return <></>;
     }
     return (

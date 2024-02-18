@@ -31,8 +31,6 @@ function Positionable({position, setPosition, children}) {
     };
   }, [updatePosition, endDrag, isDragging]);
   const mouseDown = useCallback((e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
     setIsDragging(true);
   }, [setIsDragging]);
   const positionStyle = {
