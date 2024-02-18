@@ -7,6 +7,7 @@ import Canvas from "./views/Canvas";
 import { useState } from "react";
 import './App.css';
 import CodeView from "./views/CodeView";
+import Machine from "./models/Machine";
 
 const initialStates: { [id: string]: StateInformation} = {};
 
@@ -69,13 +70,14 @@ export default function App() {
   const [states, setStates] = useState(initialStates);
   const [transitions, setTransitions] = useState(initialTransitions);
   const [edittingState, setEdittingState] = useState<string | undefined>(undefined);
+  const [currentMachine, setCurrentMachine] = useState(new Machine('', '', ''));
   if (edittingState !== undefined) {
     return (
       <CodeView actions={states[edittingState].properties.actions} language="javascript" state={states[edittingState].properties.name} setActions={(action: string, code: string) => { states[edittingState].properties.actions[action] = code; }} onExit={() => setEdittingState(undefined)} />
     );
   } else {
     return (
-      <Canvas states={states} transitions={transitions} setStates={setStates} setTransitions={setTransitions} setEdittingState={setEdittingState} />
+      <Canvas states={states} transitions={transitions} machine={currentMachine} setStates={setStates} setTransitions={setTransitions} setEdittingState={setEdittingState} />
     );
   }
 }

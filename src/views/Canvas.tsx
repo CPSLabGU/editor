@@ -11,10 +11,10 @@ import WindowContextMenu from '../views/WindowContextMenu';
 import StateContextMenu from '../views/StateContextMenu';
 import StateIdentifier from '../models/StateIdentifier';
 import BoundingBox from '../models/BoundingBox';
-import SidePanel from './SidePanel';
 import CanvasSidePanel from './CanvasSidePanel';
+import Machine from '../models/Machine';
 
-export default function Canvas({states, transitions, setStates, setTransitions, setEdittingState}: {states: { [id: string]: StateInformation}, transitions: { [id: string]: TransitionProperties}, setStates: (f: (states: { [id: string]: StateInformation}) => { [id: string]: StateInformation}) => void, setTransitions: (f: (transitions: { [id: string]: TransitionProperties}) => { [id: string]: TransitionProperties}) => void, setEdittingState: (id: string | undefined) => void}) {
+export default function Canvas({states, transitions, machine, setStates, setTransitions, setEdittingState}: {states: { [id: string]: StateInformation}, transitions: { [id: string]: TransitionProperties}, machine: Machine, setStates: (f: (states: { [id: string]: StateInformation}) => { [id: string]: StateInformation}) => void, setTransitions: (f: (transitions: { [id: string]: TransitionProperties}) => { [id: string]: TransitionProperties}) => void, setEdittingState: (id: string | undefined) => void}) {
     const [focusedObjects, setFocusedObjects] = useState(new Set<string>());
   const [contextState, setContextState] = useState<string | undefined>(undefined);
   const [stateContextMenuPosition, setStateContextMenuPosition] = useState<[Point2D, string] | undefined>(undefined);
@@ -250,7 +250,7 @@ export default function Canvas({states, transitions, setStates, setTransitions, 
           />
         )
       }
-      <CanvasSidePanel />
+      <CanvasSidePanel machine={machine} />
     </div>
   )
 }
