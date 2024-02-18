@@ -3,31 +3,31 @@ import Point2D from '../models/Point2D';
 import Grip from './Grip';
 import '../styles/Positionable.css';
 
-function Positionable({position, setPosition, enabled=true, onClick=() => {}, children}) {
+function Positionable({position, setPosition, enabled=true, onClick=() => {}, onContextMenu=(e) => {}, children}) {
   if (!enabled) {
     return (
-      <DisabledView position={position} onClick={onClick}>
+      <DisabledView position={position} onClick={onClick} onContextMenu={onContextMenu}>
         {children}
       </DisabledView>
     );
   } else {
     return (
-      <EnabledView position={position} setPosition={setPosition} onClick={onClick}>
+      <EnabledView position={position} setPosition={setPosition} onClick={onClick} onContextMenu={onContextMenu}>
         {children}
       </EnabledView>
     );
   }
 }
 
-function DisabledView({position, onClick=() => {}, children}) {
+function DisabledView({position, onClick=() => {}, onContextMenu=(e) => {}, children}) {
   return (
-    <div style={{position: 'absolute', left: position.x, top: position.y}} onClick={onClick}>
+    <div style={{position: 'absolute', left: position.x, top: position.y}} onClick={onClick} onContextMenu={onContextMenu}>
       {children}
     </div>
   );
 }
 
-function EnabledView({position, setPosition, onClick=() => {}, children}) {
+function EnabledView({position, setPosition, onClick=() => {}, onContextMenu=(e) => {}, children}) {
   const [isDragging, setIsDragging] = useState(false);
   const [mousePosition, setMousePosition] = useState(position);
   const currentPosition = useMemo(() => (new Point2D(position.x, position.y)), [position]);
@@ -67,7 +67,7 @@ function EnabledView({position, setPosition, onClick=() => {}, children}) {
     cursor: isDragging ? 'grabbing' : 'grab'
   };
   return (
-    <div style={positionStyle} onMouseDown={mouseDown}>
+    <div style={positionStyle} onMouseDown={mouseDown} onClick={onClick} onContextMenu={onContextMenu}>
       {/* <div className='drag'>
         <div><Grip /></div>
       </div> */}

@@ -4,12 +4,11 @@ import State from './views/State'
 import { v4 as uuidv4 } from 'uuid';
 import StateInformation from './models/StateInformation';
 import Point2D from './models/Point2D';
-import Positionable from './views/Positionable';
-import Resizable from './views/Resizable';
 import Transition from './views/Transition';
 import BezierPath from './models/BezierPath';
 import TransitionProperties from './models/TransitionProperties';
 import WindowContextMenu from './views/WindowContextMenu';
+import StateContextMenu from './views/StateContextMenu';
 
 const initialStates: { [id: string]: StateInformation} = {};
 
@@ -70,6 +69,8 @@ function App() {
   const [states, setStates] = useState(initialStates);
   const [transitions, setTransitions] = useState(initialTransitions);
   const [focusedObjects, setFocusedObjects] = useState(new Set<string>());
+  const [stateContextMenuPosition, setStateContextMenuPosition] = useState<[Point2D, string] | undefined>(undefined);
+  const [contextMenuPosition, setContextMenuPosition] = useState<Point2D | undefined>(undefined);
   const addSelection = useCallback((id: string) => {
     setFocusedObjects((focusedObjects) => {
       const newFocusedObjects = new Set(focusedObjects);
@@ -106,7 +107,7 @@ function App() {
     setTransitions((transitions) => {
       const newTransitions: { [id: string]: TransitionProperties} = {};
       Object.keys(transitions).forEach((id) => {
-        if (!focusedObjects.has(id) && !focusedObjects.has(transitions[id].source)) {
+        if (!focusedObjects.has(id) && !focusedObjects.has(transitions[id].source) && !focusedObjects.has(transitions[id].target)) {
           newTransitions[id] = transitions[id];
         }
       });
@@ -117,6 +118,7 @@ function App() {
   const deselectAll = useCallback(() => {
     setFocusedObjects(new Set());
     setContextMenuPosition(undefined);
+    setStateContextMenuPosition(undefined);
   }, [setFocusedObjects]);
   const keyDown = useCallback((e: KeyboardEvent) => {
     if (e.key == 'Escape') {
@@ -126,7 +128,6 @@ function App() {
       deleteSelection();
     }
   }, [deselectAll, deleteSelection]);
-  const [contextMenuPosition, setContextMenuPosition] = useState<Point2D | undefined>(undefined);
   const showContextMenu = useCallback((e) => {
     e.preventDefault();
     setContextMenuPosition(new Point2D(e.clientX, e.clientY));
@@ -161,7 +162,29 @@ function App() {
       };
       return newStates;
     });
-  }, [setStates]);
+    deselectAll();
+  }, [setStates, deselectAll]);
+  const showStateContextMenu = useCallback((position: Point2D, id: string) => {
+    setContextMenuPosition(undefined);
+    setStateContextMenuPosition([position, id]);
+  }, [setStateContextMenuPosition]);
+  const deleteState = useCallback((stateId: string) => {
+    setStates((states) => {
+      const newStates = {...states};
+      delete newStates[stateId];
+      return newStates;
+    });
+    setTransitions((transitions) => {
+      const newTransitions: { [id: string]: TransitionProperties} = {};
+      Object.keys(transitions).forEach((id) => {
+        if (transitions[id].source != stateId && transitions[id].target != stateId) {
+          newTransitions[id] = transitions[id];
+        }
+      });
+      return newTransitions;
+    });
+    deselectAll();
+  }, [setStates, setTransitions, deselectAll]);
   return (
     <div id="canvas" onContextMenu={showContextMenu}>
       {
@@ -232,6 +255,7 @@ function App() {
               isSelected={focusedObjects.has(id)}
               addSelection={() => addSelection(id)}
               uniqueSelection={() => uniqueSelection(id)}
+              showContextMenu={(position: Point2D) => showStateContextMenu(position, id)}
             />
           </div>
         })
@@ -239,6 +263,11 @@ function App() {
       {
         contextMenuPosition !== undefined && (
           <WindowContextMenu position={contextMenuPosition!} createState={() => createState(contextMenuPosition)} />
+        )
+      }
+      {
+        stateContextMenuPosition !== undefined && (
+          <StateContextMenu position={stateContextMenuPosition![0]} deleteState={() => deleteState(stateContextMenuPosition![1])} />
         )
       }
     </div>
