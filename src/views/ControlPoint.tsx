@@ -60,14 +60,9 @@ import Positionable from "./Positionable";
 function ControlPoint({position, color, isFilled, setPosition}: {
     position: Point2D, color: string, isFilled: boolean, setPosition: (newPosition: Point2D) => void
 }) {
-    const svgStyle = {
-        top: 0,
-        left: 0,
-        position: 'absolute',
-    }
     return (
         <Positionable position={position} setPosition={setPosition}>
-            <svg style={svgStyle}>
+            <svg>
                 <circle
                     cx={position.x} cy={position.y}
                     r={5}

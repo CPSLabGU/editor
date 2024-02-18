@@ -29,21 +29,33 @@ function Transition({properties, setPath}: {properties: TransitionProperties, se
             window.removeEventListener('mousedown', unfocus);
         };
     }, [isFocused, unfocus]);
-    const svgStyle = {
-        top: 0,
-        left: 0,
+    const boundingBox = path.boundingBox
+    console.log('');
+    console.log('Path:', path.source, path.target, path.control0, path.control1)
+    const conditionX = (path.target.x - path.source.x) / 2;
+    const conditionY = (path.target.y - path.source.y) / 2;
+    const offset = new Point2D((path.source.x - boundingBox.x) / 2, (path.source.y - boundingBox.y) / 2);
+    console.log('offset', offset);
+    const parentStyle = {
         position: 'absolute',
-    }
-    const conditionX = path.control0.x + (path.control1.x - path.control0.x) / 2;
-    const conditionY = path.control0.y + (path.control1.y - path.control0.y) / 2;
+        left: path.source.x - offset.x,
+        top: path.source.y - offset.y,
+    };
     const conditionStyle = {
         position: 'absolute',
-        top: conditionX,
-        left: conditionY,
-        color: isFocused ? 'blue' : color
+        top: `calc(${conditionY + offset.y}px - 1em)`,
+        left: conditionX,
+        textAlign: 'center',
+        color: isFocused ? 'blue' : color,
+        width: `${boundingBox.x + 20 + offset.x}px`,
+        height: `${boundingBox.y + 20 + offset.y}px`
+    }
+    const svgStyle = {
+        width: `${boundingBox.x + 20 + offset.x}px`,
+        height: `${boundingBox.y + 20 + offset.y}px`
     }
     return (
-        <div>
+        <div style={parentStyle}>
             <div className='transition-condition' style={conditionStyle}>
                 {condition}
             </div>
@@ -56,7 +68,7 @@ function Transition({properties, setPath}: {properties: TransitionProperties, se
                 </marker>
                 </defs>
                 <path
-                    d={`M ${path.source.x},${path.source.y} C ${path.control0.x},${path.control0.y} ${path.control1.x},${path.control1.y} ${path.target.x},${path.target.y}`}
+                    d={`M ${offset.x},${offset.y} C ${path.control0.x - path.source.x + offset.x},${path.control0.y - path.source.y + offset.y} ${path.control1.x - path.source.x + offset.x},${path.control1.y - path.source.y + offset.y} ${path.target.x - path.source.x + offset.x},${path.target.y - path.source.y  + offset.y}`}
                     stroke={isFocused ? 'blue' : color}
                     fill={'transparent'}
                     strokeWidth={2}
