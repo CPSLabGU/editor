@@ -92,6 +92,27 @@ function App() {
     });
     setTransitions(newTransitions);
   }, [transitions, setTransitions]);
+  const deleteSelection = useCallback(() => {
+    setStates((states) => {
+      const newStates: { [id: string]: StateInformation} = {};
+      Object.keys(states).forEach((id) => {
+        if (!focusedObjects.has(id)) {
+          newStates[id] = states[id];
+        }
+      });
+      return newStates;
+    });
+    setTransitions((transitions) => {
+      const newTransitions: { [id: string]: TransitionProperties} = {};
+      Object.keys(transitions).forEach((id) => {
+        if (!focusedObjects.has(id) && !focusedObjects.has(transitions[id].source)) {
+          newTransitions[id] = transitions[id];
+        }
+      });
+      return newTransitions;
+    });
+    setFocusedObjects(new Set());
+  }, [focusedObjects, setStates, setTransitions, setFocusedObjects]);
   const deselectAll = useCallback(() => {
     setFocusedObjects(new Set());
   }, [setFocusedObjects]);
@@ -99,7 +120,10 @@ function App() {
     if (e.key == 'Escape') {
       deselectAll();
     }
-  }, [deselectAll]);
+    if (e.key == 'Delete') {
+      deleteSelection();
+    }
+  }, [deselectAll, deleteSelection]);
   useEffect(() => {
     window.addEventListener('keydown', keyDown);
     window.addEventListener('click', deselectAll);
