@@ -32,27 +32,39 @@ function Transition({properties, setPath}: {properties: TransitionProperties, se
     const boundingBox = path.boundingBox
     console.log('');
     console.log('Path:', path.source, path.target, path.control0, path.control1)
+    console.log('BoundingBox: ', boundingBox)
     const conditionX = (path.target.x - path.source.x) / 2;
     const conditionY = (path.target.y - path.source.y) / 2;
-    const offset = new Point2D((path.source.x - boundingBox.x) / 2, (path.source.y - boundingBox.y) / 2);
+    const padding = 20;
+    const width = boundingBox.width + padding;
+    const height = boundingBox.height + padding;
+    const offset = new Point2D(width / 2, height / 2);
+    console.log('dimensions: ', width, height)
     console.log('offset', offset);
+    const relativeOffset = new Point2D(-boundingBox.x + padding / 2, -boundingBox.y + padding / 2);
+    console.log('relativeOffset', relativeOffset);
+    const relativeCurve = new BezierPath(
+        new Point2D(path.source.x + relativeOffset.x, path.source.y + relativeOffset.y),
+        new Point2D(path.target.x + relativeOffset.x, path.target.y + relativeOffset.y),
+        new Point2D(path.control0.x + relativeOffset.x, path.control0.y + relativeOffset.y),
+        new Point2D(path.control1.x + relativeOffset.x, path.control1.y + relativeOffset.y)
+    )
+    console.log('relativeCurve', relativeCurve.source, relativeCurve.target, relativeCurve.control0, relativeCurve.control1);
     const parentStyle = {
         position: 'absolute',
-        left: path.source.x - offset.x,
-        top: path.source.y - offset.y,
+        left: boundingBox.x - padding / 2,
+        top: boundingBox.y - padding / 2,
     };
     const conditionStyle = {
         position: 'absolute',
-        top: `calc(${conditionY + offset.y}px - 0.5em)`,
-        left: conditionX,
+        left: `calc(${conditionX}px - 0.2em * ${condition.length})`,
+        top: `calc(${conditionY}px - 0.5em)`,
         textAlign: 'center',
-        color: isFocused ? 'blue' : color,
-        width: `${boundingBox.x + 20 + offset.x}px`,
-        height: `${boundingBox.y + 20 + offset.y}px`
+        color: isFocused ? 'blue' : color
     }
     const svgStyle = {
-        width: `${boundingBox.x + 20 + offset.x}px`,
-        height: `${boundingBox.y + 20 + offset.y}px`
+        width: `${boundingBox.width + padding}px`,
+        height: `${boundingBox.height + padding}px`
     }
     return (
         <div style={parentStyle} onClick={focus}>
@@ -68,7 +80,7 @@ function Transition({properties, setPath}: {properties: TransitionProperties, se
                 </marker>
                 </defs>
                 <path
-                    d={`M ${offset.x},${offset.y} C ${path.control0.x - path.source.x + offset.x},${path.control0.y - path.source.y + offset.y} ${path.control1.x - path.source.x + offset.x},${path.control1.y - path.source.y + offset.y} ${path.target.x - path.source.x + offset.x},${path.target.y - path.source.y  + offset.y}`}
+                    d={`M ${relativeCurve.source.x},${relativeCurve.source.y} C ${relativeCurve.control0.x},${relativeCurve.control0.y} ${relativeCurve.control1.x},${relativeCurve.control1.y} ${relativeCurve.target.x},${relativeCurve.target.y}`}
                     stroke={isFocused ? 'blue' : color}
                     fill={'transparent'}
                     strokeWidth={2}
@@ -77,7 +89,7 @@ function Transition({properties, setPath}: {properties: TransitionProperties, se
                     markerEnd='url(#head)'
                 />
             </svg>
-            <ControlPoints curve={path} isFocused={isFocused} offset={offset} setCurve={setPath}></ControlPoints>
+            <ControlPoints curve={path} isFocused={isFocused} offset={relativeOffset} setCurve={setPath}></ControlPoints>
         </div>
     );
 }
@@ -89,15 +101,15 @@ function ControlPoints({curve, isFocused, offset, setCurve}: {curve: BezierPath,
     return (
         <div>
             <ControlPoint
-                position={new Point2D(offset.x, offset.y)}
+                position={new Point2D(curve.source.x + offset.x, curve.source.y + offset.y)}
                 color='red'
                 isFilled={false}
                 setPosition={(newPosition) => {
                     setCurve(
                         new BezierPath(
                             new Point2D(
-                                newPosition.x - offset.x + curve.source.x,
-                                newPosition.y - offset.y + curve.source.y
+                                newPosition.x - offset.x,
+                                newPosition.y - offset.y
                             ),
                             curve.target,
                             curve.control0,
@@ -107,7 +119,7 @@ function ControlPoints({curve, isFocused, offset, setCurve}: {curve: BezierPath,
                 }}
             ></ControlPoint>
             <ControlPoint
-                position={new Point2D(curve.target.x - curve.source.x + offset.x, curve.target.y - curve.source.y + offset.y)}
+                position={new Point2D(curve.target.x + offset.x, curve.target.y + offset.y)}
                 color='yellow'
                 isFilled={false}
                 setPosition={(newPosition) => {
@@ -115,8 +127,8 @@ function ControlPoints({curve, isFocused, offset, setCurve}: {curve: BezierPath,
                         new BezierPath(
                             curve.source,
                             new Point2D(
-                                newPosition.x - offset.x + curve.source.x,
-                                newPosition.y - offset.y + curve.source.y
+                                newPosition.x - offset.x,
+                                newPosition.y - offset.y
                             ),
                             curve.control0,
                             curve.control1
@@ -125,7 +137,7 @@ function ControlPoints({curve, isFocused, offset, setCurve}: {curve: BezierPath,
                 }}
             ></ControlPoint>
             <ControlPoint
-                position={new Point2D(curve.control0.x - curve.source.x + offset.x, curve.control0.y - curve.source.y + offset.y)}
+                position={new Point2D(curve.control0.x + offset.x, curve.control0.y + offset.y)}
                 color='green'
                 isFilled={true}
                 setPosition={(newPosition) => {
@@ -134,8 +146,8 @@ function ControlPoints({curve, isFocused, offset, setCurve}: {curve: BezierPath,
                             curve.source,
                             curve.target,
                             new Point2D(
-                                newPosition.x - offset.x + curve.source.x,
-                                newPosition.y - offset.y + curve.source.y
+                                newPosition.x - offset.x,
+                                newPosition.y - offset.y
                             ),
                             curve.control1
                         )
@@ -143,7 +155,7 @@ function ControlPoints({curve, isFocused, offset, setCurve}: {curve: BezierPath,
                 }}
             ></ControlPoint>
             <ControlPoint
-                position={new Point2D(curve.control1.x - curve.source.x + offset.x, curve.control1.y - curve.source.y + offset.y)}
+                position={new Point2D(curve.control1.x + offset.x, curve.control1.y + offset.y)}
                 color='green'
                 isFilled={true}
                 setPosition={(newPosition) => {
@@ -153,8 +165,8 @@ function ControlPoints({curve, isFocused, offset, setCurve}: {curve: BezierPath,
                             curve.target,
                             curve.control0,
                             new Point2D(
-                                newPosition.x - offset.x + curve.source.x,
-                                newPosition.y - offset.y + curve.source.y
+                                newPosition.x - offset.x,
+                                newPosition.y - offset.y
                             )
                         )
                     )
