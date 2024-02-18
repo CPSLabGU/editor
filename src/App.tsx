@@ -9,6 +9,7 @@ import BezierPath from './models/BezierPath';
 import TransitionProperties from './models/TransitionProperties';
 import WindowContextMenu from './views/WindowContextMenu';
 import StateContextMenu from './views/StateContextMenu';
+import StateIdentifier from './models/StateIdentifier';
 
 const initialStates: { [id: string]: StateInformation} = {};
 
@@ -69,6 +70,7 @@ function App() {
   const [states, setStates] = useState(initialStates);
   const [transitions, setTransitions] = useState(initialTransitions);
   const [focusedObjects, setFocusedObjects] = useState(new Set<string>());
+  const [contextState, setContextState] = useState<string | undefined>(undefined);
   const [stateContextMenuPosition, setStateContextMenuPosition] = useState<[Point2D, string] | undefined>(undefined);
   const [contextMenuPosition, setContextMenuPosition] = useState<Point2D | undefined>(undefined);
   const addSelection = useCallback((id: string) => {
@@ -116,6 +118,7 @@ function App() {
     setFocusedObjects(new Set());
   }, [focusedObjects, setStates, setTransitions, setFocusedObjects]);
   const deselectAll = useCallback(() => {
+    setContextState(undefined);
     setFocusedObjects(new Set());
     setContextMenuPosition(undefined);
     setStateContextMenuPosition(undefined);
@@ -165,6 +168,7 @@ function App() {
     deselectAll();
   }, [setStates, deselectAll]);
   const showStateContextMenu = useCallback((position: Point2D, id: string) => {
+    setContextState(id);
     setContextMenuPosition(undefined);
     setStateContextMenuPosition([position, id]);
   }, [setStateContextMenuPosition]);
@@ -185,6 +189,26 @@ function App() {
     });
     deselectAll();
   }, [setStates, setTransitions, deselectAll]);
+  const createTransition = useCallback((stateID: string, sourceID: string) => {
+    const newUUID = uuidv4();
+    setTransitions((transitions) => {
+      const newTransitions = {...transitions};
+      newTransitions[newUUID] = new TransitionProperties(
+        sourceID,
+        stateID,
+        'true',
+        new BezierPath(new Point2D(100, 100), new Point2D(100, 200), new Point2D(100, 135), new Point2D(100, 170)),
+        'white'
+      );
+      return newTransitions;
+    });
+    setStates((states) => {
+      const newStates = {...states};
+      newStates[stateID].properties.transitions.push(newUUID);
+      return newStates;
+    });
+    deselectAll();
+  }, [setTransitions, setStates, deselectAll]);
   return (
     <div id="canvas" onContextMenu={showContextMenu}>
       {
@@ -267,7 +291,12 @@ function App() {
       }
       {
         stateContextMenuPosition !== undefined && (
-          <StateContextMenu position={stateContextMenuPosition![0]} deleteState={() => deleteState(stateContextMenuPosition![1])} />
+          <StateContextMenu
+            position={stateContextMenuPosition![0]}
+            states={Object.keys(states).map((id: string) => new StateIdentifier(id, states[id].properties.name))}
+            createTransition={(stateID: string) => createTransition(stateID, contextState!) }
+            deleteState={() => deleteState(stateContextMenuPosition![1])}
+          />
         )
       }
     </div>
