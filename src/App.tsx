@@ -71,7 +71,7 @@ export default function App() {
   const [edittingState, setEdittingState] = useState<string | undefined>(undefined);
   if (edittingState !== undefined) {
     return (
-      <CodeView actions={states[edittingState].properties.actions} language="javascript" state={states[edittingState].properties.name} setActions={(action: string, code: string) => { states[edittingState].properties.actions[action] = code; }} />
+      <CodeView actions={states[edittingState].properties.actions} language="javascript" state={states[edittingState].properties.name} setActions={(action: string, code: string) => { states[edittingState].properties.actions[action] = code; }} onExit={() => setEdittingState(undefined)} />
     );
   } else {
     return (
