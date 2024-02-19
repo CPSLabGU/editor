@@ -76,11 +76,11 @@ function State({
 }
 
 function CollapsedState({ name, w, h, expanded }: StateProperties) {
-  return <div className="padding">{name}!</div>
+  return <div className="padding">{name}</div>
 }
 
 function ExpandedState({ name, w, h, expanded }: StateProperties) {
-  return <div className="padding">{name}!</div>
+  return <div className="padding">{name}</div>
 }
 
 export default State
