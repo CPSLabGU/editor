@@ -112,6 +112,7 @@ function Transition({id, properties, priority, isSelected, setPath, setCondition
                     strokeLinecap={'round'}
                     markerEnd={`url(#${id}${properties.priority}head)`}
                     markerStart={`url(#${id}${properties.priority}strokes)`}
+                    onDoubleClick={enableEditing}
                 />
             </svg>
             <ControlPoints curve={path} isSelected={isSelected} offset={relativeOffset} setCurve={setPath}></ControlPoints>
