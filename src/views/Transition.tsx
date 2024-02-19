@@ -79,7 +79,7 @@ function Transition({id, properties, priority, isSelected, setPath, setCondition
             </div>
             <svg style={svgStyle}>
                 <defs>
-                    <marker id={`${id}${properties.priority}strokes`} orient="auto"
+                    <marker id={`${id}${priority}strokes`} orient="auto"
                         markerWidth={max * 2 + gap} markerHeight={max * 2 + gap}
                         refX="0" refY={max}
                     >
@@ -96,7 +96,7 @@ function Transition({id, properties, priority, isSelected, setPath, setCondition
                         <path d='M4,2 L4,10' stroke={isSelected ? 'blue' : color} />
                         <path d='M6,0 L6,12' stroke={isSelected ? 'blue' : color} />
                     </marker> */}
-                    <marker id={`${id}${properties.priority}head`} orient="auto"
+                    <marker id={`${id}${priority}head`} orient="auto"
                         markerWidth='6' markerHeight='8'
                         refX='0.2' refY='2'>
                         <path d='M0,0 V4 L4,2 Z' fill={isSelected ? 'blue' : color}/>
@@ -110,8 +110,8 @@ function Transition({id, properties, priority, isSelected, setPath, setCondition
                     strokeWidth={2}
                     strokeLinejoin={'round'}
                     strokeLinecap={'round'}
-                    markerEnd={`url(#${id}${properties.priority}head)`}
-                    markerStart={`url(#${id}${properties.priority}strokes)`}
+                    markerEnd={`url(#${id}${priority}head)`}
+                    markerStart={`url(#${id}${priority}strokes)`}
                     onDoubleClick={enableEditing}
                 />
             </svg>
