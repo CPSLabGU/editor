@@ -38,7 +38,6 @@ export default function Canvas({states, transitions, machine, setStates, setTran
           transition.source,
           transition.target,
           transition.condition,
-          transition.priority,
           newPath,
           transition.color
         );
@@ -64,12 +63,6 @@ export default function Canvas({states, transitions, machine, setStates, setTran
       Object.keys(transitions).forEach((id) => {
         if (!focusedObjects.has(id) && !focusedObjects.has(transitions[id].source) && !focusedObjects.has(transitions[id].target)) {
           newTransitions[id] = transitions[id];
-        } else if (!focusedObjects.has(transitions[id].source)) {
-          const sourceState = states[transitions[id].source];
-          const newTransitionsForSource = sourceState.properties.transitions.filter((v) => !focusedObjects.has(v));
-          newTransitionsForSource.forEach((v, i) => {
-            transitions[id].priority = i;
-          });
         }
       });
       return newTransitions;
@@ -160,7 +153,6 @@ export default function Canvas({states, transitions, machine, setStates, setTran
         sourceID,
         stateID,
         'true',
-        states[sourceID].properties.transitions.length,
         edge,
         'white'
       );
@@ -181,11 +173,13 @@ export default function Canvas({states, transitions, machine, setStates, setTran
       {
         Object.keys(transitions).map((id) => {
           const transition = transitions[id];
+          const priority = Math.max(states[transition.source].properties.transitions.indexOf(id), 0);
           return (
             <div key={id}>
               <Transition
                 id={id}
                 properties={transition}
+                priority={priority}
                 isSelected={focusedObjects.has(id)}
                 setPath={ (newPath: BezierPath) => setPath(id, newPath) }
                 addSelection={()=> addSelection(id)}

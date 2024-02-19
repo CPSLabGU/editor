@@ -5,7 +5,7 @@ import ControlPoint from "./ControlPoint";
 import Point2D from "../models/Point2D";
 import '../styles/Transition.css'
 
-function Transition({id, properties, isSelected, setPath, addSelection, uniqueSelection}: {id: string, properties: TransitionProperties, isSelected: boolean, setPath: (newPath: BezierPath) => void, addSelection: () => void, uniqueSelection: () => void}): JSX.Element {
+function Transition({id, properties, priority, isSelected, setPath, addSelection, uniqueSelection}: {id: string, properties: TransitionProperties, priority: number, isSelected: boolean, setPath: (newPath: BezierPath) => void, addSelection: () => void, uniqueSelection: () => void}): JSX.Element {
     const path = properties.path
     const condition = properties.condition
     const color = properties.color
@@ -20,8 +20,8 @@ function Transition({id, properties, isSelected, setPath, addSelection, uniqueSe
     }, [addSelection, uniqueSelection]);
     let str = '';
     const gap = 2;
-    const max = gap * properties.priority;
-    for (let i = 1; i <= properties.priority; i++) {
+    const max = gap * priority;
+    for (let i = 1; i <= priority; i++) {
         str += `M${i * gap},${max - i * gap} L${i * gap},${max + i * gap} `
     }
     const boundingBox = path.boundingBox;
