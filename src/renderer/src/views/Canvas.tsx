@@ -230,6 +230,30 @@ export default function Canvas({
       return newStates
     })
   }, [setStates])
+  const deleteTransition = useCallback(
+    (transitionId: string) => {
+      deselectAll()
+      setStates((states) => {
+        const stateID = transitions[transitionId].source
+        const state = states[stateID]
+        if (!state) return states
+        const newStates: { [id: string]: StateInformation } = {...states}
+        newStates[stateID] = {
+          ...state,
+          properties: {
+            ...state.properties,
+            transitions: state.properties.transitions.filter((v) => v != transitionId)
+          }
+        }
+        return newStates
+      })
+      setTransitions((transitions) => {
+        const newTransitions: { [id: string]: TransitionProperties } = {...transitions}
+        delete newTransitions[transitionId]
+        return newTransitions
+      })
+    }
+  )
   const createTransition = useCallback(
     (stateID: string, sourceID: string) => {
       const sourceState = boundingBox(states[sourceID])
