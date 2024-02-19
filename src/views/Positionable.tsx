@@ -21,7 +21,7 @@ function Positionable({position, setPosition, enabled=true, onClick=() => {}, on
 
 function DisabledView({position, onClick=() => {}, onContextMenu=(e) => {}, onDoubleClick = () => {}, children}) {
   return (
-    <div style={{position: 'absolute', left: position.x, top: position.y}} onClick={onClick} onContextMenu={onContextMenu} onDoubleClick={onDoubleClick}>
+    <div style={{position: 'absolute', left: position.x, top: position.y}} className='prevent-select' onClick={onClick} onContextMenu={onContextMenu} onDoubleClick={onDoubleClick}>
       {children}
     </div>
   );
@@ -67,7 +67,7 @@ function EnabledView({position, setPosition, onClick=() => {}, onContextMenu=(e)
     cursor: isDragging ? 'grabbing' : 'grab'
   };
   return (
-    <div style={positionStyle} onMouseDown={mouseDown} onClick={onClick} onContextMenu={onContextMenu} onDoubleClick={onDoubleClick}>
+    <div style={positionStyle} className='prevent-select' onMouseDown={mouseDown} onClick={onClick} onContextMenu={onContextMenu} onDoubleClick={onDoubleClick}>
       {/* <div className='drag'>
         <div><Grip /></div>
       </div> */}
