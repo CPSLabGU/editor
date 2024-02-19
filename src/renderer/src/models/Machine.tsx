@@ -1,15 +1,13 @@
 export default class Machine {
+  externalVariables: string
 
-    externalVariables: string;
+  machineVariables: string
 
-    machineVariables: string;
+  includes: string
 
-    includes: string;
-
-    constructor(externalVariables: string, machineVariables: string, includes: string) {
-        this.externalVariables = externalVariables;
-        this.machineVariables = machineVariables;
-        this.includes = includes;
-    }
-
+  constructor(externalVariables: string, machineVariables: string, includes: string) {
+    this.externalVariables = externalVariables
+    this.machineVariables = machineVariables
+    this.includes = includes
+  }
 }

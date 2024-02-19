@@ -1,23 +1,23 @@
 .state {
-    height: calc(100% - 20px);
-    width: calc(100% - 20px);
-    font-size: 1.5rem;
-    text-align: center;
-    color: #fff;
-    background-color: #333;
-    border: 2px solid #000;
-    border-radius: 10px;
-    box-shadow: 0 0 10px #000;
-    margin: 10px;
-    margin-left: auto;
-    margin-right: auto;
+  height: calc(100% - 20px);
+  width: calc(100% - 20px);
+  font-size: 1.5rem;
+  text-align: center;
+  color: #fff;
+  background-color: #333;
+  border: 2px solid #000;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #000;
+  margin: 10px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .state.focused {
-    color: rgb(58, 58, 228);
-    border-color: rgb(58, 58, 228);
+  color: rgb(58, 58, 228);
+  border-color: rgb(58, 58, 228);
 }
 
 .padding {
-    padding: 10px;
+  padding: 10px;
 }

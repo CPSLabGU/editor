@@ -1,85 +1,85 @@
 .handles {
-    position: absolute;
+  position: absolute;
 }
 
 .resizable-content {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 .top-left {
-    float: left;
-    width: 10%;
-    height: 10px;
+  float: left;
+  width: 10%;
+  height: 10px;
 }
 
 .top-middle {
-    height: 10px;
-    width: 80%;
-    float: left;
+  height: 10px;
+  width: 80%;
+  float: left;
 }
 
 .top-middle:hover {
-    cursor: n-resize;
+  cursor: n-resize;
 }
 
 .top-right {
-    height: 10px;
-    width: 10%;
-    float: right;
+  height: 10px;
+  width: 10%;
+  float: right;
 }
 
 .top-right:hover {
-    cursor: ne-resize;
+  cursor: ne-resize;
 }
 
 .top-left:hover {
-    cursor: nw-resize;
+  cursor: nw-resize;
 }
 
 .left {
-    float: left;
+  float: left;
 }
 
 .left:hover {
-    cursor: w-resize;
+  cursor: w-resize;
 }
 
 .right {
-    float: right;
+  float: right;
 }
 
 .right:hover {
-    cursor: e-resize;
+  cursor: e-resize;
 }
 
 .bottom-left {
-    float: left;
-    width: 10%;
-    height: 10px;
+  float: left;
+  width: 10%;
+  height: 10px;
 }
 
 .bottom-left:hover {
-    cursor: sw-resize;
+  cursor: sw-resize;
 }
 
 .bottom-middle {
-    height: 10px;
-    width: 80%;
-    float: left;
+  height: 10px;
+  width: 80%;
+  float: left;
 }
 
 .bottom-middle:hover {
-    cursor: s-resize;
+  cursor: s-resize;
 }
 
 .bottom-right {
-    height: 10px;
-    width: 10%;
-    float: right;
+  height: 10px;
+  width: 10%;
+  float: right;
 }
 
 .bottom-right:hover {
-    cursor: se-resize;
+  cursor: se-resize;
 }
 
 /* .handles > div {
@@ -87,5 +87,5 @@
 } */
 
 .clear {
-    clear: both
+  clear: both;
 }

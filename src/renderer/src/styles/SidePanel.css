@@ -1,10 +1,10 @@
 .side-panel {
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: 100vh;
-    background-color: #444;
-    width: 20%;
-    padding: 10px;
-    overflow: auto;
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  background-color: #444;
+  width: 20%;
+  padding: 10px;
+  overflow: auto;
 }

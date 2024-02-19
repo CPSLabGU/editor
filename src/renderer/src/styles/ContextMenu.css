@@ -1,24 +1,24 @@
 .context-menu {
-    position: absolute;
-    z-index: 1000;
-    background-color: #222;
-    border: 1px solid #111;
-    padding: 5px;
+  position: absolute;
+  z-index: 1000;
+  background-color: #222;
+  border: 1px solid #111;
+  padding: 5px;
 }
 
 .context-menu ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .context-menu ul li {
-    padding: 5px;
-    cursor: pointer;
+  padding: 5px;
+  cursor: pointer;
 }
 
 .context-menu ul li:hover {
-    background-color: #666;
-    color: #000;
-    font-weight: bold;
+  background-color: #666;
+  color: #000;
+  font-weight: bold;
 }
