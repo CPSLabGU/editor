@@ -181,7 +181,8 @@ export default function Canvas({
             h: 100,
             expanded: false,
             transitions: [],
-            actions: { onEntry: '', onExit: '', Internal: '' }
+            actions: { onEntry: '', onExit: '', Internal: '' },
+            variables: ''
           },
           position: position
         }

@@ -10,15 +10,19 @@ export default function CodeView({
   actions,
   language,
   state,
+  variables,
   setActions,
   setState,
+  setVariables,
   onExit
 }: {
   actions: { [action: string]: string }
   language: string
   state: string
+  variables: string
   setActions: (action: string, code: string) => void
   setState: (state: string) => void
+  setVariables: (variables: string) => void
   onExit: () => void
 }) {
   const [stateName, setStateName] = useState(state)
@@ -75,6 +79,20 @@ export default function CodeView({
             />
           </h1>
         </form>
+        <div key={`${state}-variables`}>
+          <h2>Variables</h2>
+          <CodeMirror
+              value={variables}
+              theme={vscodeDark}
+              readOnly={false}
+              lang={language}
+              height="100%"
+              minHeight="200px"
+              onChange={(val, viewUpdate) => {
+                setVariables(val)
+              }}
+            />
+        </div>
         {Object.keys(actions)
           .sort()
           .map((action: string) => {
