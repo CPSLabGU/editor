@@ -30,7 +30,6 @@ export default function Canvas({states, transitions, machine, setStates, setTran
     setFocusedObjects(new Set([id]));
   }, [setFocusedObjects]);
   const setPath = useCallback((id: string, newPath: BezierPath) => {
-    console.log('setPath', id, newPath);
     const transition = transitions[id];
     const newTransitions: { [id: string]: TransitionProperties} = {};
     Object.keys(transitions).forEach((id2) => {
@@ -90,7 +89,6 @@ export default function Canvas({states, transitions, machine, setStates, setTran
       window.removeEventListener('click', deselectAll);
     };
   }, [keyDown, deselectAll]);
-  console.log(focusedObjects)
   // const clickMeCB = useCallback(() => {
   //   setCounter(counter + 1);
   //   console.log(`clicked me ${counter} times!`)
@@ -154,7 +152,10 @@ export default function Canvas({states, transitions, machine, setStates, setTran
     });
     setStates((states) => {
       const newStates = {...states};
-      newStates[stateID].properties.transitions.push(newUUID);
+      if (newStates[sourceID].properties.transitions.find((v) => {return v == newUUID;}) === undefined) {
+        newStates[sourceID].properties.transitions.push(newUUID);
+      }
+      console.log(newStates[sourceID].properties.transitions);
       return newStates;
     });
     deselectAll();
@@ -169,6 +170,7 @@ export default function Canvas({states, transitions, machine, setStates, setTran
               <Transition
                 properties={transition}
                 isSelected={focusedObjects.has(id)}
+                priority={(() => {return Math.max(0, states[transition.source]?.properties.transitions.indexOf(id) ?? 0);})()}
                 setPath={ (newPath: BezierPath) => setPath(id, newPath) }
                 addSelection={()=> addSelection(id)}
                 uniqueSelection={() => uniqueSelection(id)}

@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import TransitionProperties from "../models/TransitionProperties";
 import BezierPath from "../models/BezierPath";
 import ControlPoint from "./ControlPoint";
 import Point2D from "../models/Point2D";
 
-function Transition({properties, isSelected, setPath, addSelection, uniqueSelection}: {properties: TransitionProperties, isSelected: boolean, setPath: (newPath: BezierPath) => void, addSelection: () => void, uniqueSelection: () => void}): JSX.Element {
+function Transition({properties, isSelected, priority, setPath, addSelection, uniqueSelection}: {properties: TransitionProperties, isSelected: boolean, priority: number, setPath: (newPath: BezierPath) => void, addSelection: () => void, uniqueSelection: () => void}): JSX.Element {
     const path = properties.path
     const condition = properties.condition
     const color = properties.color
@@ -17,7 +17,6 @@ function Transition({properties, isSelected, setPath, addSelection, uniqueSelect
             uniqueSelection();
         }
     }, [addSelection, uniqueSelection]);
-    const priority = 5;
     let str = '';
     const gap = 2;
     const max = gap * priority;
