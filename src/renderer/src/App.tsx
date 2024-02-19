@@ -6,7 +6,7 @@ import Point2D from './models/Point2D'
 import BezierPath from './models/BezierPath'
 import { v4 as uuidv4 } from 'uuid'
 import Canvas from './views/Canvas'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import './App.css'
 import CodeView from './views/CodeView'
 import Machine from './models/Machine'
@@ -78,6 +78,28 @@ export default function App() {
   const [transitions, setTransitions] = useState(initialTransitions)
   const [edittingState, setEdittingState] = useState<string | undefined>(undefined)
   const [currentMachine, setCurrentMachine] = useState(new Machine('', '', ''))
+
+  const setStateName = useCallback(
+    (id: string, name: string) => {
+      const state = states[id]
+      if (!state) return
+      const newStates: { [id: string]: StateInformation } = { ...states }
+      newStates[id] = {
+        id: state.id,
+        properties: {
+          name: name,
+          w: state.properties.w,
+          h: state.properties.h,
+          expanded: state.properties.expanded,
+          transitions: state.properties.transitions,
+          actions: state.properties.actions
+        },
+        position: state.position
+      }
+      setStates(() => newStates)
+    },
+    [states, setStates]
+  )
   if (edittingState !== undefined) {
     return (
       <CodeView
@@ -86,6 +108,9 @@ export default function App() {
         state={states[edittingState].properties.name}
         setActions={(action: string, code: string) => {
           states[edittingState].properties.actions[action] = code
+        }}
+        setState={(name: string) => {
+          setStateName(edittingState, name)
         }}
         onExit={() => setEdittingState(undefined)}
       />

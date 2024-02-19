@@ -3,3 +3,12 @@
   background-color: #333;
   color: white;
 }
+
+.state-name input {
+  font-size: inherit;
+  border: none;
+  background: transparent;
+  width: 100%;
+  color: inherit;
+  outline: none;
+}
