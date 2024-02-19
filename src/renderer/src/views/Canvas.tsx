@@ -15,6 +15,7 @@ import StateIdentifier from '../models/StateIdentifier'
 import BoundingBox from '../models/BoundingBox'
 import CanvasSidePanel from './CanvasSidePanel'
 import Machine from '../models/Machine'
+import TransitionContextMenu from './TransitionContextMenu'
 
 export default function Canvas({
   states,
@@ -43,6 +44,7 @@ export default function Canvas({
     [Point2D, string] | undefined
   >(undefined)
   const [contextMenuPosition, setContextMenuPosition] = useState<Point2D | undefined>(undefined)
+  const [transitionContextMenuPosition, setTransitionContextMenuPosition] = useState<[Point2D, string] | undefined>(undefined)
   const addSelection = useCallback(
     (id: string) => {
       setFocusedObjects((focusedObjects) => {
@@ -125,12 +127,14 @@ export default function Canvas({
     setContextMenuPosition(undefined)
     setStateContextMenuPosition(undefined)
     setEdittingState(undefined)
+    setTransitionContextMenuPosition(undefined)
   }, [
     setFocusedObjects,
     setContextMenuPosition,
     setStateContextMenuPosition,
     setEdittingState,
-    setContextState
+    setContextState,
+    setTransitionContextMenuPosition
   ])
   const keyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -213,6 +217,19 @@ export default function Canvas({
     },
     [setStates, setTransitions, deselectAll]
   )
+  const setStateTransitions = useCallback((stateId: string, newTransitions: string[]) => {
+    setStates((states) => {
+      const newStates = { ...states }
+      newStates[stateId] = {
+        ...newStates[stateId],
+        properties: {
+          ...newStates[stateId].properties,
+          transitions: newTransitions
+        }
+      }
+      return newStates
+    })
+  }, [setStates])
   const createTransition = useCallback(
     (stateID: string, sourceID: string) => {
       const sourceState = boundingBox(states[sourceID])
@@ -255,6 +272,7 @@ export default function Canvas({
               setCondition={(condition: string) => setCondition(id, condition)}
               addSelection={() => addSelection(id)}
               uniqueSelection={() => uniqueSelection(id)}
+              showContextMenu={(position: Point2D) => setTransitionContextMenuPosition([position, id])}
             ></Transition>
           </div>
         )
@@ -331,6 +349,15 @@ export default function Canvas({
           )}
           createTransition={(stateID: string) => createTransition(stateID, contextState!)}
           deleteState={() => deleteState(stateContextMenuPosition![1])}
+        />
+      )}
+      {transitionContextMenuPosition !== undefined && (
+        <TransitionContextMenu
+          position={transitionContextMenuPosition![0]}
+          id={transitionContextMenuPosition![1]}
+          transitions={states[transitions[transitionContextMenuPosition![1]].source].properties.transitions}
+          setTransitions={(newTransitions: string[]) => setStateTransitions(transitions[transitionContextMenuPosition![1]].source, newTransitions)}
+          deleteTransition={() => deleteTransition(transitionContextMenuPosition![1])}
         />
       )}
       <CanvasSidePanel machine={machine} />

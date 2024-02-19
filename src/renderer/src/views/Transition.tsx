@@ -15,7 +15,8 @@ function Transition({
   setPath,
   setCondition,
   addSelection,
-  uniqueSelection
+  uniqueSelection,
+  showContextMenu
 }: {
   id: string
   properties: TransitionProperties
@@ -24,7 +25,8 @@ function Transition({
   setPath: (newPath: BezierPath) => void
   setCondition: (condition: string) => void
   addSelection: () => void
-  uniqueSelection: () => void
+  uniqueSelection: () => void,
+  showContextMenu: (position:Point2D) => void
 }): JSX.Element {
   const [isEditing, setIsEditing] = useState(false)
   const [localCondition, setLocalCondition] = useState(properties.condition)
@@ -49,6 +51,14 @@ function Transition({
   useEffect(() => {
     setLocalCondition(properties.condition)
   }, [properties.condition])
+  const contextMenu = useCallback(
+    (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      showContextMenu(new Point2D(e.clientX, e.clientY))
+    },
+    [showContextMenu]
+  )
 
   const path = properties.path
   const condition = properties.condition
@@ -100,7 +110,7 @@ function Transition({
     height: `${boundingBox.height + padding}px`
   }
   return (
-    <div style={parentStyle} onClick={focus}>
+    <div style={parentStyle} onClick={focus} onContextMenu={contextMenu}>
       <div className="transition-condition" style={conditionStyle} onDoubleClick={enableEditing}>
         {isEditing && (
           <form onSubmit={disableEditing}>

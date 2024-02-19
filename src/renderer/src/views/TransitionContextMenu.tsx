@@ -62,32 +62,43 @@ export default function TransitionContextMenu({
   position,
   id,
   transitions,
-  setTransitions
+  setTransitions,
+  deleteTransition
 }: {
   position: Point2D
   id: string
   transitions: string[]
-  setTransitions: (newTransitions: string[]) => void
+  setTransitions: (newTransitions: string[]) => void,
+  deleteTransition: () => void
 }) {
-  return (
-    <ContextMenu
-      position={position}
-      menuItems={[
-        new MenuItem(`${id}-increase-priority`, 'Increase Priority', () => {
-          const newTransitions = transitions.filter((t) => {
-            t != id
+  const menuItems: MenuItem[] = [];
+  function calculateMenuItems(): void {
+    if (transitions.length > 1) {
+      const myPosition = transitions.findIndex((t) => t == id)
+      if (myPosition < 0) return
+      if (myPosition > 0) {
+        menuItems.push(
+          new MenuItem(`${id}-increase-priority`, 'Increase Priority', () => {
+            const newTransitions = [...transitions];
+            newTransitions.splice(myPosition, 1)
+            newTransitions.splice(myPosition - 1, 0, id)
+            setTransitions(newTransitions)
           })
-          newTransitions.push(id)
-          setTransitions(newTransitions)
-        }),
-        new MenuItem(`${id}-decrease-priority`, 'Decrease Priority', () => {
-          const previousPriority = transitions.findIndex((t) => t == id)
-          if (previousPriority == 0) return
-          const newTransitions = transitions.filter((t) => t != id)
-          newTransitions.splice(previousPriority - 1, 0, id)
-          setTransitions(newTransitions)
-        })
-      ]}
-    />
-  )
+        )
+      }
+      if (myPosition < transitions.length - 1) {
+        menuItems.push(
+          new MenuItem(`${id}-decrease-priority`, 'Decrease Priority', () => {
+            const newTransitions = [...transitions];
+            newTransitions.splice(myPosition, 1)
+            newTransitions.splice(myPosition + 1, 0, id)
+            setTransitions(newTransitions)
+          })
+        )
+      }
+    }
+  }
+  calculateMenuItems()
+  menuItems.push(new MenuItem(`${id}-delete-transition`, 'Delete', deleteTransition))
+  return <ContextMenu position={position} menuItems={menuItems} />
 }
