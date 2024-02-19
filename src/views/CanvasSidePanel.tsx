@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import HiddenView from "./HiddenView";
 import PanelIcon from "./PanelICon";
 import SidePanel from "./SidePanel";

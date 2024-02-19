@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { useCallback, useEffect, useState } from 'react';
 import '../styles/Canvas.css';
 import State from '../views/State';

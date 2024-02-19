@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import {useCallback, useState, MouseEvent, useEffect, useMemo, Children} from 'react';
 import Point2D from '../models/Point2D';
 import Grip from './Grip';

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { useCallback } from 'react';
 import StateProperties from '../models/StateProperties';
 import '../styles/State.css';

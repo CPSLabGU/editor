@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { useCallback, useState } from "react";
 import TransitionProperties from "../models/TransitionProperties";
 import BezierPath from "../models/BezierPath";

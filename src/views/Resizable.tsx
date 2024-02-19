@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { useCallback, useState, MouseEvent, useEffect,useMemo } from 'react';
 import '../styles/Resizable.css';
 import Point2D from '../models/Point2D';

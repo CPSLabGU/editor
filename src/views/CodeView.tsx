@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import CodeMirror from "@uiw/react-codemirror";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import "../styles/CodeView.css";

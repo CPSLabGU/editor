@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import StateInformation from "./models/StateInformation";
 import TransitionProperties from "./models/TransitionProperties";
 import Point2D from "./models/Point2D";

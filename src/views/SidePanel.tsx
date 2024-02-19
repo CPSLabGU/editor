@@ -1,6 +1,6 @@
 import '../styles/SidePanel.css'
 
-export default function SidePanel({children}) {
+export default function SidePanel({children}: {children: JSX.Element}) {
   return (
     <div className='side-panel'>
       {children}
