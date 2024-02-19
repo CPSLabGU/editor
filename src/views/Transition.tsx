@@ -1,11 +1,26 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import TransitionProperties from "../models/TransitionProperties";
 import BezierPath from "../models/BezierPath";
 import ControlPoint from "./ControlPoint";
 import Point2D from "../models/Point2D";
 import '../styles/Transition.css'
 
-function Transition({id, properties, priority, isSelected, setPath, addSelection, uniqueSelection}: {id: string, properties: TransitionProperties, priority: number, isSelected: boolean, setPath: (newPath: BezierPath) => void, addSelection: () => void, uniqueSelection: () => void}): JSX.Element {
+function Transition({id, properties, priority, isSelected, setPath, setCondition, addSelection, uniqueSelection}: {id: string, properties: TransitionProperties, priority: number, isSelected: boolean, setPath: (newPath: BezierPath) => void, setCondition: (condition: string) => void, addSelection: () => void, uniqueSelection: () => void}): JSX.Element {
+    const [isEditing, setIsEditing] = useState(false);
+    const [localCondition, setLocalCondition] = useState(properties.condition);
+    const changeCondition = useCallback((e) => {
+        setLocalCondition(e.target.value);
+    }, [setLocalCondition]);
+    const enableEditing = useCallback(() => {
+        setIsEditing(true);
+        setLocalCondition(properties.condition);
+    }, [setIsEditing]);
+    const disableEditing = useCallback((e) => {
+        e.preventDefault();
+        setIsEditing(false);
+        setCondition(localCondition);
+    }, [setIsEditing, setCondition, localCondition]);
+    
     const path = properties.path
     const condition = properties.condition
     const color = properties.color
@@ -54,8 +69,13 @@ function Transition({id, properties, priority, isSelected, setPath, addSelection
     }
     return (
         <div style={parentStyle} onClick={focus}>
-            <div className='transition-condition' style={conditionStyle}>
-                {condition}
+            <div className='transition-condition' style={conditionStyle} onDoubleClick={enableEditing}>
+                {isEditing && (
+                    <form onSubmit={disableEditing}>
+                        <input type="text" value={localCondition} onChange={changeCondition} onBlur={disableEditing} />
+                    </form>
+                )}
+                {!isEditing && properties.condition}
             </div>
             <svg style={svgStyle}>
                 <defs>
