@@ -6,4 +6,5 @@
     background-color: #444;
     width: 20%;
     padding: 10px;
+    overflow: auto;
 }
