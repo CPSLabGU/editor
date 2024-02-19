@@ -3,6 +3,7 @@ import TransitionProperties from "../models/TransitionProperties";
 import BezierPath from "../models/BezierPath";
 import ControlPoint from "./ControlPoint";
 import Point2D from "../models/Point2D";
+import '../styles/Transition.css'
 
 function Transition({id, properties, isSelected, setPath, addSelection, uniqueSelection}: {id: string, properties: TransitionProperties, isSelected: boolean, setPath: (newPath: BezierPath) => void, addSelection: () => void, uniqueSelection: () => void}): JSX.Element {
     const path = properties.path
@@ -54,7 +55,7 @@ function Transition({id, properties, isSelected, setPath, addSelection, uniqueSe
     return (
         <div style={parentStyle} onClick={focus}>
             <div className='transition-condition' style={conditionStyle}>
-                {properties.priority} {str}
+                {condition}
             </div>
             <svg style={svgStyle}>
                 <defs>
@@ -83,6 +84,7 @@ function Transition({id, properties, isSelected, setPath, addSelection, uniqueSe
                 </defs>
                 <path
                     d={`M ${relativeCurve.source.x},${relativeCurve.source.y} C ${relativeCurve.control0.x},${relativeCurve.control0.y} ${relativeCurve.control1.x},${relativeCurve.control1.y} ${relativeCurve.target.x},${relativeCurve.target.y}`}
+                    className='transition'
                     stroke={isSelected ? 'blue' : color}
                     fill={'transparent'}
                     strokeWidth={2}
