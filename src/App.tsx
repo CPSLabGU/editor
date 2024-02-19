@@ -57,6 +57,7 @@ function createDefaultTransition(): void {
     initialState!,
     suspendedState!,
     'true',
+    0,
     new BezierPath(new Point2D(100, 100), new Point2D(100, 200), new Point2D(100, 135), new Point2D(100, 170)),
     'white'
   );

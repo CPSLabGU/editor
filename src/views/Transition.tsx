@@ -4,8 +4,7 @@ import BezierPath from "../models/BezierPath";
 import ControlPoint from "./ControlPoint";
 import Point2D from "../models/Point2D";
 
-function Transition({properties, isSelected, priority, setPath, addSelection, uniqueSelection}: {properties: TransitionProperties, isSelected: boolean, priority: number, setPath: (newPath: BezierPath) => void, addSelection: () => void, uniqueSelection: () => void}): JSX.Element {
-    console.log('Priority', priority);
+function Transition({id, properties, isSelected, setPath, addSelection, uniqueSelection}: {id: string, properties: TransitionProperties, isSelected: boolean, setPath: (newPath: BezierPath) => void, addSelection: () => void, uniqueSelection: () => void}): JSX.Element {
     const path = properties.path
     const condition = properties.condition
     const color = properties.color
@@ -20,8 +19,8 @@ function Transition({properties, isSelected, priority, setPath, addSelection, un
     }, [addSelection, uniqueSelection]);
     let str = '';
     const gap = 2;
-    const max = gap * priority;
-    for (let i = 1; i <= priority; i++) {
+    const max = gap * properties.priority;
+    for (let i = 1; i <= properties.priority; i++) {
         str += `M${i * gap},${max - i * gap} L${i * gap},${max + i * gap} `
     }
     const boundingBox = path.boundingBox;
@@ -55,11 +54,11 @@ function Transition({properties, isSelected, priority, setPath, addSelection, un
     return (
         <div style={parentStyle} onClick={focus}>
             <div className='transition-condition' style={conditionStyle}>
-                {condition}
+                {properties.priority} {str}
             </div>
             <svg style={svgStyle}>
                 <defs>
-                    <marker id='strokes' orient="auto"
+                    <marker id={`${id}${properties.priority}strokes`} orient="auto"
                         markerWidth={max * 2 + gap} markerHeight={max * 2 + gap}
                         refX="0" refY={max}
                     >
@@ -76,7 +75,7 @@ function Transition({properties, isSelected, priority, setPath, addSelection, un
                         <path d='M4,2 L4,10' stroke={isSelected ? 'blue' : color} />
                         <path d='M6,0 L6,12' stroke={isSelected ? 'blue' : color} />
                     </marker> */}
-                    <marker id='head' orient="auto"
+                    <marker id={`${id}${properties.priority}head`} orient="auto"
                         markerWidth='6' markerHeight='8'
                         refX='0.2' refY='2'>
                         <path d='M0,0 V4 L4,2 Z' fill={isSelected ? 'blue' : color}/>
@@ -89,8 +88,8 @@ function Transition({properties, isSelected, priority, setPath, addSelection, un
                     strokeWidth={2}
                     strokeLinejoin={'round'}
                     strokeLinecap={'round'}
-                    markerEnd='url(#head)'
-                    markerStart="url(#strokes)"
+                    markerEnd={`url(#${id}${properties.priority}head)`}
+                    markerStart={`url(#${id}${properties.priority}strokes)`}
                 />
             </svg>
             <ControlPoints curve={path} isSelected={isSelected} offset={relativeOffset} setCurve={setPath}></ControlPoints>

@@ -15,7 +15,7 @@ import CanvasSidePanel from './CanvasSidePanel';
 import Machine from '../models/Machine';
 
 export default function Canvas({states, transitions, machine, setStates, setTransitions, setEdittingState}: {states: { [id: string]: StateInformation}, transitions: { [id: string]: TransitionProperties}, machine: Machine, setStates: (f: (states: { [id: string]: StateInformation}) => { [id: string]: StateInformation}) => void, setTransitions: (f: (transitions: { [id: string]: TransitionProperties}) => { [id: string]: TransitionProperties}) => void, setEdittingState: (id: string | undefined) => void}) {
-    const [focusedObjects, setFocusedObjects] = useState(new Set<string>());
+  const [focusedObjects, setFocusedObjects] = useState(new Set<string>());
   const [contextState, setContextState] = useState<string | undefined>(undefined);
   const [stateContextMenuPosition, setStateContextMenuPosition] = useState<[Point2D, string] | undefined>(undefined);
   const [contextMenuPosition, setContextMenuPosition] = useState<Point2D | undefined>(undefined);
@@ -34,7 +34,14 @@ export default function Canvas({states, transitions, machine, setStates, setTran
     const newTransitions: { [id: string]: TransitionProperties} = {};
     Object.keys(transitions).forEach((id2) => {
       if (id == id2) {
-        newTransitions[id2] = new TransitionProperties(transition.source, transition.target, transition.condition, newPath, transition.color);
+        newTransitions[id2] = new TransitionProperties(
+          transition.source,
+          transition.target,
+          transition.condition,
+          transition.priority,
+          newPath,
+          transition.color
+        );
       } else {
         newTransitions[id2] = transition;
       }
@@ -47,6 +54,7 @@ export default function Canvas({states, transitions, machine, setStates, setTran
       Object.keys(states).forEach((id) => {
         if (!focusedObjects.has(id)) {
           newStates[id] = states[id];
+          newStates[id].properties.transitions = newStates[id].properties.transitions.filter((v) => !focusedObjects.has(v));
         }
       });
       return newStates;
@@ -56,12 +64,18 @@ export default function Canvas({states, transitions, machine, setStates, setTran
       Object.keys(transitions).forEach((id) => {
         if (!focusedObjects.has(id) && !focusedObjects.has(transitions[id].source) && !focusedObjects.has(transitions[id].target)) {
           newTransitions[id] = transitions[id];
+        } else if (!focusedObjects.has(transitions[id].source)) {
+          const sourceState = states[transitions[id].source];
+          const newTransitionsForSource = sourceState.properties.transitions.filter((v) => !focusedObjects.has(v));
+          newTransitionsForSource.forEach((v, i) => {
+            transitions[id].priority = i;
+          });
         }
       });
       return newTransitions;
     });
     setFocusedObjects(new Set());
-  }, [focusedObjects, setStates, setTransitions, setFocusedObjects]);
+  }, [focusedObjects, setStates, setTransitions, setFocusedObjects, states]);
   const deselectAll = useCallback(() => {
     setContextState(undefined);
     setFocusedObjects(new Set());
@@ -104,7 +118,8 @@ export default function Canvas({states, transitions, machine, setStates, setTran
           w: 200,
           h: 100,
           expanded: false,
-          transitions: []
+          transitions: [],
+          actions: { "onEntry": "", "onExit": "", "Internal": ""}
         },
         position: position
       };
@@ -145,6 +160,7 @@ export default function Canvas({states, transitions, machine, setStates, setTran
         sourceID,
         stateID,
         'true',
+        states[sourceID].properties.transitions.length,
         edge,
         'white'
       );
@@ -168,9 +184,9 @@ export default function Canvas({states, transitions, machine, setStates, setTran
           return (
             <div key={id}>
               <Transition
+                id={id}
                 properties={transition}
                 isSelected={focusedObjects.has(id)}
-                priority={(() => {return Math.max(0, states[transition.source]?.properties.transitions.indexOf(id) ?? 0);})()}
                 setPath={ (newPath: BezierPath) => setPath(id, newPath) }
                 addSelection={()=> addSelection(id)}
                 uniqueSelection={() => uniqueSelection(id)}
