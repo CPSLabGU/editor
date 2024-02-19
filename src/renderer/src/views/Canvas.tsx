@@ -339,7 +339,7 @@ export default function Canvas({
                 properties: {
                   ...states[id2].properties,
                   w: newDimensions.x,
-                  h: newDimensions.y,
+                  h: newDimensions.y
                 },
                 position: newPosition
               }

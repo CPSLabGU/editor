@@ -82,16 +82,16 @@ export default function CodeView({
         <div key={`${state}-variables`}>
           <h2>Variables</h2>
           <CodeMirror
-              value={variables}
-              theme={vscodeDark}
-              readOnly={false}
-              lang={language}
-              height="100%"
-              minHeight="200px"
-              onChange={(val, viewUpdate) => {
-                setVariables(val)
-              }}
-            />
+            value={variables}
+            theme={vscodeDark}
+            readOnly={false}
+            lang={language}
+            height="100%"
+            minHeight="200px"
+            onChange={(val, viewUpdate) => {
+              setVariables(val)
+            }}
+          />
         </div>
         {Object.keys(actions)
           .sort()

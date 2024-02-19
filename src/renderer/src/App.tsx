@@ -135,7 +135,9 @@ export default function App() {
         setState={(name: string) => {
           setStateName(edittingState, name)
         }}
-        setVariables={(variables: string) => { setStateVariables(edittingState, variables) }}
+        setVariables={(variables: string) => {
+          setStateVariables(edittingState, variables)
+        }}
         onExit={() => setEdittingState(undefined)}
       />
     )
