@@ -18,6 +18,7 @@ export default class BoundingBox {
         this.width = width;
         this.height = height;
         this.findIntersection = this.findIntersection.bind(this);
+        this.adjustToFit = this.adjustToFit.bind(this);
     }
 
     findIntersection(angle: number): Point2D {
@@ -48,6 +49,24 @@ export default class BoundingBox {
             centre.y + this.width / 2 * Math.tan(angle)
           );
         }
+      }
+
+      adjustToFit(width: number, height: number) {
+        if (width > this.width) {
+          this.x -= (width - this.width) / 2;
+          this.width = width;
+        }
+        if (height > this.height) {
+          this.y -= (height - this.height) / 2;
+          this.height = height;
+        }
+      }
+
+      add(width: number, height: number) {
+        this.x -= width / 2;
+        this.width = this.width + width;
+        this.y -= height / 2;
+        this.height = this.height + height;
       }
 
 }

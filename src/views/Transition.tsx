@@ -17,7 +17,15 @@ function Transition({properties, isSelected, setPath, addSelection, uniqueSelect
             uniqueSelection();
         }
     }, [addSelection, uniqueSelection]);
-    const boundingBox = path.boundingBox
+    const priority = 5;
+    let str = '';
+    const gap = 2;
+    const max = gap * priority;
+    for (let i = 1; i <= priority; i++) {
+        str += `M${i * gap},${max - i * gap} L${i * gap},${max + i * gap} `
+    }
+    const boundingBox = path.boundingBox;
+    boundingBox.add(max * 2, max * 2);
     const padding = 20;
     const conditionX = path.control0.x + (path.control1.x - path.control0.x) / 2;
     const conditionY = path.control0.y + (path.control1.y - path.control0.y) / 2;
@@ -39,13 +47,6 @@ function Transition({properties, isSelected, setPath, addSelection, uniqueSelect
         top: `calc(${conditionY + relativeOffset.y}px - 0.5em)`,
         textAlign: 'center',
         color: isSelected ? 'blue' : color
-    }
-    const priority = 5;
-    let str = '';
-    const gap = 2;
-    const max = gap * priority;
-    for (let i = 1; i <= priority; i++) {
-        str += `M${i * gap},${max - i * gap} L${i * gap},${max + i * gap} `
     }
     const svgStyle = {
         width: `${boundingBox.width + padding}px`,
