@@ -3,21 +3,50 @@
 import CodeMirror from '@uiw/react-codemirror'
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
 import '../styles/CodeView.css'
-import { useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { finished } from 'stream'
 
 export default function CodeView({
   actions,
   language,
   state,
   setActions,
+  setState,
   onExit
 }: {
   actions: { [action: string]: string }
   language: string
   state: string
   setActions: (action: string, code: string) => void
+  setState: (state: string) => void
   onExit: () => void
 }) {
+  const [stateName, setStateName] = useState(state)
+  const changeStateName = useCallback(
+    (e) => {
+      setStateName(e.target.value)
+    },
+    [setStateName]
+  )
+  const finishedEditingStateName = useCallback(
+    (e) => {
+      e.preventDefault()
+      setState(stateName)
+    },
+    [setState, stateName]
+  )
+  const keyPress = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === 'Escape') {
+        setStateName(e.target.value)
+        e.target.blur()
+      }
+    },
+    [setStateName]
+  )
+  useEffect(() => {
+    setStateName(state)
+  }, [state, setStateName])
   const escapePress = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -35,7 +64,17 @@ export default function CodeView({
   return (
     <>
       <div className="code-container">
-        <h1>{state}</h1>
+        <form className="state-name" onSubmit={finishedEditingStateName}>
+          <h1>
+            <input
+              type="text"
+              value={stateName}
+              onChange={changeStateName}
+              onBlur={finishedEditingStateName}
+              onKeyDown={keyPress}
+            />
+          </h1>
+        </form>
         {Object.keys(actions)
           .sort()
           .map((action: string) => {
