@@ -11,6 +11,9 @@
   margin: 10px;
   margin-left: auto;
   margin-right: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .state.focused {

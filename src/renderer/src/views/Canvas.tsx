@@ -334,13 +334,11 @@ export default function Canvas({
                 return
               }
               newStates[id2] = {
-                id: id2,
+                ...states[id2],
                 properties: {
-                  name: states[id2].properties.name,
+                  ...states[id2].properties,
                   w: newDimensions.x,
                   h: newDimensions.y,
-                  expanded: states[id2].properties.expanded,
-                  transitions: states[id2].properties.transitions
                 },
                 position: newPosition
               }
