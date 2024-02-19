@@ -31,20 +31,15 @@ export default function Canvas({states, transitions, machine, setStates, setTran
   }, [setFocusedObjects]);
   const setPath = useCallback((id: string, newPath: BezierPath) => {
     const transition = transitions[id];
-    const newTransitions: { [id: string]: TransitionProperties} = {};
-    Object.keys(transitions).forEach((id2) => {
-      if (id == id2) {
-        newTransitions[id2] = new TransitionProperties(
-          transition.source,
-          transition.target,
-          transition.condition,
-          newPath,
-          transition.color
-        );
-      } else {
-        newTransitions[id2] = transition;
-      }
-    });
+    if (!transition) return;
+    const newTransitions: { [id: string]: TransitionProperties} = { ...transitions };
+    newTransitions[id] = new TransitionProperties(
+      transition.source,
+      transition.target,
+      transition.condition,
+      newPath,
+      transition.color
+    );
     setTransitions(() => newTransitions);
   }, [transitions, setTransitions]);
   const deleteSelection = useCallback(() => {
