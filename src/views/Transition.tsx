@@ -1,11 +1,26 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import TransitionProperties from "../models/TransitionProperties";
 import BezierPath from "../models/BezierPath";
 import ControlPoint from "./ControlPoint";
 import Point2D from "../models/Point2D";
 import '../styles/Transition.css'
 
-function Transition({id, properties, priority, isSelected, setPath, addSelection, uniqueSelection}: {id: string, properties: TransitionProperties, priority: number, isSelected: boolean, setPath: (newPath: BezierPath) => void, addSelection: () => void, uniqueSelection: () => void}): JSX.Element {
+function Transition({id, properties, priority, isSelected, setPath, setCondition, addSelection, uniqueSelection}: {id: string, properties: TransitionProperties, priority: number, isSelected: boolean, setPath: (newPath: BezierPath) => void, setCondition: (condition: string) => void, addSelection: () => void, uniqueSelection: () => void}): JSX.Element {
+    const [isEditing, setIsEditing] = useState(false);
+    const [localCondition, setLocalCondition] = useState(properties.condition);
+    const changeCondition = useCallback((e) => {
+        setLocalCondition(e.target.value);
+    }, [setLocalCondition]);
+    const enableEditing = useCallback(() => {
+        setIsEditing(true);
+        setLocalCondition(properties.condition);
+    }, [setIsEditing]);
+    const disableEditing = useCallback((e) => {
+        e.preventDefault();
+        setIsEditing(false);
+        setCondition(localCondition);
+    }, [setIsEditing, setCondition, localCondition]);
+    
     const path = properties.path
     const condition = properties.condition
     const color = properties.color
@@ -54,12 +69,17 @@ function Transition({id, properties, priority, isSelected, setPath, addSelection
     }
     return (
         <div style={parentStyle} onClick={focus}>
-            <div className='transition-condition' style={conditionStyle}>
-                {condition}
+            <div className='transition-condition' style={conditionStyle} onDoubleClick={enableEditing}>
+                {isEditing && (
+                    <form onSubmit={disableEditing}>
+                        <input type="text" value={localCondition} onChange={changeCondition} onBlur={disableEditing} />
+                    </form>
+                )}
+                {!isEditing && properties.condition}
             </div>
             <svg style={svgStyle}>
                 <defs>
-                    <marker id={`${id}${properties.priority}strokes`} orient="auto"
+                    <marker id={`${id}${priority}strokes`} orient="auto"
                         markerWidth={max * 2 + gap} markerHeight={max * 2 + gap}
                         refX="0" refY={max}
                     >
@@ -76,7 +96,7 @@ function Transition({id, properties, priority, isSelected, setPath, addSelection
                         <path d='M4,2 L4,10' stroke={isSelected ? 'blue' : color} />
                         <path d='M6,0 L6,12' stroke={isSelected ? 'blue' : color} />
                     </marker> */}
-                    <marker id={`${id}${properties.priority}head`} orient="auto"
+                    <marker id={`${id}${priority}head`} orient="auto"
                         markerWidth='6' markerHeight='8'
                         refX='0.2' refY='2'>
                         <path d='M0,0 V4 L4,2 Z' fill={isSelected ? 'blue' : color}/>
@@ -90,8 +110,9 @@ function Transition({id, properties, priority, isSelected, setPath, addSelection
                     strokeWidth={2}
                     strokeLinejoin={'round'}
                     strokeLinecap={'round'}
-                    markerEnd={`url(#${id}${properties.priority}head)`}
-                    markerStart={`url(#${id}${properties.priority}strokes)`}
+                    markerEnd={`url(#${id}${priority}head)`}
+                    markerStart={`url(#${id}${priority}strokes)`}
+                    onDoubleClick={enableEditing}
                 />
             </svg>
             <ControlPoints curve={path} isSelected={isSelected} offset={relativeOffset} setCurve={setPath}></ControlPoints>

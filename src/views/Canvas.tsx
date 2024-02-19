@@ -31,20 +31,28 @@ export default function Canvas({states, transitions, machine, setStates, setTran
   }, [setFocusedObjects]);
   const setPath = useCallback((id: string, newPath: BezierPath) => {
     const transition = transitions[id];
-    const newTransitions: { [id: string]: TransitionProperties} = {};
-    Object.keys(transitions).forEach((id2) => {
-      if (id == id2) {
-        newTransitions[id2] = new TransitionProperties(
-          transition.source,
-          transition.target,
-          transition.condition,
-          newPath,
-          transition.color
-        );
-      } else {
-        newTransitions[id2] = transition;
-      }
-    });
+    if (!transition) return;
+    const newTransitions: { [id: string]: TransitionProperties} = { ...transitions };
+    newTransitions[id] = new TransitionProperties(
+      transition.source,
+      transition.target,
+      transition.condition,
+      newPath,
+      transition.color
+    );
+    setTransitions(() => newTransitions);
+  }, [transitions, setTransitions]);
+  const setCondition = useCallback((id: string, condition: string) => {
+    const transition = transitions[id];
+    if (!transition) return;
+    const newTransitions: { [id: string]: TransitionProperties} = { ...transitions };
+    newTransitions[id] = new TransitionProperties(
+      transition.source,
+      transition.target,
+      condition,
+      transition.path,
+      transition.color
+    );
     setTransitions(() => newTransitions);
   }, [transitions, setTransitions]);
   const deleteSelection = useCallback(() => {
@@ -163,7 +171,6 @@ export default function Canvas({states, transitions, machine, setStates, setTran
       if (newStates[sourceID].properties.transitions.find((v) => {return v == newUUID;}) === undefined) {
         newStates[sourceID].properties.transitions.push(newUUID);
       }
-      console.log(newStates[sourceID].properties.transitions);
       return newStates;
     });
     deselectAll();
@@ -182,6 +189,7 @@ export default function Canvas({states, transitions, machine, setStates, setTran
                 priority={priority}
                 isSelected={focusedObjects.has(id)}
                 setPath={ (newPath: BezierPath) => setPath(id, newPath) }
+                setCondition={(condition: string) => setCondition(id, condition)}
                 addSelection={()=> addSelection(id)}
                 uniqueSelection={() => uniqueSelection(id)}
               ></Transition>
