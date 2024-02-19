@@ -1,4 +1,4 @@
-import Point2D from "./Point2D"
+import Point2D from './Point2D'
 
 export default class MachineModel {
   states: StateModel[]
@@ -6,7 +6,13 @@ export default class MachineModel {
   machineVariables: string
   includes: string
   transitions: TransitionModel[]
-  constructor(states: StateModel[], externalVariables: string, machineVariables: string, includes: string, transitions: TransitionModel[]) {
+  constructor(
+    states: StateModel[],
+    externalVariables: string,
+    machineVariables: string,
+    includes: string,
+    transitions: TransitionModel[]
+  ) {
     this.states = states
     this.externalVariables = externalVariables
     this.machineVariables = machineVariables
@@ -56,10 +62,17 @@ export default class StateLayout {
 }
 
 export default class TransitionLayout {
-
   path: BezierPath
   constructor(path: BezierPath) {
     this.path = path
   }
+}
 
+export default class MachineFileSystem {
+  machine: MachineModel
+  layout: MachineLayout
+  constructor(machine: MachineModel, layout: MachineLayout) {
+    this.machine = machine
+    this.layout = layout
+  }
 }
