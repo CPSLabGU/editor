@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import TransitionProperties from '../models/TransitionProperties'
 import BezierPath from '../models/BezierPath'
 import ControlPoint from './ControlPoint'
@@ -46,6 +46,9 @@ function Transition({
     },
     [setIsEditing, setCondition, localCondition]
   )
+  useEffect(() => {
+    setLocalCondition(properties.condition)
+  }, [properties.condition])
 
   const path = properties.path
   const condition = properties.condition
