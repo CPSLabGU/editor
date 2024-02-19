@@ -25,8 +25,8 @@ function Transition({
   setPath: (newPath: BezierPath) => void
   setCondition: (condition: string) => void
   addSelection: () => void
-  uniqueSelection: () => void,
-  showContextMenu: (position:Point2D) => void
+  uniqueSelection: () => void
+  showContextMenu: (position: Point2D) => void
 }): JSX.Element {
   const [isEditing, setIsEditing] = useState(false)
   const [localCondition, setLocalCondition] = useState(properties.condition)

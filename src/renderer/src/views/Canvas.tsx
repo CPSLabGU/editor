@@ -44,7 +44,9 @@ export default function Canvas({
     [Point2D, string] | undefined
   >(undefined)
   const [contextMenuPosition, setContextMenuPosition] = useState<Point2D | undefined>(undefined)
-  const [transitionContextMenuPosition, setTransitionContextMenuPosition] = useState<[Point2D, string] | undefined>(undefined)
+  const [transitionContextMenuPosition, setTransitionContextMenuPosition] = useState<
+    [Point2D, string] | undefined
+  >(undefined)
   const addSelection = useCallback(
     (id: string) => {
       setFocusedObjects((focusedObjects) => {
@@ -217,43 +219,44 @@ export default function Canvas({
     },
     [setStates, setTransitions, deselectAll]
   )
-  const setStateTransitions = useCallback((stateId: string, newTransitions: string[]) => {
-    setStates((states) => {
-      const newStates = { ...states }
-      newStates[stateId] = {
-        ...newStates[stateId],
-        properties: {
-          ...newStates[stateId].properties,
-          transitions: newTransitions
-        }
-      }
-      return newStates
-    })
-  }, [setStates])
-  const deleteTransition = useCallback(
-    (transitionId: string) => {
-      deselectAll()
+  const setStateTransitions = useCallback(
+    (stateId: string, newTransitions: string[]) => {
       setStates((states) => {
-        const stateID = transitions[transitionId].source
-        const state = states[stateID]
-        if (!state) return states
-        const newStates: { [id: string]: StateInformation } = {...states}
-        newStates[stateID] = {
-          ...state,
+        const newStates = { ...states }
+        newStates[stateId] = {
+          ...newStates[stateId],
           properties: {
-            ...state.properties,
-            transitions: state.properties.transitions.filter((v) => v != transitionId)
+            ...newStates[stateId].properties,
+            transitions: newTransitions
           }
         }
         return newStates
       })
-      setTransitions((transitions) => {
-        const newTransitions: { [id: string]: TransitionProperties } = {...transitions}
-        delete newTransitions[transitionId]
-        return newTransitions
-      })
-    }
+    },
+    [setStates]
   )
+  const deleteTransition = useCallback((transitionId: string) => {
+    deselectAll()
+    setStates((states) => {
+      const stateID = transitions[transitionId].source
+      const state = states[stateID]
+      if (!state) return states
+      const newStates: { [id: string]: StateInformation } = { ...states }
+      newStates[stateID] = {
+        ...state,
+        properties: {
+          ...state.properties,
+          transitions: state.properties.transitions.filter((v) => v != transitionId)
+        }
+      }
+      return newStates
+    })
+    setTransitions((transitions) => {
+      const newTransitions: { [id: string]: TransitionProperties } = { ...transitions }
+      delete newTransitions[transitionId]
+      return newTransitions
+    })
+  })
   const createTransition = useCallback(
     (stateID: string, sourceID: string) => {
       const sourceState = boundingBox(states[sourceID])
@@ -296,7 +299,9 @@ export default function Canvas({
               setCondition={(condition: string) => setCondition(id, condition)}
               addSelection={() => addSelection(id)}
               uniqueSelection={() => uniqueSelection(id)}
-              showContextMenu={(position: Point2D) => setTransitionContextMenuPosition([position, id])}
+              showContextMenu={(position: Point2D) =>
+                setTransitionContextMenuPosition([position, id])
+              }
             ></Transition>
           </div>
         )
@@ -379,8 +384,15 @@ export default function Canvas({
         <TransitionContextMenu
           position={transitionContextMenuPosition![0]}
           id={transitionContextMenuPosition![1]}
-          transitions={states[transitions[transitionContextMenuPosition![1]].source].properties.transitions}
-          setTransitions={(newTransitions: string[]) => setStateTransitions(transitions[transitionContextMenuPosition![1]].source, newTransitions)}
+          transitions={
+            states[transitions[transitionContextMenuPosition![1]].source].properties.transitions
+          }
+          setTransitions={(newTransitions: string[]) =>
+            setStateTransitions(
+              transitions[transitionContextMenuPosition![1]].source,
+              newTransitions
+            )
+          }
           deleteTransition={() => deleteTransition(transitionContextMenuPosition![1])}
         />
       )}

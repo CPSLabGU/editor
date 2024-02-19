@@ -68,10 +68,10 @@ export default function TransitionContextMenu({
   position: Point2D
   id: string
   transitions: string[]
-  setTransitions: (newTransitions: string[]) => void,
+  setTransitions: (newTransitions: string[]) => void
   deleteTransition: () => void
 }) {
-  const menuItems: MenuItem[] = [];
+  const menuItems: MenuItem[] = []
   function calculateMenuItems(): void {
     if (transitions.length > 1) {
       const myPosition = transitions.findIndex((t) => t == id)
@@ -79,7 +79,7 @@ export default function TransitionContextMenu({
       if (myPosition > 0) {
         menuItems.push(
           new MenuItem(`${id}-increase-priority`, 'Increase Priority', () => {
-            const newTransitions = [...transitions];
+            const newTransitions = [...transitions]
             newTransitions.splice(myPosition, 1)
             newTransitions.splice(myPosition - 1, 0, id)
             setTransitions(newTransitions)
@@ -89,7 +89,7 @@ export default function TransitionContextMenu({
       if (myPosition < transitions.length - 1) {
         menuItems.push(
           new MenuItem(`${id}-decrease-priority`, 'Decrease Priority', () => {
-            const newTransitions = [...transitions];
+            const newTransitions = [...transitions]
             newTransitions.splice(myPosition, 1)
             newTransitions.splice(myPosition + 1, 0, id)
             setTransitions(newTransitions)
