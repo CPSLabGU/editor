@@ -36,10 +36,11 @@ export default function CodeView({
     [setState, stateName]
   )
   const keyPress = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      setStateName(e.target.value)
       e.target.blur();
     }
-  }, [])
+  }, [setStateName])
   useEffect(() => {
     setStateName(state);
   }, [state, setStateName]);
@@ -67,7 +68,7 @@ export default function CodeView({
               value={stateName}
               onChange={changeStateName}
               onBlur={finishedEditingStateName}
-              onKeyUp={keyPress}
+              onKeyDown={keyPress}
             />
           </h1>
         </form>
