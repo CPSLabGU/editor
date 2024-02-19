@@ -14,8 +14,8 @@
 }
 
 .state.focused {
-    color: blue;
-    border-color: blue;
+    color: rgb(58, 58, 228);
+    border-color: rgb(58, 58, 228);
 }
 
 .padding {

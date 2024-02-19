@@ -61,7 +61,7 @@ function Transition({id, properties, priority, isSelected, setPath, setCondition
         left: `calc(${conditionX + relativeOffset.x}px - 0.2em * ${condition.length})`,
         top: `calc(${conditionY + relativeOffset.y}px - 0.5em)`,
         textAlign: 'center',
-        color: isSelected ? 'blue' : color
+        color: isSelected ? 'rgb(58, 58, 228)' : color
     }
     const svgStyle = {
         width: `${boundingBox.width + padding}px`,
@@ -83,7 +83,7 @@ function Transition({id, properties, priority, isSelected, setPath, setCondition
                         markerWidth={max * 2 + gap} markerHeight={max * 2 + gap}
                         refX="0" refY={max}
                     >
-                        <path d={str} stroke={isSelected ? 'blue' : color} />
+                        <path d={str} stroke={isSelected ? 'rgb(58, 58, 228)' : color} />
                         {/* <path d='M2,4 L2,8' stroke={isSelected ? 'blue' : color} />
                         <path d='M4,2 L4,10' stroke={isSelected ? 'blue' : color} />
                         <path d='M6,0 L6,12' stroke={isSelected ? 'blue' : color} /> */}
@@ -99,13 +99,13 @@ function Transition({id, properties, priority, isSelected, setPath, setCondition
                     <marker id={`${id}${priority}head`} orient="auto"
                         markerWidth='6' markerHeight='8'
                         refX='0.2' refY='2'>
-                        <path d='M0,0 V4 L4,2 Z' fill={isSelected ? 'blue' : color}/>
+                        <path d='M0,0 V4 L4,2 Z' fill={isSelected ? 'rgb(58, 58, 228)' : color}/>
                     </marker>
                 </defs>
                 <path
                     d={`M ${relativeCurve.source.x},${relativeCurve.source.y} C ${relativeCurve.control0.x},${relativeCurve.control0.y} ${relativeCurve.control1.x},${relativeCurve.control1.y} ${relativeCurve.target.x},${relativeCurve.target.y}`}
                     className='transition'
-                    stroke={isSelected ? 'blue' : color}
+                    stroke={isSelected ? 'rgb(58, 58, 228)' : color}
                     fill={'transparent'}
                     strokeWidth={2}
                     strokeLinejoin={'round'}
