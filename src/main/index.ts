@@ -1,4 +1,13 @@
-import { app, shell, BrowserWindow, ipcMain, IpcMainEvent, Menu, dialog, ipcRenderer } from 'electron'
+import {
+  app,
+  shell,
+  BrowserWindow,
+  ipcMain,
+  IpcMainEvent,
+  Menu,
+  dialog,
+  ipcRenderer
+} from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -34,12 +43,12 @@ function createWindow(): void {
               ]
             })
             if (!filePath || filePath.length < 1) {
-              console.log("Malformed file path detected.")
+              console.log('Malformed file path detected.')
               return
             }
             const fd = fs.openSync(filePath[0], 'r')
             if (fd < 0) {
-              console.log("Failed to open file at path: " + filePath[0])
+              console.log('Failed to open file at path: ' + filePath[0])
               return
             }
             const data = fs.readFileSync(fd, 'utf-8')

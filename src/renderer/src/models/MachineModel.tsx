@@ -46,12 +46,7 @@ class StateModel {
   variables: string
   actions: ActionModel[]
   layout: StateLayout
-  constructor(
-    name: string,
-    variables: string,
-    actions: ActionModel[],
-    layout: StateLayout
-  ) {
+  constructor(name: string, variables: string, actions: ActionModel[], layout: StateLayout) {
     this.name = name
     this.variables = variables
     this.actions = actions

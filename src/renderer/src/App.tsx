@@ -99,8 +99,8 @@ export default function App() {
   const showTest = async (): void => {
     const number = await window.ipc.test()
     setCurrentNumber(number)
-    window.ipc.print("Hello World!")
-  };
+    window.ipc.print('Hello World!')
+  }
   const setStateName = useCallback(
     (id: string, name: string) => {
       const state = states[id]
@@ -145,7 +145,7 @@ export default function App() {
   if (edittingState !== undefined) {
     return (
       <>
-       <p onClick={showTest}>Current Number: {currentNumber}</p>
+        <p onClick={showTest}>Current Number: {currentNumber}</p>
         <CodeView
           actions={states[edittingState].properties.actions}
           language="javascript"

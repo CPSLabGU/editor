@@ -1,4 +1,4 @@
-import { IpcRendererEvent, contextBridge, ipcRenderer, } from 'electron'
+import { IpcRendererEvent, contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
@@ -17,7 +17,8 @@ if (process.contextIsolated) {
       test: () => ipcRenderer.invoke('testEvent'),
       print: (message: string) => ipcRenderer.send('print', message),
       open: (callback: (e: IpcRendererEvent) => void) => ipcRenderer.on('open', callback),
-      load: (callback: (e: IpcRendererEvent, data: string) => void) => ipcRenderer.on('load', callback)
+      load: (callback: (e: IpcRendererEvent, data: string) => void) =>
+        ipcRenderer.on('load', callback)
     })
   } catch (error) {
     console.error(error)
