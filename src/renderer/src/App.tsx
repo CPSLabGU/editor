@@ -81,6 +81,11 @@ export default function App() {
   const [edittingState, setEdittingState] = useState<string | undefined>(undefined)
   const [currentMachine, setCurrentMachine] = useState(new Machine('', '', ''))
   const [currentNumber, setCurrentNumber] = useState(0)
+  useEffect(() => {
+    window.ipc.open((e) => {
+      setCurrentNumber(0)
+    })
+  }, [setCurrentNumber])
   // const dialog = window.require('electron').dialog
 
   // const showDevTools = useCallback((e: KeyboardEvent) => {
@@ -88,8 +93,10 @@ export default function App() {
   //     remote.getCurrentWindow().toggleDevTools()
   //   }
   // }, []);
-  const showTest = (): void => {
-    setCurrentNumber(window.ipc.test())
+  const showTest = async (): void => {
+    const number = await window.ipc.test()
+    setCurrentNumber(number)
+    window.ipc.print("Hello World!")
   };
   const setStateName = useCallback(
     (id: string, name: string) => {
