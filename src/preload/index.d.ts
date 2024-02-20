@@ -5,6 +5,7 @@ interface IPCInterface {
   test: () => Promise<number>
   print: (message: string) => void
   open: (callback: (e: IpcRendererEvent) => void) => void
+  load: (callback: (e: IpcRendererEvent, data: string) => void) => void
 }
 
 declare global {

@@ -85,6 +85,9 @@ export default function App() {
     window.ipc.open((e) => {
       setCurrentNumber(0)
     })
+    window.ipc.load((e, data) => {
+      console.log(data)
+    })
   }, [setCurrentNumber])
   // const dialog = window.require('electron').dialog
 

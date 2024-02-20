@@ -1,8 +1,8 @@
-import { app, shell, BrowserWindow, ipcMain, IpcMainEvent, Menu } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, IpcMainEvent, Menu, dialog, ipcRenderer } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-
+import fs from 'fs'
 let number = 0
 
 function createWindow(): void {
@@ -25,7 +25,27 @@ function createWindow(): void {
       submenu: [
         {
           label: 'Open',
-          click: () => mainWindow.webContents.send('open')
+          click: () => {
+            const filePath: string[] | undefined = dialog.showOpenDialogSync(mainWindow, {
+              properties: ['openFile'],
+              filters: [
+                { name: 'All Files', extensions: ['*'] },
+                { name: 'Text Files', extensions: ['txt'] }
+              ]
+            })
+            if (!filePath || filePath.length < 1) {
+              console.log("Malformed file path detected.")
+              return
+            }
+            const fd = fs.openSync(filePath[0], 'r')
+            if (fd < 0) {
+              console.log("Failed to open file at path: " + filePath[0])
+              return
+            }
+            const data = fs.readFileSync(fd, 'utf-8')
+            fs.closeSync(fd)
+            mainWindow.webContents.send('load', data)
+          }
         }
       ]
     }

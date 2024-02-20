@@ -16,7 +16,8 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('ipc', {
       test: () => ipcRenderer.invoke('testEvent'),
       print: (message: string) => ipcRenderer.send('print', message),
-      open: (callback: (e: IpcRendererEvent) => void) => ipcRenderer.on('open', callback)
+      open: (callback: (e: IpcRendererEvent) => void) => ipcRenderer.on('open', callback),
+      load: (callback: (e: IpcRendererEvent, data: string) => void) => ipcRenderer.on('load', callback)
     })
   } catch (error) {
     console.error(error)
