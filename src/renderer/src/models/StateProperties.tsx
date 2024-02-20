@@ -5,4 +5,5 @@ export default interface StateProperties {
   expanded: boolean
   transitions: string[]
   actions: { [action: string]: string }
+  variables: string
 }

@@ -181,7 +181,8 @@ export default function Canvas({
             h: 100,
             expanded: false,
             transitions: [],
-            actions: { onEntry: '', onExit: '', Internal: '' }
+            actions: { onEntry: '', onExit: '', Internal: '' },
+            variables: ''
           },
           position: position
         }
@@ -338,7 +339,7 @@ export default function Canvas({
                 properties: {
                   ...states[id2].properties,
                   w: newDimensions.x,
-                  h: newDimensions.y,
+                  h: newDimensions.y
                 },
                 position: newPosition
               }

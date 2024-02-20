@@ -29,7 +29,8 @@ addState(
       h: 100,
       expanded: false,
       transitions: [],
-      actions: { onEntry: '', onExit: '', Internal: '' }
+      actions: { onEntry: '', onExit: '', Internal: '' },
+      variables: ''
     },
     position: new Point2D(0, 0)
   },
@@ -41,7 +42,8 @@ addState(
       h: 100,
       expanded: false,
       transitions: [],
-      actions: { onEntry: '', onExit: '', Internal: '' }
+      actions: { onEntry: '', onExit: '', Internal: '' },
+      variables: ''
     },
     position: new Point2D(0, 200)
   }
@@ -89,12 +91,6 @@ export default function App() {
   const showTest = (): void => {
     setCurrentNumber(window.ipc.test())
   };
-  
-  // const showDialog = () => {
-  //   console.log('show dialog');
-  //   console.log(dialog.showOpenDialog({ properties: ['openFile', 'multiSelections'] }))
-  // };
-
   const setStateName = useCallback(
     (id: string, name: string) => {
       const state = states[id]
@@ -108,7 +104,8 @@ export default function App() {
           h: state.properties.h,
           expanded: state.properties.expanded,
           transitions: state.properties.transitions,
-          actions: state.properties.actions
+          actions: state.properties.actions,
+          variables: state.properties.variables
         },
         position: state.position
       }
@@ -116,36 +113,60 @@ export default function App() {
     },
     [states, setStates]
   )
-  return (
-    <div>
-      <p onClick={showTest}>Current Number: {currentNumber}</p>
-    </div>
-  )
-  // if (edittingState !== undefined) {
-  //   return (
-  //     <CodeView
-  //       actions={states[edittingState].properties.actions}
-  //       language="javascript"
-  //       state={states[edittingState].properties.name}
-  //       setActions={(action: string, code: string) => {
-  //         states[edittingState].properties.actions[action] = code
-  //       }}
-  //       setState={(name: string) => {
-  //         setStateName(edittingState, name)
-  //       }}
-  //       onExit={() => setEdittingState(undefined)}
-  //     />
-  //   )
-  // } else {
-  //   return (
-  //     <Canvas
-  //       states={states}
-  //       transitions={transitions}
-  //       machine={currentMachine}
-  //       setStates={setStates}
-  //       setTransitions={setTransitions}
-  //       setEdittingState={setEdittingState}
-  //     />
-  //   )
-  // }
+  const setStateVariables = useCallback((id: string, variables: string) => {
+    const state = states[id]
+    if (!state) return
+    const newStates: { [id: string]: StateInformation } = { ...states }
+    newStates[id] = {
+      id: state.id,
+      properties: {
+        name: state.properties.name,
+        w: state.properties.w,
+        h: state.properties.h,
+        expanded: state.properties.expanded,
+        transitions: state.properties.transitions,
+        actions: state.properties.actions,
+        variables: variables
+      },
+      position: state.position
+    }
+    setStates(() => newStates)
+  })
+  if (edittingState !== undefined) {
+    return (
+      <>
+       <p onClick={showTest}>Current Number: {currentNumber}</p>
+        <CodeView
+          actions={states[edittingState].properties.actions}
+          language="javascript"
+          state={states[edittingState].properties.name}
+          variables={states[edittingState].properties.variables}
+          setActions={(action: string, code: string) => {
+            states[edittingState].properties.actions[action] = code
+          }}
+          setState={(name: string) => {
+            setStateName(edittingState, name)
+          }}
+          setVariables={(variables: string) => {
+            setStateVariables(edittingState, variables)
+          }}
+          onExit={() => setEdittingState(undefined)}
+        />
+      </>
+    )
+  } else {
+    return (
+      <>
+        <p onClick={showTest}>Current Number: {currentNumber}</p>
+        <Canvas
+          states={states}
+          transitions={transitions}
+          machine={currentMachine}
+          setStates={setStates}
+          setTransitions={setTransitions}
+          setEdittingState={setEdittingState}
+        />
+      </>
+    )
+  }
 }
