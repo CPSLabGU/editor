@@ -6,7 +6,7 @@ import Point2D from './models/Point2D'
 import BezierPath from './models/BezierPath'
 import { v4 as uuidv4 } from 'uuid'
 import Canvas from './views/Canvas'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import './App.css'
 import CodeView from './views/CodeView'
 import Machine from './models/Machine'
@@ -78,6 +78,22 @@ export default function App() {
   const [transitions, setTransitions] = useState(initialTransitions)
   const [edittingState, setEdittingState] = useState<string | undefined>(undefined)
   const [currentMachine, setCurrentMachine] = useState(new Machine('', '', ''))
+  const [currentNumber, setCurrentNumber] = useState(0)
+  // const dialog = window.require('electron').dialog
+
+  // const showDevTools = useCallback((e: KeyboardEvent) => {
+  //   if (e.shiftKey && e.ctrlKey && e.key === 'J') {
+  //     remote.getCurrentWindow().toggleDevTools()
+  //   }
+  // }, []);
+  const showTest = (): void => {
+    setCurrentNumber(window.ipc.test())
+  };
+  
+  // const showDialog = () => {
+  //   console.log('show dialog');
+  //   console.log(dialog.showOpenDialog({ properties: ['openFile', 'multiSelections'] }))
+  // };
 
   const setStateName = useCallback(
     (id: string, name: string) => {
@@ -100,31 +116,36 @@ export default function App() {
     },
     [states, setStates]
   )
-  if (edittingState !== undefined) {
-    return (
-      <CodeView
-        actions={states[edittingState].properties.actions}
-        language="javascript"
-        state={states[edittingState].properties.name}
-        setActions={(action: string, code: string) => {
-          states[edittingState].properties.actions[action] = code
-        }}
-        setState={(name: string) => {
-          setStateName(edittingState, name)
-        }}
-        onExit={() => setEdittingState(undefined)}
-      />
-    )
-  } else {
-    return (
-      <Canvas
-        states={states}
-        transitions={transitions}
-        machine={currentMachine}
-        setStates={setStates}
-        setTransitions={setTransitions}
-        setEdittingState={setEdittingState}
-      />
-    )
-  }
+  return (
+    <div>
+      <p onClick={showTest}>Current Number: {currentNumber}</p>
+    </div>
+  )
+  // if (edittingState !== undefined) {
+  //   return (
+  //     <CodeView
+  //       actions={states[edittingState].properties.actions}
+  //       language="javascript"
+  //       state={states[edittingState].properties.name}
+  //       setActions={(action: string, code: string) => {
+  //         states[edittingState].properties.actions[action] = code
+  //       }}
+  //       setState={(name: string) => {
+  //         setStateName(edittingState, name)
+  //       }}
+  //       onExit={() => setEdittingState(undefined)}
+  //     />
+  //   )
+  // } else {
+  //   return (
+  //     <Canvas
+  //       states={states}
+  //       transitions={transitions}
+  //       machine={currentMachine}
+  //       setStates={setStates}
+  //       setTransitions={setTransitions}
+  //       setEdittingState={setEdittingState}
+  //     />
+  //   )
+  // }
 }
