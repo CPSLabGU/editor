@@ -44,12 +44,12 @@ class MachineModel {
 class StateModel {
   name: string
   variables: string
-  actions: { [action: string]: string }
+  actions: ActionModel[]
   layout: StateLayout
   constructor(
     name: string,
     variables: string,
-    actions: { [action: string]: string },
+    actions: ActionModel[],
     layout: StateLayout
   ) {
     this.name = name
@@ -69,6 +69,15 @@ class TransitionModel {
     this.target = target
     this.condition = condition
     this.layout = layout
+  }
+}
+
+class ActionModel {
+  name: string
+  code: string
+  constructor(name: string, code: string) {
+    this.name = name
+    this.code = code
   }
 }
 
@@ -96,10 +105,15 @@ function machineToFileSystem({
       state.position,
       new Point2D(state.properties.w, state.properties.h)
     )
+    const actions = Object.keys(state.properties.actions).map((actionName) => {
+      return new ActionModel(actionName, state.properties.actions[actionName]!)
+    })
     const stateModel = new StateModel(
       state.properties.name,
       state.properties.variables,
-      state.properties.actions,
+      actions.toSorted((a: ActionModel, b: ActionModel) => {
+        return a.name < b.name ? -1 : 1
+      }),
       stateLayout
     )
     const transitionModels = state.properties.transitions.map((transitionID) => {
@@ -137,5 +151,6 @@ export default {
   StateLayout,
   TransitionLayout,
   MachineFileSystem,
+  ActionModel,
   machineToFileSystem
 }
