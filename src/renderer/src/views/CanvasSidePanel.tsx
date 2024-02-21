@@ -11,14 +11,16 @@ import StateInformation from '@renderer/models/StateInformation'
 
 export default function CanvasSidePanel({
   machine,
-  states
+  states,
+  setMachine
 }: {
   machine: Machine
   states: { [id: string]: StateInformation }
+  setMachine: (newMachine: Machine) => void
 }) {
   const [hidden, setHidden] = useState(true)
   return (
-    <div onContextMenu={(e) => e.stopPropagation()}>
+    <div onContextMenu={(e) => e.stopPropagation()} className='canvas-side-panel'>
       <HiddenView hidden={!hidden}>
         <div className="canvas-side-panel-hidden">
           <div className="canvas-side-panel-button" onClick={() => setHidden(!hidden)}>
@@ -38,6 +40,19 @@ export default function CanvasSidePanel({
             </div>
             <div>
               <span>{`Suspended State: ${machine.suspendedState !== undefined ? states[machine.suspendedState].properties.name : 'none'}`}</span>
+            </div>
+            <div>
+              <button className='remove-suspension' onClick={() => {
+                setMachine(new Machine(
+                  machine.externalVariables,
+                  machine.machineVariables,
+                  machine.includes,
+                  machine.initialState,
+                  undefined
+                ))
+              }}>
+                Remove Suspended State
+              </button>
             </div>
           </div>
           <PanelChildView

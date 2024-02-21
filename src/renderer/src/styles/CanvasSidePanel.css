@@ -10,3 +10,23 @@
   margin-left: auto;
   margin-right: auto;
 }
+.remove-suspension {
+  border: 1px solid black;
+  padding: 10px;
+  margin: 10px 0;
+  background-color: #555;
+  font-size: 0.75rem;
+  width: 100%;
+  color: white;
+  box-shadow: 0 0 10px #000;
+}
+
+.remove-suspension:hover {
+  text-decoration: underline;
+  cursor: pointer;
+  background-color: #566;
+}
+
+.canvas-side-panel {
+  color: white;
+}
