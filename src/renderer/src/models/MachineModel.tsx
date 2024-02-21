@@ -26,18 +26,24 @@ class MachineModel {
   machineVariables: string
   includes: string
   transitions: TransitionModel[]
+  initialState: string
+  suspendedState: string | undefined
   constructor(
     states: StateModel[],
     externalVariables: string,
     machineVariables: string,
     includes: string,
-    transitions: TransitionModel[]
+    transitions: TransitionModel[],
+    initialState: string,
+    suspendedState: string | undefined = undefined
   ) {
     this.states = states
     this.externalVariables = externalVariables
     this.machineVariables = machineVariables
     this.includes = includes
     this.transitions = transitions
+    this.initialState = initialState
+    this.suspendedState = suspendedState
   }
 }
 
@@ -84,14 +90,7 @@ class ActionModel {
   }
 }
 
-class MachineFileSystem {
-  machine: MachineModel
-  constructor(machine: MachineModel) {
-    this.machine = machine
-  }
-}
-
-function machineToFileSystem({
+function machineToModel({
   machine,
   states,
   transitions
@@ -99,7 +98,7 @@ function machineToFileSystem({
   machine: Machine
   states: { [id: string]: StateInformation }
   transitions: { [id: string]: TransitionProperties }
-}): MachineFileSystem {
+}): MachineModel {
   const models: { stateModel: StateModel; transitionModels: TransitionModel[] }[] = Object.keys(
     states
   ).map((id) => {
@@ -137,14 +136,16 @@ function machineToFileSystem({
   const transitionModels: TransitionModel[] = models.flatMap((models) => {
     return models.transitionModels
   })
+  const initialState = states[machine.initialState]!.properties.name
+  const suspendedState = machine.suspendedState ? states[machine.suspendedState]!.properties.name : undefined
   return {
-    machine: {
-      states: stateModels,
-      externalVariables: machine.externalVariables,
-      machineVariables: machine.machineVariables,
-      includes: machine.includes,
-      transitions: transitionModels
-    }
+    states: stateModels,
+    externalVariables: machine.externalVariables,
+    machineVariables: machine.machineVariables,
+    includes: machine.includes,
+    transitions: transitionModels,
+    initialState: initialState,
+    suspendedState: suspendedState
   }
 }
 
@@ -154,7 +155,6 @@ export default {
   TransitionModel,
   StateLayout,
   TransitionLayout,
-  MachineFileSystem,
   ActionModel,
-  machineToFileSystem
+  machineToModel
 }
