@@ -396,7 +396,7 @@ export default function Canvas({
           deleteTransition={() => deleteTransition(transitionContextMenuPosition![1])}
         />
       )}
-      <CanvasSidePanel machine={machine} />
+      <CanvasSidePanel machine={machine} states={states} />
     </div>
   )
 }

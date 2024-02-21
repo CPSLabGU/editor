@@ -76,12 +76,22 @@ function createDefaultTransition(): void {
 
 createDefaultTransition()
 
+function defaultMachine(): Machine {
+  const initialState = Object.keys(initialStates).find(
+    (id) => initialStates[id].properties.name == 'Initial'
+  )
+  const suspendedState = Object.keys(initialStates).find(
+    (id) => initialStates[id].properties.name == 'Suspended'
+  )
+  return new Machine('', '', '', initialState, suspendedState)
+}
+
 export default function App() {
   // const [counter, setCounter] = useState(0);
   const [states, setStates] = useState(initialStates)
   const [transitions, setTransitions] = useState(initialTransitions)
   const [edittingState, setEdittingState] = useState<string | undefined>(undefined)
-  const [currentMachine, setCurrentMachine] = useState(new Machine('', '', ''))
+  const [currentMachine, setCurrentMachine] = useState(defaultMachine())
   const [currentNumber, setCurrentNumber] = useState(0)
   useEffect(() => {
     window.ipc.open((e) => {
