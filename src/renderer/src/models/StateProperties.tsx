@@ -6,4 +6,5 @@ export default interface StateProperties {
   transitions: string[]
   actions: { [action: string]: string }
   variables: string
+  externalVariables: string
 }

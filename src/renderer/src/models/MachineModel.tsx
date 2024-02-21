@@ -44,11 +44,19 @@ class MachineModel {
 class StateModel {
   name: string
   variables: string
+  externalVariables: string
   actions: ActionModel[]
   layout: StateLayout
-  constructor(name: string, variables: string, actions: ActionModel[], layout: StateLayout) {
+  constructor(
+    name: string,
+    variables: string,
+    externalVariables: string,
+    actions: ActionModel[],
+    layout: StateLayout
+  ) {
     this.name = name
     this.variables = variables
+    this.externalVariables = externalVariables
     this.actions = actions
     this.layout = layout
   }
@@ -106,6 +114,7 @@ function machineToFileSystem({
     const stateModel = new StateModel(
       state.properties.name,
       state.properties.variables,
+      state.properties.externalVariables,
       actions.toSorted((a: ActionModel, b: ActionModel) => {
         return a.name < b.name ? -1 : 1
       }),

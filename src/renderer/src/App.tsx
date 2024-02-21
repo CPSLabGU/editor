@@ -30,7 +30,8 @@ addState(
       expanded: false,
       transitions: [],
       actions: { onEntry: '', onExit: '', Internal: '' },
-      variables: ''
+      variables: '',
+      externalVariables: ''
     },
     position: new Point2D(0, 0)
   },
@@ -43,7 +44,8 @@ addState(
       expanded: false,
       transitions: [],
       actions: { onEntry: '', onExit: '', Internal: '' },
-      variables: ''
+      variables: '',
+      externalVariables: ''
     },
     position: new Point2D(0, 200)
   }
@@ -115,7 +117,8 @@ export default function App() {
           expanded: state.properties.expanded,
           transitions: state.properties.transitions,
           actions: state.properties.actions,
-          variables: state.properties.variables
+          variables: state.properties.variables,
+          externalVariables: state.properties.externalVariables
         },
         position: state.position
       }
@@ -136,12 +139,33 @@ export default function App() {
         expanded: state.properties.expanded,
         transitions: state.properties.transitions,
         actions: state.properties.actions,
-        variables: variables
+        variables: variables,
+        externalVariables: state.properties.externalVariables
       },
       position: state.position
     }
     setStates(() => newStates)
-  })
+  }, [states, setStates])
+  const setExternalVariables = useCallback((id: string, externalVariables: string) => {
+    const state = states[id]
+    if (!state) return
+    const newStates: { [id: string]: StateInformation } = { ...states }
+    newStates[id] = {
+      id: state.id,
+      properties: {
+        name: state.properties.name,
+        w: state.properties.w,
+        h: state.properties.h,
+        expanded: state.properties.expanded,
+        transitions: state.properties.transitions,
+        actions: state.properties.actions,
+        variables: state.properties.variables,
+        externalVariables: externalVariables
+      },
+      position: state.position
+    }
+    setStates(() => newStates)
+  }, [states, setStates])
   if (edittingState !== undefined) {
     return (
       <>
@@ -151,6 +175,7 @@ export default function App() {
           language="javascript"
           state={states[edittingState].properties.name}
           variables={states[edittingState].properties.variables}
+          externalVariables={states[edittingState].properties.externalVariables}
           setActions={(action: string, code: string) => {
             states[edittingState].properties.actions[action] = code
           }}
@@ -159,6 +184,9 @@ export default function App() {
           }}
           setVariables={(variables: string) => {
             setStateVariables(edittingState, variables)
+          }}
+          setExternalVariables={(externalVariables: string) => {
+            setExternalVariables(edittingState, externalVariables)
           }}
           onExit={() => setEdittingState(undefined)}
         />

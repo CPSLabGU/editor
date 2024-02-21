@@ -182,7 +182,8 @@ export default function Canvas({
             expanded: false,
             transitions: [],
             actions: { onEntry: '', onExit: '', Internal: '' },
-            variables: ''
+            variables: '',
+            externalVariables: ''
           },
           position: position
         }
@@ -404,7 +405,7 @@ function boundingBox(state: StateInformation): BoundingBox {
   return new BoundingBox(state.position.x, state.position.y, state.properties.w, state.properties.h)
 }
 
-function calculateEdge(source: BoundingBox, target: BoundingBox) {
+function calculateEdge(source: BoundingBox, target: BoundingBox): BezierPath {
   const sourceCentre = new Point2D(source.x + source.width / 2, source.y + source.height / 2)
   const targetCentre = new Point2D(target.x + target.width / 2, target.y + target.height / 2)
   const angle = Math.atan2(targetCentre.y - sourceCentre.y, targetCentre.x - sourceCentre.x)
