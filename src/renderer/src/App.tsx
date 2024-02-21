@@ -213,6 +213,7 @@ export default function App() {
           setStates={setStates}
           setTransitions={setTransitions}
           setEdittingState={setEdittingState}
+          setMachine={setCurrentMachine}
         />
       </>
     )

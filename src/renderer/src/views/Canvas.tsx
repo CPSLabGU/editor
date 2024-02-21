@@ -23,7 +23,8 @@ export default function Canvas({
   machine,
   setStates,
   setTransitions,
-  setEdittingState
+  setEdittingState,
+  setMachine
 }: {
   states: { [id: string]: StateInformation }
   transitions: { [id: string]: TransitionProperties }
@@ -37,6 +38,7 @@ export default function Canvas({
     }
   ) => void
   setEdittingState: (id: string | undefined) => void
+  setMachine: (newMachine: Machine) => void
 }) {
   const [focusedObjects, setFocusedObjects] = useState(new Set<string>())
   const [contextState, setContextState] = useState<string | undefined>(undefined)
@@ -378,6 +380,8 @@ export default function Canvas({
           )}
           createTransition={(stateID: string) => createTransition(stateID, contextState!)}
           deleteState={() => deleteState(stateContextMenuPosition![1])}
+          setInitialState={() => setMachine(new Machine(machine.externalVariables, machine.machineVariables, machine.includes, contextState, machine.suspendedState))}
+          setSuspendedState={() => setMachine(new Machine(machine.externalVariables, machine.machineVariables, machine.includes, machine.initialState, contextState))}
         />
       )}
       {transitionContextMenuPosition !== undefined && (
