@@ -149,7 +149,7 @@ function machineToModel({
   }
 }
 
-export default {
+export {
   MachineModel,
   StateModel,
   TransitionModel,
