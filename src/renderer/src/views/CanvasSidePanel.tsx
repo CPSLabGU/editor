@@ -9,7 +9,13 @@ import PanelChildView from './PanelChildView'
 import Machine from '../models/Machine'
 import StateInformation from '@renderer/models/StateInformation'
 
-export default function CanvasSidePanel({ machine, states }: { machine: Machine, states: { [id: string]: StateInformation }}) {
+export default function CanvasSidePanel({
+  machine,
+  states
+}: {
+  machine: Machine
+  states: { [id: string]: StateInformation }
+}) {
   const [hidden, setHidden] = useState(true)
   return (
     <div onContextMenu={(e) => e.stopPropagation()}>

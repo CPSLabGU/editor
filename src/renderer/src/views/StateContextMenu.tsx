@@ -24,19 +24,16 @@ function StateContextMenu({
     new MenuItem('delete', 'Delete State', deleteState),
     new MenuItem('makeInitial', 'Make Initial State', setInitialState),
     new MenuItem('makeSuspended', 'Make Suspended State', setSuspendedState)
-  ].concat(states.map((identity) => {
-    return new MenuItem(
-      `createTransition(${identity.id})`,
-      `Create Transition To ${identity.name}`,
-      () => createTransition(identity.id)
-    )
-  }))
-  return (
-    <ContextMenu
-      position={position}
-      menuItems={menuItems}
-    />
+  ].concat(
+    states.map((identity) => {
+      return new MenuItem(
+        `createTransition(${identity.id})`,
+        `Create Transition To ${identity.name}`,
+        () => createTransition(identity.id)
+      )
+    })
   )
+  return <ContextMenu position={position} menuItems={menuItems} />
 }
 
 export default StateContextMenu

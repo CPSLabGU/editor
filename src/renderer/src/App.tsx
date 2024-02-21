@@ -136,46 +136,52 @@ export default function App() {
     },
     [states, setStates]
   )
-  const setStateVariables = useCallback((id: string, variables: string) => {
-    const state = states[id]
-    if (!state) return
-    const newStates: { [id: string]: StateInformation } = { ...states }
-    newStates[id] = {
-      id: state.id,
-      properties: {
-        name: state.properties.name,
-        w: state.properties.w,
-        h: state.properties.h,
-        expanded: state.properties.expanded,
-        transitions: state.properties.transitions,
-        actions: state.properties.actions,
-        variables: variables,
-        externalVariables: state.properties.externalVariables
-      },
-      position: state.position
-    }
-    setStates(() => newStates)
-  }, [states, setStates])
-  const setExternalVariables = useCallback((id: string, externalVariables: string) => {
-    const state = states[id]
-    if (!state) return
-    const newStates: { [id: string]: StateInformation } = { ...states }
-    newStates[id] = {
-      id: state.id,
-      properties: {
-        name: state.properties.name,
-        w: state.properties.w,
-        h: state.properties.h,
-        expanded: state.properties.expanded,
-        transitions: state.properties.transitions,
-        actions: state.properties.actions,
-        variables: state.properties.variables,
-        externalVariables: externalVariables
-      },
-      position: state.position
-    }
-    setStates(() => newStates)
-  }, [states, setStates])
+  const setStateVariables = useCallback(
+    (id: string, variables: string) => {
+      const state = states[id]
+      if (!state) return
+      const newStates: { [id: string]: StateInformation } = { ...states }
+      newStates[id] = {
+        id: state.id,
+        properties: {
+          name: state.properties.name,
+          w: state.properties.w,
+          h: state.properties.h,
+          expanded: state.properties.expanded,
+          transitions: state.properties.transitions,
+          actions: state.properties.actions,
+          variables: variables,
+          externalVariables: state.properties.externalVariables
+        },
+        position: state.position
+      }
+      setStates(() => newStates)
+    },
+    [states, setStates]
+  )
+  const setExternalVariables = useCallback(
+    (id: string, externalVariables: string) => {
+      const state = states[id]
+      if (!state) return
+      const newStates: { [id: string]: StateInformation } = { ...states }
+      newStates[id] = {
+        id: state.id,
+        properties: {
+          name: state.properties.name,
+          w: state.properties.w,
+          h: state.properties.h,
+          expanded: state.properties.expanded,
+          transitions: state.properties.transitions,
+          actions: state.properties.actions,
+          variables: state.properties.variables,
+          externalVariables: externalVariables
+        },
+        position: state.position
+      }
+      setStates(() => newStates)
+    },
+    [states, setStates]
+  )
   if (edittingState !== undefined) {
     return (
       <>

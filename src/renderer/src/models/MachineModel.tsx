@@ -137,7 +137,9 @@ function machineToModel({
     return models.transitionModels
   })
   const initialState = states[machine.initialState]!.properties.name
-  const suspendedState = machine.suspendedState ? states[machine.suspendedState]!.properties.name : undefined
+  const suspendedState = machine.suspendedState
+    ? states[machine.suspendedState]!.properties.name
+    : undefined
   return {
     states: stateModels,
     externalVariables: machine.externalVariables,

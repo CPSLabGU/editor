@@ -380,8 +380,28 @@ export default function Canvas({
           )}
           createTransition={(stateID: string) => createTransition(stateID, contextState!)}
           deleteState={() => deleteState(stateContextMenuPosition![1])}
-          setInitialState={() => setMachine(new Machine(machine.externalVariables, machine.machineVariables, machine.includes, contextState, machine.suspendedState))}
-          setSuspendedState={() => setMachine(new Machine(machine.externalVariables, machine.machineVariables, machine.includes, machine.initialState, contextState))}
+          setInitialState={() =>
+            setMachine(
+              new Machine(
+                machine.externalVariables,
+                machine.machineVariables,
+                machine.includes,
+                contextState,
+                machine.suspendedState
+              )
+            )
+          }
+          setSuspendedState={() =>
+            setMachine(
+              new Machine(
+                machine.externalVariables,
+                machine.machineVariables,
+                machine.includes,
+                machine.initialState,
+                contextState
+              )
+            )
+          }
         />
       )}
       {transitionContextMenuPosition !== undefined && (
