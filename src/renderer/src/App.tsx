@@ -10,12 +10,13 @@ import { useState, useCallback, useEffect } from 'react'
 import './App.css'
 import CodeView from './views/CodeView'
 import Machine from './models/Machine'
+import Clock from './models/Clock'
 
 const initialStates: { [id: string]: StateInformation } = {}
 
 const initialTransitions: { [id: string]: TransitionProperties } = {}
 
-function addState(...states: StateInformation[]) {
+function addState(...states: StateInformation[]): void {
   for (let i = 0; i < states.length; i++) {
     initialStates[states[i].id] = states[i]
   }
@@ -83,7 +84,7 @@ function defaultMachine(): Machine {
   const suspendedState = Object.keys(initialStates).find(
     (id) => initialStates[id].properties.name == 'Suspended'
   )
-  return new Machine('', '', '', initialState, suspendedState)
+  return new Machine('', '', '', initialState, suspendedState, new Array<Clock>())
 }
 
 export default function App() {
@@ -93,6 +94,7 @@ export default function App() {
   const [edittingState, setEdittingState] = useState<string | undefined>(undefined)
   const [currentMachine, setCurrentMachine] = useState(defaultMachine())
   const [currentNumber, setCurrentNumber] = useState(0)
+  console.log(currentMachine)
   useEffect(() => {
     window.ipc.open((e) => {
       setCurrentNumber(0)
