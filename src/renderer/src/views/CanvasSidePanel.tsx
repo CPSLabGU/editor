@@ -92,6 +92,20 @@ export default function CanvasSidePanel({
                       )
                     )
                   }}
+                  deleteClock={() => {
+                    const clocks = machine.clocks
+                    clocks.splice(index, 1)
+                    setMachine(
+                      new Machine(
+                        machine.externalVariables,
+                        machine.machineVariables,
+                        machine.includes,
+                        machine.initialState,
+                        machine.suspendedState,
+                        clocks
+                      )
+                    )
+                  }}
                 />
               )
             })}

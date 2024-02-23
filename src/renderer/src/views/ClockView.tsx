@@ -59,10 +59,12 @@ import TextForm from './TextForm'
 
 export default function ClockView({
   clock,
-  setClock
+  setClock,
+  deleteClock
 }: {
   clock: Clock
   setClock: (newClock: Clock) => void
+  deleteClock: () => void
 }) {
   return (
     <div>
@@ -80,6 +82,9 @@ export default function ClockView({
           setData={(newData: string) => setClock(new Clock(clock.name, newData))}
         />
       </div>
+      <button className="remove-suspension" onClick={deleteClock}>
+        Delete clock {clock.name}
+      </button>
     </div>
   )
 }
