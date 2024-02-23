@@ -3,6 +3,7 @@ import Point2D from './Point2D'
 import StateInformation from './StateInformation'
 import TransitionProperties from './TransitionProperties'
 import BezierPath from './BezierPath'
+import Clock from './Clock'
 
 class StateLayout {
   position: Point2D
@@ -28,6 +29,7 @@ class MachineModel {
   transitions: TransitionModel[]
   initialState: string
   suspendedState: string | undefined
+  clocks: Clock[]
   constructor(
     states: StateModel[],
     externalVariables: string,
@@ -35,7 +37,8 @@ class MachineModel {
     includes: string,
     transitions: TransitionModel[],
     initialState: string,
-    suspendedState: string | undefined = undefined
+    suspendedState: string | undefined = undefined,
+    clocks: Clock[]
   ) {
     this.states = states
     this.externalVariables = externalVariables
@@ -44,6 +47,7 @@ class MachineModel {
     this.transitions = transitions
     this.initialState = initialState
     this.suspendedState = suspendedState
+    this.clocks = clocks
   }
 }
 
@@ -147,7 +151,8 @@ function machineToModel({
     includes: machine.includes,
     transitions: transitionModels,
     initialState: initialState,
-    suspendedState: suspendedState
+    suspendedState: suspendedState,
+    clocks: machine.clocks
   }
 }
 
