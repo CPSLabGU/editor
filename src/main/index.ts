@@ -12,6 +12,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import fs from 'fs'
+const { exec } = require('node:child_process')
 let number = 0
 
 let currentPath: string | undefined = undefined
@@ -127,7 +128,7 @@ function generateFileMenus(mainWindow: BrowserWindow): void {
       label: 'Open',
       click: () => {
         const filePath: string[] | undefined = dialog.showOpenDialogSync(mainWindow, {
-          properties: ['openFile'],
+          properties: ['openDirectory'],
           filters: [
             { name: 'Machines', extensions: ['machine'] },
             { name: 'All Files', extensions: ['*'] }
@@ -163,6 +164,21 @@ function generateFileMenus(mainWindow: BrowserWindow): void {
       mainWindow.webContents.send('updateData', true)
     }
   })
+  if (currentPath) {
+    fileMenus.push({
+      label: 'Export to Machine',
+      click: () => {
+        exec('llfsmgenerate model ' + currentPath!, (error, stdout, stderr) => {
+          if (error) {
+            console.error(`exec error: ${error}`)
+            return
+          }
+          console.log(`stdout: ${stdout}`)
+          console.error(`stderr: ${stderr}`)
+        })
+      }
+    })
+  }
   const menu = Menu.buildFromTemplate([
     {
       label: 'File',
