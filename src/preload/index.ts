@@ -19,12 +19,9 @@ if (process.contextIsolated) {
       open: (callback: (e: IpcRendererEvent) => void) => ipcRenderer.on('open', callback),
       load: (callback: (e: IpcRendererEvent, data: string) => void) =>
         ipcRenderer.on('load', callback),
-      updateData: (callback: (e: IpcRendererEvent) => void) =>
+      updateData: (callback: (e: IpcRendererEvent, saveAs: boolean) => void) =>
         ipcRenderer.on('updateData', callback),
-      setCurrentData: (data: string) => {
-        console.log('Got data in preload: ', data)
-        ipcRenderer.send('setCurrentData', data)
-    }
+      save: (data: string, saveAs: boolean) => ipcRenderer.send('save', data, saveAs)
     })
   } catch (error) {
     console.error(error)

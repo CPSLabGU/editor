@@ -102,14 +102,10 @@ export default function App() {
     window.ipc.load((e, data) => {
       console.log(data)
     })
-    window.ipc.updateData((e) => {
-      console.log('Creating Model!')
-      console.log('Current machine before creating model: ', currentMachine)
+    window.ipc.updateData((e, saveAs) => {
       const model = machineToModel(currentMachine, states, transitions)
-      console.log('Created model: ', model)
       const data = JSON.stringify(model)
-      console.log('Sending data to server: ', data)
-      window.ipc.setCurrentData(data)
+      window.ipc.save(data, saveAs)
     })
   }, [setCurrentNumber, currentMachine, states, transitions])
   // const dialog = window.require('electron').dialog

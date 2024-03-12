@@ -99,9 +99,6 @@ function machineToModel(
   states: { [id: string]: StateInformation },
   transitions: { [id: string]: TransitionProperties }
 ): MachineModel {
-  console.log('Creating model from machine. ', machine)
-  console.log('Creating model from states ', states)
-  console.log('Creating model from transitions ', transitions)
   const models: { stateModel: StateModel; transitionModels: TransitionModel[] }[] = Object.keys(
     states
   ).map((id) => {
@@ -133,18 +130,13 @@ function machineToModel(
     })
     return { stateModel: stateModel, transitionModels: transitionModels }
   })
-  console.log('Have state and transition models.')
   const stateModels: StateModel[] = models.map((models) => {
     return models.stateModel
   })
   const transitionModels: TransitionModel[] = models.flatMap((models) => {
     return models.transitionModels
   })
-  console.log('Created separate arrays for state and transition models.')
   let initialState: string
-  console.log('States: ', states)
-  console.log('Machine: ', machine)
-  console.log('Initial state: ', machine.initialState)
   if (states[machine.initialState]) {
     initialState = states[machine.initialState]!.properties.name
   } else {
@@ -152,11 +144,9 @@ function machineToModel(
     console.log('No initial state defined, choosing: ', firstState)
     initialState = firstState
   }
-  console.log('Have initial state.')
   const suspendedState = machine.suspendedState
     ? states[machine.suspendedState]!.properties.name
     : undefined
-  console.log('Created all properties in model')
   return {
     states: stateModels,
     externalVariables: machine.externalVariables,
