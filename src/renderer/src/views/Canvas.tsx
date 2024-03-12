@@ -183,7 +183,7 @@ export default function Canvas({
             h: 100,
             expanded: false,
             transitions: [],
-            actions: { onEntry: '', onExit: '', Internal: '' },
+            actions: { OnEntry: '', OnExit: '', Internal: '' },
             variables: '',
             externalVariables: ''
           },

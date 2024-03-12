@@ -178,6 +178,34 @@ function generateFileMenus(mainWindow: BrowserWindow): void {
         })
       }
     })
+    fileMenus.push({
+      label: 'Generate VHDL',
+      click: () => {
+        exec('llfsmgenerate vhdl ' + currentPath!, (error, stdout, stderr) => {
+          if (error) {
+            console.error(`exec error: ${error}`)
+            return
+          }
+          console.log(`stdout: ${stdout}`)
+          console.error(`stderr: ${stderr}`)
+        })
+      }
+    })
+    fileMenus.push({
+      label: 'Create Kripke Structure Generator',
+      click: () => {
+        exec(
+          'llfsmgenerate vhdl --include-kripke-structure ' + currentPath!,
+          (error, stdout, stderr) => {
+            if (error) {
+              console.error(`exec error: ${error}`)
+              return
+            }
+            console.log(`stdout: ${stdout}`)
+            console.error(`stderr: ${stderr}`)
+        })
+      }
+    })
   }
   const menu = Menu.buildFromTemplate([
     {
