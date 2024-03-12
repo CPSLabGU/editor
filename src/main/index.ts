@@ -15,7 +15,7 @@ import fs from 'fs'
 let number = 0
 
 let currentPath: string | undefined = undefined
-let currentData: object | undefined = undefined
+let currentData: string | undefined = undefined
 
 function createWindow(): void {
   // Create the browser window.
@@ -65,7 +65,7 @@ function createWindow(): void {
         if (currentData) {
           saveMachine(currentData!, currentPath!)
         } else {
-          console.log("Cannot find model in save function.")
+          console.log('Cannot find model in save function.')
         }
       }
     })
@@ -84,6 +84,7 @@ function createWindow(): void {
         })
         if (filePath) {
           saveMachine(currentData, filePath!)
+          currentPath = filePath
         }
       } else {
         console.log('Cannot find model in Save-As function.')
@@ -118,7 +119,8 @@ function createWindow(): void {
   ipcMain.on('print', (event: IpcMainEvent, message: string) => {
     console.log(message)
   })
-  ipcMain.on('setCurrentData', (event: IpcMainEvent, data: object) => {
+  ipcMain.on('setCurrentData', (event: IpcMainEvent, data: string) => {
+    console.log('In server setCurrentData')
     currentData = data
   })
   mainWindow.webContents.openDevTools()
@@ -165,8 +167,8 @@ function incrementNumber(): number {
 }
 
 // Data is the machine model, path is the file path to the machine folder.
-function saveMachine(data: object, path: string): void {
-  fs.writeFileSync(path + '/model.json', JSON.stringify(data))
+function saveMachine(data: string, path: string): void {
+  fs.writeFileSync(path + '/model.json', data)
 }
 
 // In this file you can include the rest of your app"s specific main process

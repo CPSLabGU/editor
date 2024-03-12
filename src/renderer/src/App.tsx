@@ -95,7 +95,6 @@ export default function App() {
   const [edittingState, setEdittingState] = useState<string | undefined>(undefined)
   const [currentMachine, setCurrentMachine] = useState(defaultMachine())
   const [currentNumber, setCurrentNumber] = useState(0)
-  console.log(currentMachine)
   useEffect(() => {
     window.ipc.open((e) => {
       setCurrentNumber(0)
@@ -104,7 +103,13 @@ export default function App() {
       console.log(data)
     })
     window.ipc.updateData((e) => {
-      window.ipc.setCurrentData(machineToModel(currentMachine, states, transitions))
+      console.log('Creating Model!')
+      console.log('Current machine before creating model: ', currentMachine)
+      const model = machineToModel(currentMachine, states, transitions)
+      console.log('Created model: ', model)
+      const data = JSON.stringify(model)
+      console.log('Sending data to server: ', data)
+      window.ipc.setCurrentData(data)
     })
   }, [setCurrentNumber, currentMachine, states, transitions])
   // const dialog = window.require('electron').dialog

@@ -21,7 +21,10 @@ if (process.contextIsolated) {
         ipcRenderer.on('load', callback),
       updateData: (callback: (e: IpcRendererEvent) => void) =>
         ipcRenderer.on('updateData', callback),
-      setCurrentData: (data: object) => ipcRenderer.send('setCurrentData', data)
+      setCurrentData: (data: string) => {
+        console.log('Got data in preload: ', data)
+        ipcRenderer.send('setCurrentData', data)
+    }
     })
   } catch (error) {
     console.error(error)
