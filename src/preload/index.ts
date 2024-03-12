@@ -18,7 +18,10 @@ if (process.contextIsolated) {
       print: (message: string) => ipcRenderer.send('print', message),
       open: (callback: (e: IpcRendererEvent) => void) => ipcRenderer.on('open', callback),
       load: (callback: (e: IpcRendererEvent, data: string) => void) =>
-        ipcRenderer.on('load', callback)
+        ipcRenderer.on('load', callback),
+      updateData: (callback: (e: IpcRendererEvent) => void) =>
+        ipcRenderer.on('updateData', callback),
+      setCurrentData: (data: object) => ipcRenderer.send('setCurrentData', data)
     })
   } catch (error) {
     console.error(error)

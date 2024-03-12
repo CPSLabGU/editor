@@ -11,6 +11,7 @@ import './App.css'
 import CodeView from './views/CodeView'
 import Machine from './models/Machine'
 import Clock from './models/Clock'
+import { machineToModel } from './models/MachineModel'
 
 const initialStates: { [id: string]: StateInformation } = {}
 
@@ -102,7 +103,10 @@ export default function App() {
     window.ipc.load((e, data) => {
       console.log(data)
     })
-  }, [setCurrentNumber])
+    window.ipc.updateData((e) => {
+      window.ipc.setCurrentData(machineToModel(currentMachine, states, transitions))
+    })
+  }, [setCurrentNumber, currentMachine, states, transitions])
   // const dialog = window.require('electron').dialog
 
   // const showDevTools = useCallback((e: KeyboardEvent) => {

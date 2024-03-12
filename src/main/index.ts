@@ -14,6 +14,9 @@ import icon from '../../resources/icon.png?asset'
 import fs from 'fs'
 let number = 0
 
+let currentPath: string | undefined = undefined
+let currentData: object | undefined = undefined
+
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -27,36 +30,70 @@ function createWindow(): void {
       sandbox: false
     }
   })
-
+  let fileMenus = [
+    {
+      label: 'Open',
+      click: () => {
+        const filePath: string[] | undefined = dialog.showOpenDialogSync(mainWindow, {
+          properties: ['openFile'],
+          filters: [
+            { name: 'Machines', extensions: ['machine'] },
+            { name: 'All Files', extensions: ['*'] }
+          ]
+        })
+        if (!filePath || filePath.length < 1) {
+          console.log('Malformed file path detected.')
+          return
+        }
+        const fd = fs.openSync(filePath[0], 'r')
+        if (fd < 0) {
+          console.log('Failed to open file at path: ' + filePath[0])
+          return
+        }
+        const data = fs.readFileSync(fd, 'utf-8')
+        fs.closeSync(fd)
+        currentPath = filePath[0]
+        mainWindow.webContents.send('load', data)
+      }
+    }
+  ]
+  if (currentPath) {
+    fileMenus.push({
+      label: 'Save',
+      click: () => {
+        mainWindow.webContents.send('updateData')
+        if (currentData) {
+          saveMachine(currentData!, currentPath!)
+        } else {
+          console.log("Cannot find model in save function.")
+        }
+      }
+    })
+  }
+  fileMenus.push({
+    label: 'Save As',
+    click: () => {
+      mainWindow.webContents.send('updateData')
+      if (currentData) {
+        const filePath: string | undefined = dialog.showSaveDialogSync(mainWindow, {
+          properties: ['createDirectory'],
+          filters: [
+            { name: 'Machines', extensions: ['machine'] },
+            { name: 'All Files', extensions: ['*'] }
+          ]
+        })
+        if (filePath) {
+          saveMachine(currentData, filePath!)
+        }
+      } else {
+        console.log('Cannot find model in Save-As function.')
+      }
+    }
+  })
   const menu = Menu.buildFromTemplate([
     {
       label: 'File',
-      submenu: [
-        {
-          label: 'Open',
-          click: () => {
-            const filePath: string[] | undefined = dialog.showOpenDialogSync(mainWindow, {
-              properties: ['openFile'],
-              filters: [
-                { name: 'All Files', extensions: ['*'] },
-                { name: 'Text Files', extensions: ['txt'] }
-              ]
-            })
-            if (!filePath || filePath.length < 1) {
-              console.log('Malformed file path detected.')
-              return
-            }
-            const fd = fs.openSync(filePath[0], 'r')
-            if (fd < 0) {
-              console.log('Failed to open file at path: ' + filePath[0])
-              return
-            }
-            const data = fs.readFileSync(fd, 'utf-8')
-            fs.closeSync(fd)
-            mainWindow.webContents.send('load', data)
-          }
-        }
-      ]
+      submenu: fileMenus
     }
   ])
 
@@ -80,6 +117,9 @@ function createWindow(): void {
   }
   ipcMain.on('print', (event: IpcMainEvent, message: string) => {
     console.log(message)
+  })
+  ipcMain.on('setCurrentData', (event: IpcMainEvent, data: object) => {
+    currentData = data
   })
   mainWindow.webContents.openDevTools()
 }
@@ -122,6 +162,11 @@ app.on('window-all-closed', () => {
 
 function incrementNumber(): number {
   return ++number
+}
+
+// Data is the machine model, path is the file path to the machine folder.
+function saveMachine(data: object, path: string): void {
+  fs.writeFileSync(path + '/model.json', JSON.stringify(data))
 }
 
 // In this file you can include the rest of your app"s specific main process
