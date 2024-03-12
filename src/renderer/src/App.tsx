@@ -11,7 +11,7 @@ import './App.css'
 import CodeView from './views/CodeView'
 import Machine from './models/Machine'
 import Clock from './models/Clock'
-import { machineToModel } from './models/MachineModel'
+import { machineToModel, modelToMachine, MachineModel } from './models/MachineModel'
 
 const initialStates: { [id: string]: StateInformation } = {}
 
@@ -100,14 +100,29 @@ export default function App() {
       setCurrentNumber(0)
     })
     window.ipc.load((e, data) => {
-      console.log(data)
+      console.log('Reading model.')
+      const model: MachineModel = JSON.parse(data)
+      console.log('Read model ', model)
+      const { machine, states, transitions } = modelToMachine(model)
+      console.log('Created machine ', machine, states, transitions)
+      setStates(states)
+      setTransitions(transitions)
+      setCurrentMachine(machine)
     })
     window.ipc.updateData((e, saveAs) => {
       const model = machineToModel(currentMachine, states, transitions)
       const data = JSON.stringify(model)
       window.ipc.save(data, saveAs)
     })
-  }, [setCurrentNumber, currentMachine, states, transitions])
+  }, [
+    setCurrentNumber,
+    setStates,
+    setTransitions,
+    setCurrentMachine,
+    currentMachine,
+    states,
+    transitions
+  ])
   // const dialog = window.require('electron').dialog
 
   // const showDevTools = useCallback((e: KeyboardEvent) => {

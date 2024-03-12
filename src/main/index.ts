@@ -138,7 +138,7 @@ function generateFileMenus(mainWindow: BrowserWindow): void {
           console.log('Malformed file path detected.')
           return
         }
-        const fd = fs.openSync(filePath[0], 'r')
+        const fd = fs.openSync(filePath[0] + '/model.json', 'r')
         if (fd < 0) {
           console.log('Failed to open file at path: ' + filePath[0])
           return

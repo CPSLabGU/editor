@@ -4,6 +4,7 @@ import StateInformation from './StateInformation'
 import TransitionProperties from './TransitionProperties'
 import BezierPath from './BezierPath'
 import Clock from './Clock'
+import { v4 as uuidv4 } from 'uuid'
 
 class StateLayout {
   position: Point2D
@@ -159,6 +160,72 @@ function machineToModel(
   }
 }
 
+function modelToMachine(model: MachineModel): {
+  machine: Machine
+  states: { [id: string]: StateInformation }
+  transitions: { [id: string]: TransitionProperties }
+} {
+  const states: { [id: string]: StateInformation } = {}
+  const transitions: { [id: string]: TransitionProperties } = {}
+  model.states.forEach((stateModel) => {
+    const stateID = uuidv4()
+    const actions: { [action: string]: string } = {}
+    stateModel.actions.forEach((action) => {
+      actions[action.name] = action.code
+    })
+    const stateProperties = {
+      name: stateModel.name,
+      w: stateModel.layout.dimensions.x,
+      h: stateModel.layout.dimensions.y,
+      expanded: false,
+      transitions: [],
+      actions: actions,
+      variables: stateModel.variables,
+      externalVariables: stateModel.externalVariables
+    }
+    const information = {
+      id: stateID,
+      properties: stateProperties,
+      position: stateModel.layout.position
+    }
+    states[stateID] = information
+  })
+  model.transitions.forEach((transitionModel) => {
+    const id: string = uuidv4()
+    const sourceID = Object.keys(states).find(
+      (key) => states[key].properties.name == transitionModel.source
+    )!
+    const properties = {
+      source: sourceID,
+      target: Object.keys(states).find(
+        (key) => states[key].properties.name == transitionModel.target
+      )!,
+      condition: transitionModel.condition,
+      path: transitionModel.layout.path,
+      color: 'black'
+    }
+    transitions[id] = properties
+    states[sourceID].properties.transitions.push(id)
+  })
+  const machine = {
+    externalVariables: model.externalVariables,
+    machineVariables: model.machineVariables,
+    includes: model.includes,
+    initialState: Object.keys(states).find(
+      (id) => states[id].properties.name == model.initialState
+    )!,
+    suspendedState: Object.keys(states).find(
+      (id) => states[id].properties.name == model.suspendedState
+    ),
+    clocks: model.clocks
+  }
+  return {
+    machine: machine,
+    states: states,
+    transitions: transitions
+  }
+}
+
 export {
   MachineModel,
   StateModel,
@@ -166,5 +233,6 @@ export {
   StateLayout,
   TransitionLayout,
   ActionModel,
-  machineToModel
+  machineToModel,
+  modelToMachine
 }
