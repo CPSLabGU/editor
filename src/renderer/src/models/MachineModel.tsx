@@ -195,30 +195,28 @@ function modelToMachine(model: MachineModel): {
     const sourceID = Object.keys(states).find(
       (key) => states[key].properties.name == transitionModel.source
     )!
-    const properties = {
-      source: sourceID,
-      target: Object.keys(states).find(
-        (key) => states[key].properties.name == transitionModel.target
-      )!,
-      condition: transitionModel.condition,
-      path: transitionModel.layout.path,
-      color: 'black'
-    }
+    const properties: TransitionProperties = new TransitionProperties(
+      sourceID,
+      Object.keys(states).find((key) => states[key].properties.name == transitionModel.target)!,
+      transitionModel.condition,
+      transitionModel.layout.path,
+      'white'
+    )
     transitions[id] = properties
     states[sourceID].properties.transitions.push(id)
   })
-  const machine = {
-    externalVariables: model.externalVariables,
-    machineVariables: model.machineVariables,
-    includes: model.includes,
-    initialState: Object.keys(states).find(
+  const machine = new Machine(
+    model.externalVariables,
+    model.machineVariables,
+    model.includes,
+    Object.keys(states).find(
       (id) => states[id].properties.name == model.initialState
     )!,
-    suspendedState: Object.keys(states).find(
+    Object.keys(states).find(
       (id) => states[id].properties.name == model.suspendedState
     ),
-    clocks: model.clocks
-  }
+    model.clocks
+  )
   return {
     machine: machine,
     states: states,

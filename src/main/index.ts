@@ -128,7 +128,7 @@ function generateFileMenus(mainWindow: BrowserWindow): void {
       label: 'Open',
       click: () => {
         const filePath: string[] | undefined = dialog.showOpenDialogSync(mainWindow, {
-          properties: ['openDirectory'],
+          properties: ['openDirectory', 'openFile'],
           filters: [
             { name: 'Machines', extensions: ['machine'] },
             { name: 'All Files', extensions: ['*'] }

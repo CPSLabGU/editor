@@ -11,7 +11,7 @@ import './App.css'
 import CodeView from './views/CodeView'
 import Machine from './models/Machine'
 import Clock from './models/Clock'
-import { machineToModel, modelToMachine, MachineModel } from './models/MachineModel'
+import { MachineModel, StateModel, StateLayout, TransitionModel, TransitionLayout, ActionModel, machineToModel, modelToMachine } from './models/MachineModel'
 
 const initialStates: { [id: string]: StateInformation } = {}
 
@@ -101,10 +101,50 @@ export default function App() {
     // })
     window.ipc.load((e, data) => {
       console.log('Reading model.')
-      const model: MachineModel = JSON.parse(data)
+      const parsedModel = JSON.parse(data)
+      const model = new MachineModel(
+        parsedModel.states.map((state) => {
+          return new StateModel(
+            state.name,
+            state.variables,
+            state.externalVariables,
+            state.actions.map((action) => new ActionModel(action.name, action.code)),
+            new StateLayout(
+              new Point2D(state.layout.position.x, state.layout.position.y),
+              new Point2D(state.layout.dimensions.x, state.layout.dimensions.y)
+            )
+          )
+        }),
+        parsedModel.externalVariables,
+        parsedModel.machineVariables,
+        parsedModel.includes,
+        parsedModel.transitions.map((transition) => {
+          return new TransitionModel(
+            transition.source,
+            transition.target,
+            transition.condition,
+            new TransitionLayout(
+              new BezierPath(
+                new Point2D(transition.layout.path.source.x, transition.layout.path.source.y),
+                new Point2D(transition.layout.path.target.x, transition.layout.path.target.y),
+                new Point2D(transition.layout.path.control0.x, transition.layout.path.control0.y),
+                new Point2D(transition.layout.path.control1.x, transition.layout.path.control1.y)
+              )
+            )
+          )
+        }),
+        parsedModel.initialState,
+        parsedModel.suspendedState,
+        parsedModel.clocks.map((clock) => {
+          return new Clock(clock.name, clock.time)
+        })
+      )
       console.log('Read model ', model)
       const { machine, states, transitions } = modelToMachine(model)
       console.log('Created machine ', machine, states, transitions)
+      Object.values(transitions).forEach((t) => {
+        console.log(t.path.boundingBox);
+      });
       setStates(states)
       setTransitions(transitions)
       setCurrentMachine(machine)
