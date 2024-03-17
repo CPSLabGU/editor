@@ -121,7 +121,7 @@ export default function CanvasSidePanel({
                       machine.machineVariables,
                       machine.includes,
                       machine.initialState,
-                      undefined,
+                      machine.suspendedState,
                       clocks
                     )
                   )
