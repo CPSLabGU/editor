@@ -13,7 +13,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import fs from 'fs'
 const { exec } = require('node:child_process')
-let number = 0
+// let number = 0
 
 let currentPath: string | undefined = undefined
 
@@ -49,9 +49,9 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
-  ipcMain.on('print', (event: IpcMainEvent, message: string) => {
-    console.log(message)
-  })
+  // ipcMain.on('print', (event: IpcMainEvent, message: string) => {
+  //   console.log(message)
+  // })
   ipcMain.on('save', (event: IpcMainEvent, data: string, saveAs: boolean) => {
     if (!saveAs) {
       fs.writeFileSync(currentPath! + '/model.json', data)
@@ -95,7 +95,7 @@ app.whenReady().then(() => {
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
-  ipcMain.handle('testEvent', incrementNumber)
+  // ipcMain.handle('testEvent', incrementNumber)
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
@@ -118,9 +118,9 @@ app.on('window-all-closed', () => {
   }
 })
 
-function incrementNumber(): number {
-  return ++number
-}
+// function incrementNumber(): number {
+//   return ++number
+// }
 
 function generateFileMenus(mainWindow: BrowserWindow): void {
   const fileMenus = [

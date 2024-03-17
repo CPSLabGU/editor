@@ -94,11 +94,11 @@ export default function App() {
   const [transitions, setTransitions] = useState(initialTransitions)
   const [edittingState, setEdittingState] = useState<string | undefined>(undefined)
   const [currentMachine, setCurrentMachine] = useState(defaultMachine())
-  const [currentNumber, setCurrentNumber] = useState(0)
+  // const [currentNumber, setCurrentNumber] = useState(0)
   useEffect(() => {
-    window.ipc.open((e) => {
-      setCurrentNumber(0)
-    })
+    // window.ipc.open((e) => {
+    //   setCurrentNumber(0)
+    // })
     window.ipc.load((e, data) => {
       console.log('Reading model.')
       const model: MachineModel = JSON.parse(data)
@@ -115,7 +115,7 @@ export default function App() {
       window.ipc.save(data, saveAs)
     })
   }, [
-    setCurrentNumber,
+    // setCurrentNumber,
     setStates,
     setTransitions,
     setCurrentMachine,
@@ -130,11 +130,11 @@ export default function App() {
   //     remote.getCurrentWindow().toggleDevTools()
   //   }
   // }, []);
-  const showTest = async (): void => {
-    const number = await window.ipc.test()
-    setCurrentNumber(number)
-    window.ipc.print('Hello World!')
-  }
+  // const showTest = async (): void => {
+  //   const number = await window.ipc.test()
+  //   setCurrentNumber(number)
+  //   window.ipc.print('Hello World!')
+  // }
   const setStateName = useCallback(
     (id: string, name: string) => {
       const state = states[id]
@@ -207,7 +207,6 @@ export default function App() {
   if (edittingState !== undefined) {
     return (
       <>
-        <p onClick={showTest}>Current Number: {currentNumber}</p>
         <CodeView
           actions={states[edittingState].properties.actions}
           language="javascript"
@@ -233,7 +232,6 @@ export default function App() {
   } else {
     return (
       <>
-        <p onClick={showTest}>Current Number: {currentNumber}</p>
         <Canvas
           states={states}
           transitions={transitions}
