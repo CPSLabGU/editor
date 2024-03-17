@@ -145,8 +145,9 @@ function generateFileMenus(mainWindow: BrowserWindow): void {
         }
         const data = fs.readFileSync(fd, 'utf-8')
         fs.closeSync(fd)
-        currentPath = filePath[0]
         mainWindow.webContents.send('load', data)
+        currentPath = filePath[0]
+        generateFileMenus(mainWindow)
       }
     }
   ]
