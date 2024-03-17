@@ -136,7 +136,7 @@ export default function App() {
         parsedModel.initialState,
         parsedModel.suspendedState,
         parsedModel.clocks.map((clock) => {
-          return new Clock(clock.name, clock.time)
+          return new Clock(clock.name, clock.frequency)
         })
       )
       console.log('Read model ', model)
