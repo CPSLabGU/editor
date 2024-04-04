@@ -29,7 +29,7 @@ function TreeViewLabel({ item }: TreeViewLabelArgs): JSX.Element {
     (e) => {
       e.stopPropagation()
       e.preventDefault()
-      setSelected()
+      item.setSelected()
     },
     [item]
   )
@@ -41,7 +41,7 @@ function TreeViewLabel({ item }: TreeViewLabelArgs): JSX.Element {
     },
     [item]
   )
-  const classes = getSelected() ? 'selected' : ''
+  const classes = item.isSelected() ? 'selected' : ''
   return (
     <p className={classes} onClick={changeSelection} key={item.key}>
       <a onClick={changeExpanded}>&gt;</a>

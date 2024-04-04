@@ -22,7 +22,7 @@ export default function CanvasSwitcher({
 }: CanvasSwitcherArgs): JSX.Element {
   return (
     <_CanvasSwitcher
-      key="root"
+      keyName="root"
       item={root}
       getSelected={getSelected}
       setSelected={setSelected}
@@ -33,7 +33,7 @@ export default function CanvasSwitcher({
 }
 
 interface _CanvasSwitcherArgs {
-  key: string
+  keyName: string
   item: CanvasSwitcherItem
   getSelected: () => string | null
   setSelected: (key: string) => void
@@ -42,7 +42,7 @@ interface _CanvasSwitcherArgs {
 }
 
 function _CanvasSwitcher({
-  key,
+  keyName,
   item,
   getSelected,
   setSelected,
@@ -50,7 +50,7 @@ function _CanvasSwitcher({
   setExpanded,
 }: _CanvasSwitcherArgs): JSX.Element {
   const treeItem: TreeViewItem = item.treeViewItem(
-    key,
+    keyName,
     (key: string) => getSelected() === key,
     (key: string) => setSelected(key),
     (key: string) => getExpanded()[key] === true,
@@ -62,10 +62,12 @@ function _CanvasSwitcher({
   return (
     <div>
       <div className="left-panel">
-        <TreeView key={key} root={treeItem} />
+        <TreeView key={keyName} root={treeItem} />
       </div>
       <div className="right-panel">
-        {selectedView !== undefined && <LoadingView loadView={selectedView} />}
+        {selectedView !== undefined && (
+          <LoadingView keyName={selectedKey as string} loadView={selectedView} />
+        )}
       </div>
     </div>
   )
