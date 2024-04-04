@@ -7,6 +7,14 @@ export default class MachineReference {
   path: string
   mappings: { [id: string]: VariableMapping }
 
+  get toModel(): MachineReferenceModel {
+    return {
+      name: this.name,
+      path: this.path,
+      mappings: Object.values(this.mappings)
+    }
+  }
+
   constructor(name: string, path: string, mappings: { [id: string]: VariableMapping }) {
     this.name = name
     this.path = path

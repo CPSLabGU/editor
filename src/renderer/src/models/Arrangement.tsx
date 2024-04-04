@@ -2,6 +2,7 @@ import ArrangementModel from './ArrangementModel'
 import Clock from './Clock'
 import MachineReference from './MachineReference'
 import { v4 as uuidv4 } from 'uuid'
+import MachineReferenceModel from './MachineReferenceModel'
 
 export default class Arrangement {
   language: string
@@ -9,6 +10,17 @@ export default class Arrangement {
   externalVariables: string
   machines: { [id: string]: MachineReference }
   globalVariables: string
+
+  get toModel(): ArrangementModel {
+    return {
+      clocks: Object.values(this.clocks),
+      externalVariables: this.externalVariables,
+      machines: Object.values(this.machines).map(
+        (machine: MachineReference): MachineReferenceModel => machine.toModel
+      ),
+      globalVariables: this.globalVariables
+    }
+  }
 
   constructor(
     language: string,
@@ -27,7 +39,6 @@ export default class Arrangement {
   static fromData(data: string): Arrangement | null {
     function instanceOfArrangementModel(json: object): json is ArrangementModel {
       return (
-        'language' in json &&
         'clocks' in json &&
         'externalVariables' in json &&
         'machines' in json &&
@@ -37,6 +48,7 @@ export default class Arrangement {
       )
     }
     const json = JSON.parse(data)
+    console.log(json)
     if (!instanceOfArrangementModel(json)) return null
     const model = json as ArrangementModel
     return Arrangement.fromModel(model)

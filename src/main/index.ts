@@ -15,8 +15,6 @@ import fs from 'fs'
 const { exec } = require('node:child_process')
 // let number = 0
 
-let currentPath: string | undefined = undefined
-
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -31,7 +29,7 @@ function createWindow(): void {
     }
   })
 
-  generateFileMenus(mainWindow)
+  generateFileMenus(mainWindow, null, '')
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
@@ -52,29 +50,32 @@ function createWindow(): void {
   // ipcMain.on('print', (event: IpcMainEvent, message: string) => {
   //   console.log(message)
   // })
-  ipcMain.on('save', (event: IpcMainEvent, data: string, saveAs: boolean) => {
-    if (!saveAs) {
-      fs.writeFileSync(currentPath! + '/model.json', data)
+  ipcMain.on('save', (event: IpcMainEvent, path: string | null, data: string, type: string) => {
+    if (path) {
+      fs.writeFileSync(path + '/model.json', data)
       return
     }
+    const filters: Electron.FileFilter[] = []
+    if (type == 'arrangement') {
+      filters.push({ name: 'Arrangement', extensions: ['arrangement'] })
+    } else if (type == 'machine') {
+      filters.push({ name: 'Machines', extensions: ['machine'] })
+    }
+    filters.push({ name: 'All Files', extensions: ['*'] })
     const filePath: string | undefined = dialog.showSaveDialogSync(mainWindow, {
       properties: ['createDirectory'],
-      filters: [
-        { name: 'Machines', extensions: ['machine'] },
-        { name: 'All Files', extensions: ['*'] }
-      ]
+      filters: filters
     })
     if (filePath) {
-      if (!filePath.endsWith('.machine')) {
-        console.log('Incorrect file extension.')
+      if (!filePath.endsWith(`.${type}`)) {
+        console.error('Incorrect file extension.')
         return
       }
-      fs.mkdir(filePath, { recursive: true }, (err) => {
-        console.log("Couldn't create machine folder")
+      fs.mkdir(filePath, { recursive: true }, () => {
+        console.error(`Couldn't create ${type} folder`)
       })
-      fs.writeFile(filePath! + '/model.json', data, () => {
-        currentPath = filePath
-        generateFileMenus(mainWindow)
+      fs.writeFile(filePath + '/model.json', data, () => {
+        generateFileMenus(mainWindow, filePath, type)
         console.log('Finished writing model.')
       })
     }
@@ -122,54 +123,60 @@ app.on('window-all-closed', () => {
 //   return ++number
 // }
 
-function generateFileMenus(mainWindow: BrowserWindow): void {
+function generateFileMenus(mainWindow: BrowserWindow, path: string | null, type: string): void {
   const fileMenus = [
     {
       label: 'Open',
-      click: () => {
+      click: (): void => {
         const filePath: string[] | undefined = dialog.showOpenDialogSync(mainWindow, {
           properties: ['openDirectory', 'openFile'],
           filters: [
             { name: 'Machines', extensions: ['machine'] },
+            { name: 'Arrangements', extensions: ['arrangement'] },
             { name: 'All Files', extensions: ['*'] }
           ]
         })
         if (!filePath || filePath.length < 1) {
-          console.log('Malformed file path detected.')
+          console.error('Malformed file path detected.')
           return
+        }
+        let newType: string = ''
+        if (filePath[0].endsWith('.arrangement')) {
+          newType = 'arrangement'
+        } else if (filePath[0].endsWith('.machine')) {
+          newType = 'machine'
         }
         const fd = fs.openSync(filePath[0] + '/model.json', 'r')
         if (fd < 0) {
-          console.log('Failed to open file at path: ' + filePath[0])
+          console.error('Failed to open file at path: ' + filePath[0])
           return
         }
         const data = fs.readFileSync(fd, 'utf-8')
         fs.closeSync(fd)
-        mainWindow.webContents.send('load', data, filePath[0])
-        currentPath = filePath[0]
-        generateFileMenus(mainWindow)
+        mainWindow.webContents.send('load', data, filePath[0], newType)
+        generateFileMenus(mainWindow, filePath[0], newType)
       }
     }
   ]
-  if (currentPath) {
+  if (path) {
     fileMenus.push({
       label: 'Save',
       click: () => {
-        mainWindow.webContents.send('updateData', false)
+        mainWindow.webContents.send('updateData', path, type)
       }
     })
   }
   fileMenus.push({
     label: 'Save As',
     click: () => {
-      mainWindow.webContents.send('updateData', true)
+      mainWindow.webContents.send('updateData', null, type)
     }
   })
-  if (currentPath) {
+  if (path && type == 'machine') {
     fileMenus.push({
       label: 'Export to Machine',
       click: () => {
-        exec('llfsmgenerate model ' + currentPath!, (error, stdout, stderr) => {
+        exec('llfsmgenerate model ' + path, (error, stdout, stderr) => {
           if (error) {
             console.error(`exec error: ${error}`)
             return
@@ -182,7 +189,7 @@ function generateFileMenus(mainWindow: BrowserWindow): void {
     fileMenus.push({
       label: 'Generate VHDL',
       click: () => {
-        exec('llfsmgenerate vhdl ' + currentPath!, (error, stdout, stderr) => {
+        exec('llfsmgenerate vhdl ' + path, (error, stdout, stderr) => {
           if (error) {
             console.error(`exec error: ${error}`)
             return
@@ -195,17 +202,14 @@ function generateFileMenus(mainWindow: BrowserWindow): void {
     fileMenus.push({
       label: 'Create Kripke Structure Generator',
       click: () => {
-        exec(
-          'llfsmgenerate vhdl --include-kripke-structure ' + currentPath!,
-          (error, stdout, stderr) => {
-            if (error) {
-              console.error(`exec error: ${error}`)
-              return
-            }
-            console.log(`stdout: ${stdout}`)
-            console.error(`stderr: ${stderr}`)
+        exec('llfsmgenerate vhdl --include-kripke-structure ' + path, (error, stdout, stderr) => {
+          if (error) {
+            console.error(`exec error: ${error}`)
+            return
           }
-        )
+          console.log(`stdout: ${stdout}`)
+          console.error(`stderr: ${stderr}`)
+        })
       }
     })
   }

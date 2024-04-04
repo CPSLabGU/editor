@@ -89,15 +89,17 @@ export default class AppState {
     )
   }
 
-  get selectedMachineData(): string | undefined {
-    const selectedMachine = this.selected
-    if (!selectedMachine) return undefined
-    const machine = this.machines[selectedMachine]
-    const states = this.machineStates[selectedMachine]
-    const transitions = this.machineTransitions[selectedMachine]
+  get selectedData(): [string, string] | undefined {
+    const selectedID = this.selected
+    if (!selectedID) return undefined
+    const arrangement = this.arrangements[selectedID]
+    if (arrangement) return [JSON.stringify(arrangement.toModel), 'arrangement']
+    const machine = this.machines[selectedID]
+    const states = this.machineStates[selectedID]
+    const transitions = this.machineTransitions[selectedID]
     if (!machine || !states || !transitions) return undefined
     const model = machineToModel(machine, states, transitions)
-    return JSON.stringify(model)
+    return [JSON.stringify(model), 'machine']
   }
 
   get copy(): AppState {
@@ -153,6 +155,29 @@ export default class AppState {
 
   id(url: string): string | undefined {
     return this._ids[url]
+  }
+
+  loadRootArrangement(
+    data: string,
+    url: string,
+    setAppState: (newState: AppState) => void
+  ): AppState {
+    const arrangement = Arrangement.fromData(data)
+    if (!arrangement) return this
+    const newState = this.copy
+    const id = uuidv4()
+    newState._arrangements[id] = arrangement
+    newState._root = new CanvasSwitcherItem(
+      id,
+      url.split('/').pop()!.replace('.arrangement', ''),
+      [],
+      () => null
+    )
+    newState._allowSidePanelTogglingVisibility = true
+    newState._sidePanelVisible = true
+    newState._selected = id
+    newState.updateArrangementView(id, setAppState)
+    return newState
   }
 
   loadRootMachine(data: string, url: string, setAppState: (newState: AppState) => void): AppState {

@@ -17,11 +17,12 @@ if (process.contextIsolated) {
       // test: () => ipcRenderer.invoke('testEvent'),
       // print: (message: string) => ipcRenderer.send('print', message),
       open: (callback: (e: IpcRendererEvent) => void) => ipcRenderer.on('open', callback),
-      load: (callback: (e: IpcRendererEvent, data: string, url: string) => void) =>
+      load: (callback: (e: IpcRendererEvent, data: string, url: string, type: string) => void) =>
         ipcRenderer.on('load', callback),
-      updateData: (callback: (e: IpcRendererEvent, saveAs: boolean) => void) =>
+      updateData: (callback: (e: IpcRendererEvent, path: string | null, type: string) => void) =>
         ipcRenderer.on('updateData', callback),
-      save: (data: string, saveAs: boolean) => ipcRenderer.send('save', data, saveAs)
+      save: (path: string | null, data: string, type: string) =>
+        ipcRenderer.send('save', path, data, type)
     })
   } catch (error) {
     console.error(error)
