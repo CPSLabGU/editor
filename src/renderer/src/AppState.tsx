@@ -236,9 +236,13 @@ export default class AppState {
     return newState
   }
 
-  setMachineEdittingState(edittingState: MachineData<string | undefined>): AppState {
+  setMachineEdittingState(
+    edittingState: MachineData<string | undefined>,
+    setAppState: (newState: AppState) => void
+  ): AppState {
     const newState = this.copy
     newState._machineEdittingState = edittingState
+    newState.updateAllMachineViews(setAppState)
     return newState
   }
 
