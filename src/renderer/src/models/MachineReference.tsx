@@ -1,4 +1,6 @@
+import MachineReferenceModel from './MachineReferenceModel'
 import VariableMapping from './VariableMapping'
+import { v4 as uuidv4 } from 'uuid'
 
 export default class MachineReference {
   name: string
@@ -9,5 +11,13 @@ export default class MachineReference {
     this.name = name
     this.path = path
     this.mappings = mappings
+  }
+
+  static fromModel(model: MachineReferenceModel): MachineReference {
+    return new MachineReference(
+      model.name,
+      model.path,
+      model.mappings.reduce((mappings, mapping) => ({ ...mappings, [uuidv4()]: mapping }), {})
+    )
   }
 }
