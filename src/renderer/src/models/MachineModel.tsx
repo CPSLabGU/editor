@@ -250,12 +250,8 @@ function modelToMachine(model: MachineModel): {
     model.externalVariables,
     model.machineVariables,
     model.includes,
-    Object.keys(states).find(
-      (id) => states[id].properties.name == model.initialState
-    )!,
-    Object.keys(states).find(
-      (id) => states[id].properties.name == model.suspendedState
-    ),
+    Object.keys(states).find((id) => states[id].properties.name == model.initialState)!,
+    Object.keys(states).find((id) => states[id].properties.name == model.suspendedState),
     model.clocks
   )
   return {

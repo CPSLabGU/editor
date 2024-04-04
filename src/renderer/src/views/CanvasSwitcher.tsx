@@ -4,7 +4,7 @@ import TreeView from './TreeView'
 import TreeViewItem from '@renderer/models/TreeViewItem'
 import '../styles/CanvasSwitcher.css'
 
-type ItemDictionary<T> = { [key: string]: T }
+export type ItemDictionary<T> = { [key: string]: T }
 
 interface CanvasSwitcherArgs {
   root: CanvasSwitcherItem
@@ -23,7 +23,6 @@ export default function CanvasSwitcher({
 }: CanvasSwitcherArgs): JSX.Element {
   return (
     <_CanvasSwitcher
-      keyName="root"
       item={root}
       getSelected={getSelected}
       setSelected={setSelected}
@@ -34,7 +33,6 @@ export default function CanvasSwitcher({
 }
 
 interface _CanvasSwitcherArgs {
-  keyName: string
   item: CanvasSwitcherItem
   getSelected: () => string | null
   setSelected: (key: string) => void
@@ -43,7 +41,6 @@ interface _CanvasSwitcherArgs {
 }
 
 function _CanvasSwitcher({
-  keyName,
   item,
   getSelected,
   setSelected,
@@ -51,7 +48,6 @@ function _CanvasSwitcher({
   setExpanded
 }: _CanvasSwitcherArgs): JSX.Element {
   const treeItem: TreeViewItem = item.treeViewItem(
-    keyName,
     (key: string) => getSelected() === key,
     (key: string) => setSelected(key),
     (key: string) => getExpanded()[key] === true,
@@ -63,7 +59,7 @@ function _CanvasSwitcher({
   return (
     <div className="canvas-switcher">
       <div className="left-panel">
-        <TreeView key={keyName} root={treeItem} />
+        <TreeView root={treeItem} />
       </div>
       <div className="right-panel">
         {selectedView !== undefined && (

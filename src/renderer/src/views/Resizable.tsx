@@ -119,7 +119,10 @@ function Resizable({ dimensions, setDimensions, position, children }) {
       }
       const tempW = dw + _dimensions.dimensions.x
       const tempH = dh + _dimensions.dimensions.y
-      let newW = Math.max(Math.min(tempW, _dimensions.maxDimensions.x), _dimensions.minDimensions.x)
+      const newW = Math.max(
+        Math.min(tempW, _dimensions.maxDimensions.x),
+        _dimensions.minDimensions.x
+      )
       const newH = Math.max(
         Math.min(tempH, _dimensions.maxDimensions.y),
         _dimensions.minDimensions.y

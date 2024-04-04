@@ -76,7 +76,7 @@ function createWindow(): void {
         currentPath = filePath
         generateFileMenus(mainWindow)
         console.log('Finished writing model.')
-    })
+      })
     }
   })
   mainWindow.webContents.openDevTools()
@@ -145,7 +145,7 @@ function generateFileMenus(mainWindow: BrowserWindow): void {
         }
         const data = fs.readFileSync(fd, 'utf-8')
         fs.closeSync(fd)
-        mainWindow.webContents.send('load', data)
+        mainWindow.webContents.send('load', data, filePath[0])
         currentPath = filePath[0]
         generateFileMenus(mainWindow)
       }
@@ -204,7 +204,8 @@ function generateFileMenus(mainWindow: BrowserWindow): void {
             }
             console.log(`stdout: ${stdout}`)
             console.error(`stderr: ${stderr}`)
-        })
+          }
+        )
       }
     })
   }

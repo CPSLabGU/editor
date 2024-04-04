@@ -3,11 +3,9 @@
 import StateInformation from '../models/StateInformation'
 import TransitionProperties from '../models/TransitionProperties'
 import Canvas from '../views/Canvas'
-import { useCallback, useEffect } from 'react'
-import './App.css'
+import { useCallback } from 'react'
 import CodeView from './CodeView'
 import Machine from '../models/Machine'
-import { MachineModel, machineToModel, modelToMachine } from '../models/MachineModel'
 
 export type StateDictionary = { [id: string]: StateInformation }
 
@@ -34,23 +32,6 @@ export default function MachineView({
   machine,
   setMachine
 }: MachineViewArgs): JSX.Element {
-  useEffect(() => {
-    // window.ipc.open((e) => {
-    //   setCurrentNumber(0)
-    // })
-    window.ipc.load((e, data) => {
-      const model = MachineModel.fromData(data)
-      const { machine, states, transitions } = modelToMachine(model)
-      setStates(() => states)
-      setTransitions(() => transitions)
-      setMachine(machine)
-    })
-    window.ipc.updateData((e, saveAs) => {
-      const model = machineToModel(machine, states, transitions)
-      const data = JSON.stringify(model)
-      window.ipc.save(data, saveAs)
-    })
-  }, [setStates, setTransitions, setMachine, machine, states, transitions])
   const setStateName = useCallback(
     (id: string, name: string) => {
       const state = states[id]
