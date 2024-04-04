@@ -1,4 +1,5 @@
 import CanvasSwitcherItem from '../models/CanvasSwitchItem'
+import LoadingView from './LoadingView'
 import TreeView from './TreeView'
 import TreeViewItem from '@renderer/models/TreeViewItem'
 
@@ -65,7 +66,9 @@ function _CanvasSwitcher({
       <div className="left-panel">
         <TreeView key={key} root={treeItem} />
       </div>
-      <div className="right-panel">{getSelected() !== null && <div>{key}</div>}</div>
+      <div className="right-panel">
+        {getSelected() !== null && <LoadingView loadView={() => itemView(key)} />}
+      </div>
     </div>
   )
 }
