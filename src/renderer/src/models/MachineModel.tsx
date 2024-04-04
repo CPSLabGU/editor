@@ -50,6 +50,47 @@ class MachineModel {
     this.suspendedState = suspendedState
     this.clocks = clocks
   }
+  static fromData(data: string): MachineModel {
+    const parsedModel = JSON.parse(data)
+    const model = new MachineModel(
+      parsedModel.states.map((state) => {
+        return new StateModel(
+          state.name,
+          state.variables,
+          state.externalVariables,
+          state.actions.map((action) => new ActionModel(action.name, action.code)),
+          new StateLayout(
+            new Point2D(state.layout.position.x, state.layout.position.y),
+            new Point2D(state.layout.dimensions.x, state.layout.dimensions.y)
+          )
+        )
+      }),
+      parsedModel.externalVariables,
+      parsedModel.machineVariables,
+      parsedModel.includes,
+      parsedModel.transitions.map((transition) => {
+        return new TransitionModel(
+          transition.source,
+          transition.target,
+          transition.condition,
+          new TransitionLayout(
+            new BezierPath(
+              new Point2D(transition.layout.path.source.x, transition.layout.path.source.y),
+              new Point2D(transition.layout.path.target.x, transition.layout.path.target.y),
+              new Point2D(transition.layout.path.control0.x, transition.layout.path.control0.y),
+              new Point2D(transition.layout.path.control1.x, transition.layout.path.control1.y)
+            )
+          )
+        )
+      }),
+      parsedModel.initialState,
+      parsedModel.suspendedState,
+      parsedModel.clocks.map((clock) => {
+        return new Clock(clock.name, clock.frequency)
+      })
+    )
+    return model
+  }
 }
 
 class StateModel {
