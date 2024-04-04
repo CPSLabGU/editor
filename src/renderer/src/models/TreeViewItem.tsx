@@ -3,7 +3,7 @@ export default class TreeViewItem {
   title: string
   children: TreeViewItem[]
   isSelected: () => boolean
-  setSelected: (selected: boolean) => void
+  setSelected: () => void
   isExpanded: () => boolean
   setExpanded: (expanded: boolean) => void
   constructor(
@@ -11,7 +11,7 @@ export default class TreeViewItem {
     title: string,
     children: TreeViewItem[],
     isSelected: () => boolean,
-    setSelected: (selected: boolean) => void,
+    setSelected: () => void,
     isExpanded: () => boolean,
     setExpanded: (expanded: boolean) => void
   ) {

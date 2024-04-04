@@ -29,7 +29,7 @@ function TreeViewLabel({ item }: TreeViewLabelArgs): JSX.Element {
     (e) => {
       e.stopPropagation()
       e.preventDefault()
-      setSelected(true)
+      setSelected()
     },
     [item]
   )
