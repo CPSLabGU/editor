@@ -10,6 +10,15 @@ export default class CanvasSwitcherItem {
     this.view = view
   }
 
+  findChild(key: string): CanvasSwitcherItem | null {
+    const path = key.split(',')
+    if (path.length == 0) return null
+    if (path.length == 1) return this
+    const index = Number(path[1])
+    if (this.children.length <= index) return null
+    return this.children[index].findChild(path.slice(2).join(','))
+  }
+
   treeViewItem(
     key: string,
     isSelected: (key: string) => boolean,
@@ -18,7 +27,7 @@ export default class CanvasSwitcherItem {
     setExpanded: (key: string, expanded: boolean) => void
   ): TreeViewItem {
     const childItems = this.children.map((child, index) => {
-      return child.treeViewItem(`${key}-${index}`, isSelected, setSelected, isExpanded, setExpanded)
+      return child.treeViewItem(`${key},${index}`, isSelected, setSelected, isExpanded, setExpanded)
     })
     const item = new TreeViewItem(
       key,

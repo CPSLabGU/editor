@@ -1,3 +1,4 @@
+import { useCallback, useState } from 'react'
 import CanvasSwitcherItem from '../models/CanvasSwitchItem'
 import LoadingView from './LoadingView'
 import TreeView from './TreeView'
@@ -7,7 +8,6 @@ type ItemDictionary<T> = { [key: string]: T }
 
 interface CanvasSwitcherArgs {
   root: CanvasSwitcherItem
-  itemView: (key: string) => Promise<JSX.Element>
   getSelected: () => string | null
   setSelected: (key: string) => void
   getExpanded: () => ItemDictionary<boolean>
@@ -16,12 +16,28 @@ interface CanvasSwitcherArgs {
 
 export default function CanvasSwitcher({
   root,
-  itemView,
   getSelected,
   setSelected,
   getExpanded,
   setExpanded,
 }: CanvasSwitcherArgs): JSX.Element {
+  const [itemViews, setItemViews] = useState<{ [key: string]: () => Promise<JSX.Element> }>({})
+  const itemView = useCallback(
+    (key: string): Promise<JSX.Element> => {
+      if (itemViews[key]) return itemViews[key]()
+      const item = root.findChild(key)
+      if (!item) {
+        return new Promise(() => {
+          throw new Error('Unable to load view.')
+        })
+      } else {
+        const view = item.view
+        setItemViews({ ...itemViews, [key]: view })
+        return view()
+      }
+    },
+    [itemViews, setItemViews, root]
+  );
   return (
     <_CanvasSwitcher
       key="root"
