@@ -54,7 +54,7 @@ function _CanvasSwitcher({
     (key: string, expanded: boolean) => setExpanded({ ...getExpanded(), [key]: expanded })
   )
   const selectedKey = getSelected()
-  const selectedView: (() => Promise<JSX.Element>) | undefined =
+  const selectedView: (() => JSX.Element | null) | undefined =
     selectedKey !== null ? item.findChild(selectedKey)?.view : undefined
   return (
     <div className="canvas-switcher">
@@ -62,9 +62,7 @@ function _CanvasSwitcher({
         <TreeView root={treeItem} />
       </div>
       <div className="right-panel">
-        {selectedView !== undefined && (
-          <LoadingView keyName={selectedKey as string} loadView={selectedView} />
-        )}
+        {selectedView !== undefined && <LoadingView subView={selectedView} />}
       </div>
       <div className="end-switcher"></div>
     </div>

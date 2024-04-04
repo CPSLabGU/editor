@@ -4,12 +4,12 @@ export default class CanvasSwitcherItem {
   id: string
   title: string
   children: CanvasSwitcherItem[]
-  view: () => Promise<JSX.Element>
+  view: () => JSX.Element | null
   constructor(
     id: string,
     title: string,
     children: CanvasSwitcherItem[],
-    view: () => Promise<JSX.Element>
+    view: () => JSX.Element | null
   ) {
     this.id = id
     this.title = title

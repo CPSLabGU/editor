@@ -31,58 +31,40 @@ export default function App(): JSX.Element {
 
   const updateMachineView = useCallback(
     (id: string): void => {
-      if (
-        !machineStates[id] ||
-        !machineTransitions[id] ||
-        !machineEdittingState[id] ||
-        !machines[id]
-      ) {
-        return <div></div>
+      if (!machineStates[id] || !machineTransitions[id] || !machines[id]) {
+        return
       }
-      const machineView = new Promise((resolve) => {
-        const view = MachineView(
-          machineStates[id],
-          (setter: (states: StateDictionary) => StateDictionary) => {
-            const newMachineStates = { ...machineStates }
-            newMachineStates[id] = setter(newMachineStates[id])
-            setMachineStates(newMachineStates)
-          },
-          machineTransitions[id],
-          (setter: (transition: TransitionDictionary) => TransitionDictionary) => {
-            const newMachineTransitions = { ...machineTransitions }
-            newMachineTransitions[id] = setter(newMachineTransitions[id])
-            setMachineTransitions(newMachineTransitions)
-          },
-          machineEdittingState[id],
-          (stateID: string | undefined) =>
-            setMachineEdittingState((currentEdittingState) => {
-              const newEdittingState = { ...currentEdittingState }
-              newEdittingState[id] = stateID
-              return newEdittingState
-            }),
-          machines[id],
-          (newMachine: Machine) => setMachines((machines) => ({ ...machines, [id]: newMachine }))
-        )
-        resolve(view)
-      })
+      const machineView = () => MachineView(
+        machineStates[id],
+        (setter: (states: StateDictionary) => StateDictionary) => {
+          const newMachineStates = { ...machineStates }
+          newMachineStates[id] = setter(newMachineStates[id])
+          setMachineStates(newMachineStates)
+        },
+        machineTransitions[id],
+        (setter: (transition: TransitionDictionary) => TransitionDictionary) => {
+          const newMachineTransitions = { ...machineTransitions }
+          newMachineTransitions[id] = setter(newMachineTransitions[id])
+          setMachineTransitions(newMachineTransitions)
+        },
+        machineEdittingState[id],
+        (stateID: string | undefined) =>
+          setMachineEdittingState((currentEdittingState) => {
+            const newEdittingState = { ...currentEdittingState }
+            newEdittingState[id] = stateID
+            return newEdittingState
+          }),
+        machines[id],
+        (newMachine: Machine) => setMachines((machines) => ({ ...machines, [id]: newMachine }))
+      )
       const item = root?.findChild(id)
       if (!item) return
       if (root?.id == id) {
-        const newRoot = new CanvasSwitcherItem(
-          root.id,
-          root.title,
-          root.children,
-          () => machineView
-        )
+        const newRoot = new CanvasSwitcherItem(root.id, root.title, root.children, machineView)
         setRoot(newRoot)
       } else {
         const newRoot = new CanvasSwitcherItem(root.id, root.title, root.children, root.view)
-        const newItem = new CanvasSwitcherItem(
-          item.id,
-          item.title,
-          item.children,
-          () => machineView
-        )
+        const newItem = new CanvasSwitcherItem(item.id, item.title, item.children, machineView)
         newRoot.replaceChild(id, newItem)
         setRoot(newRoot)
       }
@@ -91,7 +73,7 @@ export default function App(): JSX.Element {
   )
 
   useEffect(() => {
-    for (const id in Object.keys(machines)) {
+    for (const id in machines) {
       updateMachineView(id)
     }
   }, [updateMachineView, machineStates, machineTransitions, machineEdittingState, machines])
@@ -120,11 +102,7 @@ export default function App(): JSX.Element {
         newMachines[id] = machine
         return newMachines
       })
-      setRoot(
-        new CanvasSwitcherItem(id, 'machine', [], () => {
-          return new Promise((resolve) => resolve(<div></div>))
-        })
-      )
+      setRoot(new CanvasSwitcherItem(id, 'machine', [], () => null))
     })
     window.ipc.updateData((e, saveAs) => {
       const model = machineToModel(machine, states, transitions)
