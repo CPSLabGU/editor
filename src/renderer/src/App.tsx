@@ -28,6 +28,8 @@ export default function App(): JSX.Element {
   const [root, setRoot] = useState<CanvasSwitcherItem | null>(null)
   const [selected, setSelected] = useState<string | null>(null)
   const [expanded, setExpanded] = useState<ItemDictionary<boolean>>({})
+  const [sidePanelVisible, setSidePanelVisible] = useState(false)
+  const [allowSidePanelTogglingVisiblity, setAllowSidePanelTogglingVisiblity] = useState(false)
 
   const updateMachineView = useCallback(
     (id: string): void => {
@@ -54,9 +56,12 @@ export default function App(): JSX.Element {
               const newEdittingState = { ...currentEdittingState }
               newEdittingState[id] = stateID
               return newEdittingState
-            })}
+            })
+          }
           machine={machines[id]}
-          setMachine={(newMachine: Machine) => setMachines((machines) => ({ ...machines, [id]: newMachine }))}
+          setMachine={(newMachine: Machine) =>
+            setMachines((machines) => ({ ...machines, [id]: newMachine }))
+          }
         />
       )
       const item = root?.findChild(id)
@@ -105,6 +110,9 @@ export default function App(): JSX.Element {
         return newMachines
       })
       setRoot(new CanvasSwitcherItem(id, 'machine', [], () => null))
+      setSelected(id)
+      setAllowSidePanelTogglingVisiblity(false)
+      setSidePanelVisible(false)
     })
     window.ipc.updateData((e, saveAs) => {
       const model = machineToModel(machine, states, transitions)
@@ -112,19 +120,23 @@ export default function App(): JSX.Element {
       window.ipc.save(data, saveAs)
     })
   }, [
-    machineStates,
-    machineTransitions,
-    machines,
     setMachineStates,
     setMachineTransitions,
-    setMachines
+    setMachines,
+    setRoot,
+    setSelected,
+    setAllowSidePanelTogglingVisiblity,
+    setSidePanelVisible
   ])
   if (!root) {
     return <div></div>
   } else {
     return (
       <CanvasSwitcher
-        root={root}
+        item={root}
+        allowTogglingVisibilty={allowSidePanelTogglingVisiblity}
+        sidePanelVisible={sidePanelVisible}
+        setSidePanelVisible={setSidePanelVisible}
         getSelected={() => selected}
         setSelected={setSelected}
         getExpanded={() => expanded}

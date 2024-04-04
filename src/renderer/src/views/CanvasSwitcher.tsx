@@ -3,11 +3,16 @@ import LoadingView from './LoadingView'
 import TreeView from './TreeView'
 import TreeViewItem from '@renderer/models/TreeViewItem'
 import '../styles/CanvasSwitcher.css'
+import PanelIcon from './PanelIcon'
+import HiddenView from './HiddenView'
 
 export type ItemDictionary<T> = { [key: string]: T }
 
 interface CanvasSwitcherArgs {
-  root: CanvasSwitcherItem
+  item: CanvasSwitcherItem
+  allowTogglingVisibilty: boolean
+  sidePanelVisible: boolean
+  setSidePanelVisible: (visible: boolean) => void
   getSelected: () => string | null
   setSelected: (key: string) => void
   getExpanded: () => ItemDictionary<boolean>
@@ -15,38 +20,15 @@ interface CanvasSwitcherArgs {
 }
 
 export default function CanvasSwitcher({
-  root,
+  item,
+  allowTogglingVisibilty,
+  sidePanelVisible,
+  setSidePanelVisible,
   getSelected,
   setSelected,
   getExpanded,
   setExpanded
 }: CanvasSwitcherArgs): JSX.Element {
-  return (
-    <_CanvasSwitcher
-      item={root}
-      getSelected={getSelected}
-      setSelected={setSelected}
-      getExpanded={getExpanded}
-      setExpanded={setExpanded}
-    />
-  )
-}
-
-interface _CanvasSwitcherArgs {
-  item: CanvasSwitcherItem
-  getSelected: () => string | null
-  setSelected: (key: string) => void
-  getExpanded: () => ItemDictionary<boolean>
-  setExpanded: (dictionary: ItemDictionary<boolean>) => void
-}
-
-function _CanvasSwitcher({
-  item,
-  getSelected,
-  setSelected,
-  getExpanded,
-  setExpanded
-}: _CanvasSwitcherArgs): JSX.Element {
   const treeItem: TreeViewItem = item.treeViewItem(
     (key: string) => getSelected() === key,
     (key: string) => setSelected(key),
@@ -56,11 +38,36 @@ function _CanvasSwitcher({
   const selectedKey = getSelected()
   const selectedView: (() => JSX.Element | null) | undefined =
     selectedKey !== null ? item.findChild(selectedKey)?.view : undefined
+  console.log(sidePanelVisible)
   return (
     <div className="canvas-switcher">
-      <div className="left-panel">
-        <TreeView root={treeItem} />
-      </div>
+      <HiddenView hidden={sidePanelVisible}>
+        <HiddenView hidden={!allowTogglingVisibilty}>
+          <div className="left-panel">
+            <div
+              className="canvas-switcher-visible-button"
+              onClick={() => setSidePanelVisible(!sidePanelVisible)}
+            >
+              <PanelIcon />
+            </div>
+          </div>
+        </HiddenView>
+      </HiddenView>
+      <HiddenView hidden={!sidePanelVisible}>
+        <div className="left-panel">
+          <div>
+            <HiddenView hidden={!allowTogglingVisibilty}>
+              <div
+                className="canvas-switcher-visible-button"
+                onClick={() => setSidePanelVisible(!sidePanelVisible)}
+              >
+                <PanelIcon />
+              </div>
+            </HiddenView>
+            <TreeView root={treeItem} />
+          </div>
+        </div>
+      </HiddenView>
       <div className="right-panel">
         {selectedView !== undefined && <LoadingView subView={selectedView} />}
       </div>

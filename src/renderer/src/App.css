@@ -45,14 +45,14 @@
 }
 
 .canvas-switcher .left-panel {
-  width: 20%;
+  width: 100%;
   height: 100%;
 }
 
 .canvas-switcher .right-panel {
-  width: 80%;
-  height: 100%;
   position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .canvas-switcher .cavas {

@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import HiddenView from './HiddenView'
-import PanelIcon from './PanelICon'
+import PanelIcon from './PanelIcon'
 import SidePanel from './SidePanel'
 import '../styles/CanvasSidePanel.css'
 import { useState } from 'react'
