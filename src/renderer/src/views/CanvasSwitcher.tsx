@@ -38,7 +38,6 @@ export default function CanvasSwitcher({
   const selectedKey = getSelected()
   const selectedView: (() => JSX.Element | null) | undefined =
     selectedKey !== null ? item.findChild(selectedKey)?.view : undefined
-  console.log(sidePanelVisible)
   return (
     <div className="canvas-switcher">
       <HiddenView hidden={sidePanelVisible}>
