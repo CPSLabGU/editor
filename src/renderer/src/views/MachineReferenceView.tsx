@@ -55,14 +55,19 @@ export default function MachineReferenceView({
     )
   }
   return (
-    <div className="flex-row">
-      <div className="flex-element">
-        <input type="text" onChange={changeName} value={machineReference.name} />
-      </div>
-      <div>
-        <button className="remove-suspension" onClick={deleteMachineReference}>
-          Delete instance {machineReference.name}
-        </button>
+    <div>
+      <div className="flex-row">
+        <div className="flex-element">
+          <h3>Name</h3>
+          <div>
+            <input type="text" onChange={changeName} value={machineReference.name} />
+          </div>
+        </div>
+        <div>
+          <button className="remove-suspension" onClick={deleteMachineReference}>
+            Delete instance {machineReference.name}
+          </button>
+        </div>
       </div>
       <div>{mappingViews}</div>
     </div>

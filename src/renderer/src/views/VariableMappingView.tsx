@@ -30,10 +30,16 @@ export default function VariableMappingView({
   return (
     <div className="flex-row">
       <div className="flex-element">
-        <input type="text" onChange={changeSource} value={mapping.source} />
+        <h3>Source</h3>
+        <div>
+          <input type="text" onChange={changeSource} value={mapping.source} />
+        </div>
       </div>
       <div className="flex-element">
-        <input type="text" onChange={changeDestination} value={mapping.destination} />
+        <h3>Destination</h3>
+        <div>
+          <input type="text" onChange={changeDestination} value={mapping.destination} />
+        </div>
       </div>
     </div>
   )
