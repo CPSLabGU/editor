@@ -1,0 +1,11 @@
+.left-panel {
+  float: left;
+}
+
+.right-panel {
+  float: right;
+}
+
+.end-switcher {
+  clear: both;
+}

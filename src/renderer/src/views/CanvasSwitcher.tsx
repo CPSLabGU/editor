@@ -2,6 +2,7 @@ import CanvasSwitcherItem from '../models/CanvasSwitchItem'
 import LoadingView from './LoadingView'
 import TreeView from './TreeView'
 import TreeViewItem from '@renderer/models/TreeViewItem'
+import '../styles/CanvasSwitcher.css'
 
 type ItemDictionary<T> = { [key: string]: T }
 
@@ -18,7 +19,7 @@ export default function CanvasSwitcher({
   getSelected,
   setSelected,
   getExpanded,
-  setExpanded,
+  setExpanded
 }: CanvasSwitcherArgs): JSX.Element {
   return (
     <_CanvasSwitcher
@@ -47,7 +48,7 @@ function _CanvasSwitcher({
   getSelected,
   setSelected,
   getExpanded,
-  setExpanded,
+  setExpanded
 }: _CanvasSwitcherArgs): JSX.Element {
   const treeItem: TreeViewItem = item.treeViewItem(
     keyName,
@@ -60,7 +61,7 @@ function _CanvasSwitcher({
   const selectedView: (() => Promise<JSX.Element>) | undefined =
     selectedKey !== null ? item.findChild(selectedKey)?.view : undefined
   return (
-    <div>
+    <div className="canvas-switcher">
       <div className="left-panel">
         <TreeView key={keyName} root={treeItem} />
       </div>
@@ -69,6 +70,7 @@ function _CanvasSwitcher({
           <LoadingView keyName={selectedKey as string} loadView={selectedView} />
         )}
       </div>
+      <div className="end-switcher"></div>
     </div>
   )
 }
