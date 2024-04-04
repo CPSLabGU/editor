@@ -34,28 +34,30 @@ export default function App(): JSX.Element {
       if (!machineStates[id] || !machineTransitions[id] || !machines[id]) {
         return
       }
-      const machineView = () => MachineView(
-        machineStates[id],
-        (setter: (states: StateDictionary) => StateDictionary) => {
-          const newMachineStates = { ...machineStates }
-          newMachineStates[id] = setter(newMachineStates[id])
-          setMachineStates(newMachineStates)
-        },
-        machineTransitions[id],
-        (setter: (transition: TransitionDictionary) => TransitionDictionary) => {
-          const newMachineTransitions = { ...machineTransitions }
-          newMachineTransitions[id] = setter(newMachineTransitions[id])
-          setMachineTransitions(newMachineTransitions)
-        },
-        machineEdittingState[id],
-        (stateID: string | undefined) =>
-          setMachineEdittingState((currentEdittingState) => {
-            const newEdittingState = { ...currentEdittingState }
-            newEdittingState[id] = stateID
-            return newEdittingState
-          }),
-        machines[id],
-        (newMachine: Machine) => setMachines((machines) => ({ ...machines, [id]: newMachine }))
+      const machineView = (): MachineView => (
+        <MachineView
+          states={machineStates[id]}
+          setStates={(setter: (states: StateDictionary) => StateDictionary) => {
+            const newMachineStates = { ...machineStates }
+            newMachineStates[id] = setter(newMachineStates[id])
+            setMachineStates(newMachineStates)
+          }}
+          transitions={machineTransitions[id]}
+          setTransitions={(setter: (transition: TransitionDictionary) => TransitionDictionary) => {
+            const newMachineTransitions = { ...machineTransitions }
+            newMachineTransitions[id] = setter(newMachineTransitions[id])
+            setMachineTransitions(newMachineTransitions)
+          }}
+          edittingState={machineEdittingState[id]}
+          setEdittingState={(stateID: string | undefined) =>
+            setMachineEdittingState((currentEdittingState) => {
+              const newEdittingState = { ...currentEdittingState }
+              newEdittingState[id] = stateID
+              return newEdittingState
+            })}
+          machine={machines[id]}
+          setMachine={(newMachine: Machine) => setMachines((machines) => ({ ...machines, [id]: newMachine }))}
+        />
       )
       const item = root?.findChild(id)
       if (!item) return
