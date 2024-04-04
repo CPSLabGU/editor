@@ -164,13 +164,22 @@ export default class AppState {
   ): AppState {
     const arrangement = Arrangement.fromData(data)
     if (!arrangement) return this
-    const newState = this.copy
+    const newState = new AppState()
     const id = uuidv4()
+    newState._ids[url] = id
+    newState._urls[id] = url
+    const machineItems: CanvasSwitcherItem[] = []
+    for (const id in arrangement.machines) {
+      const machine = arrangement.machines[id]
+      machineItems.push(new CanvasSwitcherItem(id, machine.name, [], () => null))
+      newState._ids[machine.path] = id
+      newState._urls[id] = machine.path
+    }
     newState._arrangements[id] = arrangement
     newState._root = new CanvasSwitcherItem(
       id,
       url.split('/').pop()!.replace('.arrangement', ''),
-      [],
+      machineItems,
       () => null
     )
     newState._allowSidePanelTogglingVisibility = true
@@ -230,7 +239,7 @@ export default class AppState {
   }
 
   newRootArrangement(language: string, setAppState: (newState: AppState) => void): AppState {
-    const newState = this.copy
+    const newState = new AppState()
     const id = uuidv4()
     newState._arrangements[id] = new Arrangement(language, {}, '', {}, '')
     newState._root = new CanvasSwitcherItem(id, 'arrangement', [], () => null)

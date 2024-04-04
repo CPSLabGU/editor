@@ -5,6 +5,16 @@ export default class CanvasSwitcherItem {
   title: string
   children: CanvasSwitcherItem[]
   view: () => JSX.Element | null
+
+  get allChildren(): CanvasSwitcherItem[] {
+    return this.children.flatMap(
+      (child: CanvasSwitcherItem): CanvasSwitcherItem[] => child.flattened
+    )
+  }
+
+  get flattened(): CanvasSwitcherItem[] {
+    return [this as CanvasSwitcherItem].concat(this.allChildren)
+  }
   constructor(
     id: string,
     title: string,
