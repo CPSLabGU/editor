@@ -7,6 +7,8 @@ import MachineView, { StateDictionary, TransitionDictionary } from './views/Mach
 import { v4 as uuidv4 } from 'uuid'
 import Arrangement from './models/Arrangement'
 import ArrangementView from './views/ArrangementView'
+import TransitionProperties from './models/TransitionProperties'
+import StateInformation from './models/StateInformation'
 
 type ListData<T> = { [id: string]: T }
 
@@ -164,47 +166,13 @@ export default class AppState {
   ): AppState {
     const arrangement = Arrangement.fromData(data)
     if (!arrangement) return this
-    const newState = new AppState()
-    const id = uuidv4()
-    newState._ids[url] = id
-    newState._urls[id] = url
-    const machineItems: CanvasSwitcherItem[] = []
-    for (const id in arrangement.machines) {
-      const machine = arrangement.machines[id]
-      machineItems.push(new CanvasSwitcherItem(id, machine.name, [], () => null))
-      newState._ids[machine.path] = id
-      newState._urls[id] = machine.path
-    }
-    newState._arrangements[id] = arrangement
-    newState._root = new CanvasSwitcherItem(
-      id,
-      url.split('/').pop()!.replace('.arrangement', ''),
-      machineItems,
-      () => null
-    )
-    newState._allowSidePanelTogglingVisibility = true
-    newState._sidePanelVisible = true
-    newState._selected = id
-    newState.updateArrangementView(id, setAppState)
-    return newState
+    return this.setNewRootArrangement(arrangement, url, setAppState)
   }
 
   loadRootMachine(data: string, url: string, setAppState: (newState: AppState) => void): AppState {
     const model = MachineModel.fromData(data)
     const { machine, states, transitions } = modelToMachine(model)
-    const id = this.id(url) || uuidv4()
-    this._urls[id] = url
-    this._ids[url] = id
-    const newState = this.copy
-    newState._machineStates[id] = states
-    newState._machineTransitions[id] = transitions
-    newState._machines[id] = machine
-    newState._root = new CanvasSwitcherItem(id, 'machine', [], () => null)
-    newState._selected = id
-    newState._allowSidePanelTogglingVisibility = false
-    newState._sidePanelVisible = false
-    newState.updateMachineView(id, setAppState)
-    return newState
+    return this.setNewRootMachine(machine, states, transitions, url, setAppState)
   }
 
   machineView(id: string, setAppState: (newState: AppState) => void): JSX.Element {
@@ -239,15 +207,13 @@ export default class AppState {
   }
 
   newRootArrangement(language: string, setAppState: (newState: AppState) => void): AppState {
-    const newState = new AppState()
-    const id = uuidv4()
-    newState._arrangements[id] = new Arrangement(language, {}, '', {}, '')
-    newState._root = new CanvasSwitcherItem(id, 'arrangement', [], () => null)
-    newState._allowSidePanelTogglingVisibility = true
-    newState._sidePanelVisible = true
-    newState._selected = id
-    newState.updateArrangementView(id, setAppState)
-    return newState
+    const arrangement = new Arrangement(language, {}, '', {}, '')
+    return this.setNewRootArrangement(arrangement, null, setAppState)
+  }
+
+  newRootMachine(setAppState: (newState: AppState) => void): AppState {
+    const [states, transitions, machine] = Machine.defaultMachine
+    return this.setNewRootMachine(machine, states, transitions, null, setAppState)
   }
 
   setArrangement(
@@ -268,6 +234,67 @@ export default class AppState {
     const newState = this.copy
     newState._arrangements = arrangements
     newState.updateAllArrangementViews(setAppState)
+    return newState
+  }
+
+  setNewRootArrangement(
+    arrangement: Arrangement,
+    url: string | null,
+    setAppState: (newState: AppState) => void
+  ): AppState {
+    const newState = new AppState()
+    const id = uuidv4()
+    if (url) {
+      newState._ids[url] = id
+      newState._urls[id] = url
+    }
+    const machineItems: CanvasSwitcherItem[] = []
+    for (const id in arrangement.machines) {
+      const machine = arrangement.machines[id]
+      machineItems.push(new CanvasSwitcherItem(id, machine.name, [], () => null))
+      newState._ids[machine.path] = id
+      newState._urls[id] = machine.path
+    }
+    newState._arrangements[id] = arrangement
+    newState._root = new CanvasSwitcherItem(
+      id,
+      url?.split('/').pop()?.replace('.arrangement', '') || 'arrangement',
+      machineItems,
+      () => null
+    )
+    newState._allowSidePanelTogglingVisibility = true
+    newState._sidePanelVisible = true
+    newState._selected = id
+    newState.updateArrangementView(id, setAppState)
+    return newState
+  }
+
+  setNewRootMachine(
+    machine: Machine,
+    states: ListData<StateInformation>,
+    transitions: ListData<TransitionProperties>,
+    url: string | null,
+    setAppState: (newState: AppState) => void
+  ): AppState {
+    const id = uuidv4()
+    const newState = new AppState()
+    if (url) {
+      newState._urls[id] = url
+      newState._ids[url] = id
+    }
+    newState._machineStates[id] = states
+    newState._machineTransitions[id] = transitions
+    newState._machines[id] = machine
+    newState._root = new CanvasSwitcherItem(
+      id,
+      url?.split('/').pop()?.replace('.machine', '') || 'machine',
+      [],
+      () => null
+    )
+    newState._selected = id
+    newState._allowSidePanelTogglingVisibility = false
+    newState._sidePanelVisible = false
+    newState.updateMachineView(id, setAppState)
     return newState
   }
 
