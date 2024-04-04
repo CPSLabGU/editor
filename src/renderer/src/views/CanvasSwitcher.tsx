@@ -1,4 +1,3 @@
-import { useCallback, useState } from 'react'
 import CanvasSwitcherItem from '../models/CanvasSwitchItem'
 import LoadingView from './LoadingView'
 import TreeView from './TreeView'
@@ -21,28 +20,10 @@ export default function CanvasSwitcher({
   getExpanded,
   setExpanded,
 }: CanvasSwitcherArgs): JSX.Element {
-  const [itemViews, setItemViews] = useState<{ [key: string]: () => Promise<JSX.Element> }>({})
-  const itemView = useCallback(
-    (key: string): Promise<JSX.Element> => {
-      if (itemViews[key]) return itemViews[key]()
-      const item = root.findChild(key)
-      if (!item) {
-        return new Promise(() => {
-          throw new Error('Unable to load view.')
-        })
-      } else {
-        const view = item.view
-        setItemViews({ ...itemViews, [key]: view })
-        return view()
-      }
-    },
-    [itemViews, setItemViews, root]
-  );
   return (
     <_CanvasSwitcher
       key="root"
       item={root}
-      itemView={itemView}
       getSelected={getSelected}
       setSelected={setSelected}
       getExpanded={getExpanded}
@@ -54,7 +35,6 @@ export default function CanvasSwitcher({
 interface _CanvasSwitcherArgs {
   key: string
   item: CanvasSwitcherItem
-  itemView: (key: string) => Promise<JSX.Element>
   getSelected: () => string | null
   setSelected: (key: string) => void
   getExpanded: () => ItemDictionary<boolean>
@@ -64,7 +44,6 @@ interface _CanvasSwitcherArgs {
 function _CanvasSwitcher({
   key,
   item,
-  itemView,
   getSelected,
   setSelected,
   getExpanded,
@@ -77,13 +56,16 @@ function _CanvasSwitcher({
     (key: string) => getExpanded()[key] === true,
     (key: string, expanded: boolean) => setExpanded({ ...getExpanded(), [key]: expanded })
   )
+  const selectedKey = getSelected()
+  const selectedView: (() => Promise<JSX.Element>) | undefined =
+    selectedKey !== null ? item.findChild(selectedKey)?.view : undefined
   return (
     <div>
       <div className="left-panel">
         <TreeView key={key} root={treeItem} />
       </div>
       <div className="right-panel">
-        {getSelected() !== null && <LoadingView loadView={() => itemView(key)} />}
+        {selectedView !== undefined && <LoadingView loadView={selectedView} />}
       </div>
     </div>
   )
