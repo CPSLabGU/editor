@@ -42,9 +42,14 @@ function TreeViewLabel({ item }: TreeViewLabelArgs): JSX.Element {
     [item]
   )
   const classes = item.isSelected() ? 'selected' : ''
+  const expandedClasses = 'expanded-indicator' + (item.isExpanded() ? ' expanded' : ' collapsed')
   return (
     <p className={classes} onClick={changeSelection} key={item.key}>
-      <a onClick={changeExpanded}>&gt;</a>
+      {item.children.length > 0 && (
+        <a className={expandedClasses} onClick={changeExpanded}>
+          &gt;
+        </a>
+      )}
       {item.title}
     </p>
   )

@@ -5,3 +5,8 @@
 .child {
     margin-left: 10px;
 }
+
+.expanded-indicator.expanded {
+    display: inline-block;
+    rotate: 90deg;
+}
