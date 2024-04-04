@@ -2,17 +2,20 @@ import Clock from './Clock'
 import MachineReference from './MachineReference'
 
 export default class Arrangement {
-  clocks: Clock[]
+  language: string
+  clocks: { [id: string]: Clock }
   externalVariables: string
-  machines: MachineReference[]
+  machines: { [id: string]: MachineReference }
   globalVariables: string
 
   constructor(
-    clocks: Clock[],
+    language: string,
+    clocks: { [id: string]: Clock },
     externalVariables: string,
-    machines: MachineReference[],
+    machines: { [id: string]: MachineReference },
     globalVariables: string
   ) {
+    this.language = language
     this.clocks = clocks
     this.externalVariables = externalVariables
     this.machines = machines
