@@ -42,7 +42,7 @@ export default function CanvasSwitcher({
     <div className="canvas-switcher">
       <HiddenView hidden={sidePanelVisible}>
         <HiddenView hidden={!allowTogglingVisibilty}>
-          <div className="left-panel">
+          <div className="left-panel hidden">
             <div
               className="canvas-switcher-visible-button"
               onClick={() => setSidePanelVisible(!sidePanelVisible)}
