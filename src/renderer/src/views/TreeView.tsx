@@ -6,69 +6,40 @@ import '../styles/TreeView.css'
 
 interface TreeViewArgs {
   root: TreeViewItem
-  getSelected: () => number | null
-  setSelected: (item: number | null) => void
-  getExpanded: () => boolean
-  setExpanded: (expanded: boolean) => void
 }
 
 interface TreeViewLabelArgs {
   item: TreeViewItem
-  index: number
-  getSelected: () => number | null
-  setSelected: (item: number | null) => void
-  getExpanded: () => boolean
-  setExpanded: (expanded: boolean) => void
 }
 
-export default function TreeView({
-  root,
-  getSelected,
-  setSelected,
-  getExpanded,
-  setExpanded
-}: TreeViewArgs): JSX.Element {
-  const childrenLabels = getExpanded()
-    ? root.children.map((child) => <div key={child.key}>{child.title}</div>)
+export default function TreeView({ root }: TreeViewArgs): JSX.Element {
+  const childrenViews = root.isExpanded()
+    ? root.children.map((child) => <TreeView key={child.key} root={child} />)
     : []
   return (
     <div>
-      <TreeViewLabel
-        item={root}
-        index={-1}
-        getSelected={getSelected}
-        setSelected={setSelected}
-        getExpanded={getExpanded}
-        setExpanded={setExpanded}
-      />
-      <div className={'child'}>{childrenLabels}</div>
+      <TreeViewLabel item={root} />
+      <div className={'child'}>{childrenViews}</div>
     </div>
   )
 }
 
-function TreeViewLabel({
-  item,
-  index,
-  getSelected,
-  setSelected,
-  getExpanded,
-  setExpanded
-}: TreeViewLabelArgs): JSX.Element {
+function TreeViewLabel({ item }: TreeViewLabelArgs): JSX.Element {
   const changeSelection = useCallback(
     (e) => {
       e.stopPropagation()
       e.preventDefault()
-      setSelected(index)
+      setSelected(true)
     },
-    [index, setSelected]
+    [item]
   )
   const changeExpanded = useCallback(
     (e) => {
       e.stopPropagation()
       e.preventDefault()
-      setExpanded(!getExpanded())
+      item.setExpanded(!item.isExpanded())
     },
-    [getExpanded, setExpanded]
+    [item]
   )
   const classes = getSelected() ? 'selected' : ''
   return (

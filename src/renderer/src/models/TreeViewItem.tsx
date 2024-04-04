@@ -2,11 +2,25 @@ export default class TreeViewItem {
   key: string
   title: string
   children: TreeViewItem[]
-  element: () => JSX.Element
-  constructor(key: string, title: string, children: TreeViewItem[], element: () => JSX.Element) {
+  isSelected: () => boolean
+  setSelected: (selected: boolean) => void
+  isExpanded: () => boolean
+  setExpanded: (expanded: boolean) => void
+  constructor(
+    key: string,
+    title: string,
+    children: TreeViewItem[],
+    isSelected: () => boolean,
+    setSelected: (selected: boolean) => void,
+    isExpanded: () => boolean,
+    setExpanded: (expanded: boolean) => void
+  ) {
     this.key = key
     this.title = title
     this.children = children
-    this.element = element
+    this.isSelected = isSelected
+    this.setSelected = setSelected
+    this.isExpanded = isExpanded
+    this.setExpanded = setExpanded
   }
 }
