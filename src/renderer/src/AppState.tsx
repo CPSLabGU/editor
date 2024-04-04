@@ -5,16 +5,19 @@ import { MachineModel, machineToModel, modelToMachine } from './models/MachineMo
 import { ItemDictionary } from './views/CanvasSwitcher'
 import MachineView, { StateDictionary, TransitionDictionary } from './views/MachineView'
 import { v4 as uuidv4 } from 'uuid'
+import Arrangement from './models/Arrangement'
+import ArrangementView from './views/ArrangementView'
 
-type MachineData<T> = { [id: string]: T }
+type ListData<T> = { [id: string]: T }
 
 export default class AppState {
   _ids: { [url: string]: string }
   _urls: { [id: string]: string }
-  _machineStates: MachineData<StateDictionary>
-  _machineTransitions: MachineData<TransitionDictionary>
-  _machineEdittingState: MachineData<string | undefined>
-  _machines: MachineData<Machine>
+  _machineStates: ListData<StateDictionary>
+  _machineTransitions: ListData<TransitionDictionary>
+  _machineEdittingState: ListData<string | undefined>
+  _machines: ListData<Machine>
+  _arrangements: ListData<Arrangement>
   _root: CanvasSwitcherItem | null
   _selected: string | null
   _expanded: ItemDictionary<boolean>
@@ -29,20 +32,24 @@ export default class AppState {
     return this._urls
   }
 
-  get machineStates(): MachineData<StateDictionary> {
+  get machineStates(): ListData<StateDictionary> {
     return this._machineStates
   }
 
-  get machineTransitions(): MachineData<TransitionDictionary> {
+  get machineTransitions(): ListData<TransitionDictionary> {
     return this._machineTransitions
   }
 
-  get machineEdittingState(): MachineData<string | undefined> {
+  get machineEdittingState(): ListData<string | undefined> {
     return this._machineEdittingState
   }
 
-  get machines(): MachineData<Machine> {
+  get machines(): ListData<Machine> {
     return this._machines
+  }
+
+  get arrangements(): ListData<Arrangement> {
+    return this._arrangements
   }
 
   get root(): CanvasSwitcherItem | null {
@@ -116,6 +123,7 @@ export default class AppState {
     this._machineTransitions = {}
     this._machineEdittingState = {}
     this._machines = {}
+    this._arrangements = {}
     this._root = null
     this._selected = null
     this._expanded = {}
@@ -128,6 +136,19 @@ export default class AppState {
     newState._ids[url] = id
     newState._urls[id] = url
     return newState
+  }
+
+  arrangementView(id: string, setAppState: (newState: AppState) => void): JSX.Element {
+    const arrangement = this.arrangements[id]
+    if (!arrangement) return <div></div>
+    return (
+      <ArrangementView
+        arrangement={this.arrangements[id]}
+        setArrangement={(newArrangement: Arrangement) =>
+          setAppState(this.setArrangement(id, newArrangement, setAppState))
+        }
+      />
+    )
   }
 
   id(url: string): string | undefined {
@@ -183,6 +204,39 @@ export default class AppState {
     )
   }
 
+  newRootArrangement(language: string, setAppState: (newState: AppState) => void): AppState {
+    const newState = this.copy
+    const id = uuidv4()
+    newState._arrangements[id] = new Arrangement(language, {}, '', {}, '')
+    newState._root = new CanvasSwitcherItem(id, 'arrangement', [], () => null)
+    newState._allowSidePanelTogglingVisibility = true
+    newState._sidePanelVisible = true
+    newState._selected = id
+    newState.updateArrangementView(id, setAppState)
+    return newState
+  }
+
+  setArrangement(
+    id: string,
+    arrangement: Arrangement,
+    setAppState: (newState: AppState) => void
+  ): AppState {
+    const newState = this.copy
+    newState._arrangements[id] = arrangement
+    newState.updateArrangementView(id, setAppState)
+    return newState
+  }
+
+  setArrangements(
+    arrangements: ListData<Arrangement>,
+    setAppState: (newState: AppState) => void
+  ): AppState {
+    const newState = this.copy
+    newState._arrangements = arrangements
+    newState.updateAllArrangementViews(setAppState)
+    return newState
+  }
+
   setStates(
     id: string,
     state: StateDictionary,
@@ -195,7 +249,7 @@ export default class AppState {
   }
 
   setMachineStates(
-    states: MachineData<StateDictionary>,
+    states: ListData<StateDictionary>,
     setAppState: (newState: AppState) => void
   ): AppState {
     const newState = this.copy
@@ -216,7 +270,7 @@ export default class AppState {
   }
 
   setMachineTransitions(
-    transition: MachineData<TransitionDictionary>,
+    transition: ListData<TransitionDictionary>,
     setAppState: (newState: AppState) => void
   ): AppState {
     const newState = this.copy
@@ -237,7 +291,7 @@ export default class AppState {
   }
 
   setMachineEdittingState(
-    edittingState: MachineData<string | undefined>,
+    edittingState: ListData<string | undefined>,
     setAppState: (newState: AppState) => void
   ): AppState {
     const newState = this.copy
@@ -253,7 +307,7 @@ export default class AppState {
     return newState
   }
 
-  setMachines(machines: MachineData<Machine>, setAppState: (newState: AppState) => void): AppState {
+  setMachines(machines: ListData<Machine>, setAppState: (newState: AppState) => void): AppState {
     const newState = this.copy
     newState._machines = machines
     newState.updateAllMachineViews(setAppState)
@@ -290,9 +344,35 @@ export default class AppState {
     return newState
   }
 
+  updateAllArrangementViews(setAppState: (newAppState: AppState) => void): void {
+    for (const id in this.arrangements) {
+      this.updateArrangementView(id, setAppState)
+    }
+  }
+
   updateAllMachineViews(setAppState: (newAppState: AppState) => void): void {
     for (const id in this.machines) {
       this.updateMachineView(id, setAppState)
+    }
+  }
+
+  updateArrangementView(id: string, setAppState: (newAppState: AppState) => void): void {
+    const item = this.root?.findChild(id)
+    if (!item) return
+    const arrangement = this.arrangements[id]
+    const arrangementView = arrangement
+      ? (): JSX.Element => this.arrangementView(id, setAppState)
+      : (): JSX.Element => <div></div>
+    if (this.root?.id == id) {
+      const root = this.root
+      const newRoot = new CanvasSwitcherItem(root.id, root.title, root.children, arrangementView)
+      this._root = newRoot
+    } else {
+      const root = this.root as CanvasSwitcherItem
+      const newRoot = new CanvasSwitcherItem(root.id, root.title, root.children, root.view)
+      const newItem = new CanvasSwitcherItem(item.id, item.title, item.children, arrangementView)
+      newRoot.replaceChild(id, newItem)
+      this._root = newRoot
     }
   }
 

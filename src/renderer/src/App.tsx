@@ -7,6 +7,10 @@ import AppState from './AppState'
 export default function App(): JSX.Element {
   const [appState, setAppState] = useState(new AppState())
 
+  // useEffect(() => {
+  //   setAppState(appState.newRootArrangement('vhdl'))
+  // }, [])
+
   useEffect(() => {
     window.ipc.load((e, data, url) => {
       setAppState(appState.loadRootMachine(data, url, setAppState))
