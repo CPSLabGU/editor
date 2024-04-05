@@ -17,6 +17,8 @@ if (process.contextIsolated) {
       // test: () => ipcRenderer.invoke('testEvent'),
       // print: (message: string) => ipcRenderer.send('print', message),
       open: (callback: (e: IpcRendererEvent) => void) => ipcRenderer.on('open', callback),
+      openArrangement: () => ipcRenderer.send('openArrangement'),
+      openMachine: () => ipcRenderer.send('openMachine'),
       load: (callback: (e: IpcRendererEvent, data: string, url: string, type: string) => void) =>
         ipcRenderer.on('load', callback),
       updateData: (callback: (e: IpcRendererEvent, path: string | null, type: string) => void) =>

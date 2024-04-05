@@ -5,6 +5,8 @@ interface IPCInterface {
   test: () => Promise<number>
   print: (message: string) => void
   open: (callback: (e: IpcRendererEvent) => void) => void
+  openArrangement: () => void
+  openMachine: () => void
   load: (callback: (e: IpcRendererEvent, data: string, url: string, type: string) => void) => void
 }
 

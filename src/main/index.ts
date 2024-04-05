@@ -50,6 +50,14 @@ function createWindow(): void {
   // ipcMain.on('print', (event: IpcMainEvent, message: string) => {
   //   console.log(message)
   // })
+  ipcMain.on('openArrangement', (event: IpcMainEvent) => {
+    openFileDialog(mainWindow)
+  })
+
+  ipcMain.on('openMachine', (event: IpcMainEvent) => {
+    openFileDialog(mainWindow)
+  })
+
   ipcMain.on('save', (event: IpcMainEvent, path: string | null, data: string, type: string) => {
     if (path) {
       fs.writeFileSync(path + '/model.json', data)
@@ -123,39 +131,41 @@ app.on('window-all-closed', () => {
 //   return ++number
 // }
 
+function openFileDialog(window: BrowserWindow) {
+  const filePath: string[] | undefined = dialog.showOpenDialogSync(window, {
+    properties: ['openDirectory', 'openFile'],
+    filters: [
+      { name: 'Machines', extensions: ['machine'] },
+      { name: 'Arrangements', extensions: ['arrangement'] },
+      { name: 'All Files', extensions: ['*'] }
+    ]
+  })
+  if (!filePath || filePath.length < 1) {
+    console.error('Malformed file path detected.')
+    return
+  }
+  let newType: string = ''
+  if (filePath[0].endsWith('.arrangement')) {
+    newType = 'arrangement'
+  } else if (filePath[0].endsWith('.machine')) {
+    newType = 'machine'
+  }
+  const fd = fs.openSync(filePath[0] + '/model.json', 'r')
+  if (fd < 0) {
+    console.error('Failed to open file at path: ' + filePath[0])
+    return
+  }
+  const data = fs.readFileSync(fd, 'utf-8')
+  fs.closeSync(fd)
+  window.webContents.send('load', data, filePath[0], newType)
+  generateFileMenus(window, filePath[0], newType)
+}
+
 function generateFileMenus(mainWindow: BrowserWindow, path: string | null, type: string): void {
   const fileMenus = [
     {
       label: 'Open',
-      click: (): void => {
-        const filePath: string[] | undefined = dialog.showOpenDialogSync(mainWindow, {
-          properties: ['openDirectory', 'openFile'],
-          filters: [
-            { name: 'Machines', extensions: ['machine'] },
-            { name: 'Arrangements', extensions: ['arrangement'] },
-            { name: 'All Files', extensions: ['*'] }
-          ]
-        })
-        if (!filePath || filePath.length < 1) {
-          console.error('Malformed file path detected.')
-          return
-        }
-        let newType: string = ''
-        if (filePath[0].endsWith('.arrangement')) {
-          newType = 'arrangement'
-        } else if (filePath[0].endsWith('.machine')) {
-          newType = 'machine'
-        }
-        const fd = fs.openSync(filePath[0] + '/model.json', 'r')
-        if (fd < 0) {
-          console.error('Failed to open file at path: ' + filePath[0])
-          return
-        }
-        const data = fs.readFileSync(fd, 'utf-8')
-        fs.closeSync(fd)
-        mainWindow.webContents.send('load', data, filePath[0], newType)
-        generateFileMenus(mainWindow, filePath[0], newType)
-      }
+      click: (): void => openFileDialog(mainWindow)
     }
   ]
   if (path) {

@@ -9,10 +9,10 @@ export default function App(): JSX.Element {
   const [appState, setAppState] = useState(new AppState())
 
   const openArrangement = useCallback((): void => {
-    console.log('openArrangement')
+    window.ipc.openArrangement()
   }, [])
   const openMachine = useCallback((): void => {
-    console.log('openMachine')
+    window.ipc.openMachine()
   }, [])
   const createArrangement = useCallback((): void => {
     setAppState(appState.newRootArrangement('vhdl', setAppState))
