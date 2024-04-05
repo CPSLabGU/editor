@@ -156,9 +156,7 @@ export default class AppState {
       <MachineView
         machine={machine}
         setMachine={(newMachine: Machine) => {
-          const newMachines = { ...this.machines }
-          newMachines[id] = newMachine
-          setAppState(this.setMachines(newMachines, setAppState))
+          setAppState(this.setMachine(id, newMachine, setAppState))
         }}
       />
     )
