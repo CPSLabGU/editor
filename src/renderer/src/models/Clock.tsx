@@ -54,11 +54,29 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 //
 
+import ClockModel, { instanceOfClockModel } from '@renderer/MachineModel/ClockModel'
+
 export default class Clock {
   name: string
   frequency: string
+
+  get toModel(): ClockModel {
+    return { name: this.name, frequency: this.frequency }
+  }
+
   constructor(name: string, frequency: string) {
     this.name = name
     this.frequency = frequency
+  }
+
+  static fromData(data: string): Clock | null {
+    const obj = JSON.parse(data)
+    if (!(typeof obj === 'object')) return null
+    if (!instanceOfClockModel(obj as object)) return null
+    return Clock.fromModel(obj as ClockModel)
+  }
+
+  static fromModel(model: ClockModel): Clock {
+    return new Clock(model.name, model.frequency)
   }
 }

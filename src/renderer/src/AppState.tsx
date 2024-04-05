@@ -1,7 +1,7 @@
 import CanvasSwitcherItem from './models/CanvasSwitchItem'
 import CanvasSwitcher from './views/CanvasSwitcher'
 import Machine from './models/Machine'
-import { MachineModel, machineToModel, modelToMachine } from './models/MachineModel'
+import { MachineModel, machineToModel, modelToMachine } from './MachineModel/MachineModel'
 import { ItemDictionary } from './views/CanvasSwitcher'
 import MachineView, { StateDictionary, TransitionDictionary } from './views/MachineView'
 import { v4 as uuidv4 } from 'uuid'
