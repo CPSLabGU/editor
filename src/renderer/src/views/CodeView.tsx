@@ -1,10 +1,8 @@
 // @ts-nocheck
 
-import CodeMirror from '@uiw/react-codemirror'
-import { vscodeDark } from '@uiw/codemirror-theme-vscode'
 import '../styles/CodeView.css'
 import { useState, useCallback, useEffect } from 'react'
-import { finished } from 'stream'
+import CodeEditor from './CodeEditor'
 
 export default function CodeView({
   actions,
@@ -85,31 +83,15 @@ export default function CodeView({
         </form>
         <div key={`${state}-externalVariables`}>
           <h2>External Variables</h2>
-          <CodeMirror
-            value={externalVariables}
-            theme={vscodeDark}
-            readOnly={false}
-            lang={language}
-            height="100%"
-            minHeight="200px"
-            onChange={(val, viewUpdate) => {
-              setExternalVariables(val)
-            }}
+          <CodeEditor
+            language={language}
+            sourcecode={externalVariables}
+            setSourceCode={setExternalVariables}
           />
         </div>
         <div key={`${state}-variables`}>
           <h2>Variables</h2>
-          <CodeMirror
-            value={variables}
-            theme={vscodeDark}
-            readOnly={false}
-            lang={language}
-            height="100%"
-            minHeight="200px"
-            onChange={(val, viewUpdate) => {
-              setVariables(val)
-            }}
-          />
+          <CodeEditor language={language} sourcecode={variables} setSourceCode={setVariables} />
         </div>
         {Object.keys(actions)
           .sort()
@@ -117,14 +99,10 @@ export default function CodeView({
             return (
               <div key={action}>
                 <h2>{action}</h2>
-                <CodeMirror
-                  value={actions[action]}
-                  theme={vscodeDark}
-                  readOnly={false}
-                  lang={language}
-                  height="100%"
-                  minHeight="200px"
-                  onChange={(val, viewUpdate) => {
+                <CodeEditor
+                  language={language}
+                  sourcecode={actions[action]}
+                  setSourceCode={(val: string): void => {
                     setActions(action, val)
                   }}
                 />
