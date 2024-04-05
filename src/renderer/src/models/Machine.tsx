@@ -39,34 +39,34 @@ export default class Machine {
       }
     }
     addState(
-      {
-        id: uuidv4(),
-        properties: {
-          name: 'Initial',
-          w: 200,
-          h: 100,
-          expanded: false,
-          transitions: [],
-          actions: { OnEntry: '', OnExit: '', Internal: '' },
-          variables: '',
-          externalVariables: ''
-        },
-        position: new Point2D(0, 0)
-      },
-      {
-        id: uuidv4(),
-        properties: {
-          name: 'Suspended',
-          w: 200,
-          h: 100,
-          expanded: false,
-          transitions: [],
-          actions: { OnEntry: '', OnExit: '', Internal: '' },
-          variables: '',
-          externalVariables: ''
-        },
-        position: new Point2D(0, 200)
-      }
+      new StateInformation(
+        uuidv4(),
+        new StateProperties(
+          'Initial',
+          200,
+          100,
+          false,
+          [],
+          { OnEntry: '', OnExit: '', Internal: '' },
+          '',
+          ''
+        ),
+        new Point2D(0, 0)
+      ),
+      new StateInformation(
+        uuidv4(),
+        new StateProperties(
+          'Suspended',
+          200,
+          100,
+          false,
+          [],
+          { OnEntry: '', OnExit: '', Internal: '' },
+          '',
+          ''
+        ),
+        new Point2D(0, 200)
+      )
     )
     const initialState = Object.keys(initialStates).find(
       (id) => initialStates[id].properties.name == 'Initial'

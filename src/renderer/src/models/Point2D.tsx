@@ -1,4 +1,4 @@
-import Point2DModel, { instanceOfPoint2DModel } from '@renderer/MachineModel/Point2DModel'
+import Point2DModel, { instanceOfPoint2DModel } from '@renderer/parsing/Point2DModel'
 
 export default class Point2D {
   x: number

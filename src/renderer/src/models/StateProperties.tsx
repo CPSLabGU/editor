@@ -1,4 +1,4 @@
-import StateModel from '@renderer/MachineModel/StateModel'
+import StateModel from '@renderer/parsing/StateModel'
 
 export default class StateProperties {
   name: string

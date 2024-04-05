@@ -1,8 +1,8 @@
-import ArrangementModel from './ArrangementModel'
+import ArrangementModel, { instanceOfArrangementModel } from '../parsing/ArrangementModel'
 import Clock from './Clock'
 import MachineReference from './MachineReference'
 import { v4 as uuidv4 } from 'uuid'
-import MachineReferenceModel from './MachineReferenceModel'
+import MachineReferenceModel from '../parsing/MachineReferenceModel'
 
 export default class Arrangement {
   language: string
@@ -37,19 +37,10 @@ export default class Arrangement {
   }
 
   static fromData(data: string): Arrangement | null {
-    function instanceOfArrangementModel(json: object): json is ArrangementModel {
-      return (
-        'clocks' in json &&
-        'externalVariables' in json &&
-        'machines' in json &&
-        'globalVariables' in json &&
-        Array.isArray(json.clocks) &&
-        Array.isArray(json.machines)
-      )
-    }
     const json = JSON.parse(data)
     console.log(json)
-    if (!instanceOfArrangementModel(json)) return null
+    if (!(typeof json === 'object')) return null
+    if (!instanceOfArrangementModel(json as object)) return null
     const model = json as ArrangementModel
     return Arrangement.fromModel(model)
   }
@@ -57,7 +48,9 @@ export default class Arrangement {
   static fromModel(model: ArrangementModel): Arrangement {
     return new Arrangement(
       'vhdl',
-      model.clocks.reduce((clocks, clock) => ({ ...clocks, [uuidv4()]: clock }), {}),
+      model.clocks
+        .map(Clock.fromModel)
+        .reduce((clocks, clock) => ({ ...clocks, [uuidv4()]: clock }), {}),
       model.externalVariables,
       model.machines.reduce(
         (machines, machine) => ({ ...machines, [uuidv4()]: MachineReference.fromModel(machine) }),

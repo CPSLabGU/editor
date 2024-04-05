@@ -1,4 +1,4 @@
-import MachineReferenceModel from './MachineReferenceModel'
+import MachineReferenceModel from '../parsing/MachineReferenceModel'
 import VariableMapping from './VariableMapping'
 import { v4 as uuidv4 } from 'uuid'
 

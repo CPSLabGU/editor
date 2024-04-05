@@ -21,7 +21,6 @@ export function instanceOfMachineModel(obj: object): obj is MachineModel {
     'includes' in obj &&
     'transitions' in obj &&
     'initialState' in obj &&
-    'suspendedState' in obj &&
     'clocks' in obj &&
     Array.isArray(obj.states) &&
     (obj.states as unknown[]).find(
@@ -37,7 +36,7 @@ export function instanceOfMachineModel(obj: object): obj is MachineModel {
         !(typeof element === 'object') || !instanceOfTransitionModel(element as object)
     ) === undefined &&
     typeof obj.initialState === 'string' &&
-    typeof obj.suspendedState === 'string' &&
+    (!('suspendState' in obj) || typeof obj.suspendedState === 'string') &&
     Array.isArray(obj.clocks) &&
     (obj.clocks as unknown[]).find(
       (element: unknown): boolean =>

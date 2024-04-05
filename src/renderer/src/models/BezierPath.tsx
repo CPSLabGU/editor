@@ -1,6 +1,6 @@
 import Point2D from './Point2D'
 import BoundingBox from './BoundingBox'
-import BezierPathModel, { instanceOfBezierPathModel } from '@renderer/MachineModel/BezierPathModel'
+import BezierPathModel, { instanceOfBezierPathModel } from '@renderer/parsing/BezierPathModel'
 
 export default class BezierPath {
   source: Point2D
