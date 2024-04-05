@@ -40,11 +40,11 @@ function createWindow(): void {
   }
 
   ipcMain.on('openArrangement', () => {
-    openFileDialog(mainWindow)
+    openFileDialog(mainWindow, 'arrangement')
   })
 
   ipcMain.on('openMachine', () => {
-    openFileDialog(mainWindow)
+    openFileDialog(mainWindow, 'machine')
   })
 
   ipcMain.on('save', (event: IpcMainEvent, path: string | null, data: string, type: string) => {
@@ -116,14 +116,17 @@ app.on('window-all-closed', () => {
 //   return ++number
 // }
 
-function openFileDialog(window: BrowserWindow): void {
+function openFileDialog(window: BrowserWindow, type: string): void {
+  const filters: Electron.FileFilter[] = []
+  if (type === 'machine') {
+    filters.push({ name: 'Machines', extensions: ['machine'] })
+  } else if (type == 'arrangement') {
+    filters.push({ name: 'Arrangements', extensions: ['arrangement'] })
+  }
+  filters.push({ name: 'All Files', extensions: ['*'] })
   const filePath: string[] | undefined = dialog.showOpenDialogSync(window, {
     properties: ['openDirectory', 'openFile'],
-    filters: [
-      { name: 'Machines', extensions: ['machine'] },
-      { name: 'Arrangements', extensions: ['arrangement'] },
-      { name: 'All Files', extensions: ['*'] }
-    ]
+    filters: filters
   })
   if (!filePath || filePath.length < 1) {
     console.error('Malformed file path detected.')
@@ -150,7 +153,7 @@ function generateFileMenus(mainWindow: BrowserWindow, path: string | null, type:
   const fileMenus = [
     {
       label: 'Open',
-      click: (): void => openFileDialog(mainWindow)
+      click: (): void => openFileDialog(mainWindow, '')
     }
   ]
   if (path) {
