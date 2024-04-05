@@ -19,15 +19,7 @@ export default function ArrangementView({
   const changeClocks = useCallback(
     (setter: (currentClocks: { [id: string]: Clock }) => { [id: string]: Clock }) => {
       const newClocks = setter(arrangement.clocks)
-      setArrangement(
-        new Arrangement(
-          arrangement.language,
-          newClocks,
-          arrangement.externalVariables,
-          arrangement.machines,
-          arrangement.globalVariables
-        )
-      )
+      setArrangement(arrangement.setClocks(newClocks))
     },
     [arrangement, setArrangement]
   )
@@ -39,29 +31,13 @@ export default function ArrangementView({
   )
   const changeExternalVariables = useCallback(
     (newExternalVariables: string) => {
-      setArrangement(
-        new Arrangement(
-          arrangement.language,
-          arrangement.clocks,
-          newExternalVariables,
-          arrangement.machines,
-          arrangement.globalVariables
-        )
-      )
+      setArrangement(arrangement.setExternalVariables(newExternalVariables))
     },
     [arrangement, setArrangement]
   )
   const changeGlobalVariables = useCallback(
     (newGlobalVariables: string) => {
-      setArrangement(
-        new Arrangement(
-          arrangement.language,
-          arrangement.clocks,
-          arrangement.externalVariables,
-          arrangement.machines,
-          newGlobalVariables
-        )
-      )
+      setArrangement(arrangement.setGlobalVariables(newGlobalVariables))
     },
     [arrangement, setArrangement]
   )
@@ -72,15 +48,7 @@ export default function ArrangementView({
       }
     ) => {
       const newMachines = setter(arrangement.machines)
-      setArrangement(
-        new Arrangement(
-          arrangement.language,
-          arrangement.clocks,
-          arrangement.externalVariables,
-          newMachines,
-          arrangement.globalVariables
-        )
-      )
+      setArrangement(arrangement.setMachines(newMachines))
     },
     [arrangement, setArrangement]
   )

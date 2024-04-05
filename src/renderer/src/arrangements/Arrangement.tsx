@@ -5,11 +5,41 @@ import { v4 as uuidv4 } from 'uuid'
 import MachineReferenceModel from '../machine_reference/MachineReferenceModel'
 
 export default class Arrangement {
-  language: string
-  clocks: { [id: string]: Clock }
-  externalVariables: string
-  machines: { [id: string]: MachineReference }
-  globalVariables: string
+  private _language: string
+  private _clocks: { [id: string]: Clock }
+  private _externalVariables: string
+  private _machines: { [id: string]: MachineReference }
+  private _globalVariables: string
+
+  get language(): string {
+    return this._language
+  }
+
+  get clocks(): { [id: string]: Clock } {
+    return this._clocks
+  }
+
+  get externalVariables(): string {
+    return this._externalVariables
+  }
+
+  get machines(): { [id: string]: MachineReference } {
+    return this._machines
+  }
+
+  get globalVariables(): string {
+    return this._globalVariables
+  }
+
+  get shallowCopy(): Arrangement {
+    return new Arrangement(
+      this.language,
+      { ...this.clocks },
+      this.externalVariables,
+      { ...this.machines },
+      this.globalVariables
+    )
+  }
 
   get toModel(): ArrangementModel {
     return {
@@ -29,11 +59,11 @@ export default class Arrangement {
     machines: { [id: string]: MachineReference },
     globalVariables: string
   ) {
-    this.language = language
-    this.clocks = clocks
-    this.externalVariables = externalVariables
-    this.machines = machines
-    this.globalVariables = globalVariables
+    this._language = language
+    this._clocks = clocks
+    this._externalVariables = externalVariables
+    this._machines = machines
+    this._globalVariables = globalVariables
   }
 
   static fromData(data: string): Arrangement | null {
@@ -58,5 +88,73 @@ export default class Arrangement {
       ),
       model.globalVariables
     )
+  }
+
+  addClock(clock: Clock): Arrangement {
+    const newArrangement = this.shallowCopy
+    const id = uuidv4()
+    newArrangement._clocks[id] = clock
+    return newArrangement
+  }
+
+  addMachine(machine: MachineReference): Arrangement {
+    const newArrangement = this.shallowCopy
+    const id = uuidv4()
+    newArrangement._machines[id] = machine
+    return newArrangement
+  }
+
+  deleteClock(id: string): Arrangement {
+    const newArrangement = this.shallowCopy
+    delete newArrangement._clocks[id]
+    return newArrangement
+  }
+
+  deleteMachine(id: string): Arrangement {
+    const newArrangement = this.shallowCopy
+    delete newArrangement._machines[id]
+    return newArrangement
+  }
+
+  setLanguage(language: string): Arrangement {
+    const newArrangement = this.shallowCopy
+    newArrangement._language = language
+    return newArrangement
+  }
+
+  setClocks(clocks: { [id: string]: Clock }): Arrangement {
+    const newArrangement = this.shallowCopy
+    newArrangement._clocks = clocks
+    return newArrangement
+  }
+
+  setClock(id: string, clock: Clock): Arrangement {
+    const newArrangement = this.shallowCopy
+    newArrangement._clocks[id] = clock
+    return newArrangement
+  }
+
+  setExternalVariables(externalVariables: string): Arrangement {
+    const newArrangement = this.shallowCopy
+    newArrangement._externalVariables = externalVariables
+    return newArrangement
+  }
+
+  setMachines(machines: { [id: string]: MachineReference }): Arrangement {
+    const newArrangement = this.shallowCopy
+    newArrangement._machines = machines
+    return newArrangement
+  }
+
+  setMachine(id: string, machine: MachineReference): Arrangement {
+    const newArrangement = this.shallowCopy
+    newArrangement._machines[id] = machine
+    return newArrangement
+  }
+
+  setGlobalVariables(globalVariables: string): Arrangement {
+    const newArrangement = this.shallowCopy
+    newArrangement._globalVariables = globalVariables
+    return newArrangement
   }
 }
