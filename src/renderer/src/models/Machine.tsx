@@ -14,23 +14,15 @@ import StateProperties from './StateProperties'
 import ClockModel from '@renderer/parsing/ClockModel'
 
 export default class Machine {
-  _states: { [id: string]: StateInformation }
-
-  _transitions: { [id: string]: TransitionProperties }
-
-  _edittingState: string | null
-
-  _externalVariables: string
-
-  _machineVariables: string
-
-  _includes: string
-
-  _initialState: string
-
-  _suspendedState: string | undefined
-
-  _clocks: Clock[]
+  private _states: { [id: string]: StateInformation }
+  private _transitions: { [id: string]: TransitionProperties }
+  private _edittingState: string | null
+  private _externalVariables: string
+  private _machineVariables: string
+  private _includes: string
+  private _initialState: string
+  private _suspendedState: string | undefined
+  private _clocks: Clock[]
 
   get states(): { [id: string]: StateInformation } {
     return this._states
@@ -294,22 +286,21 @@ export default class Machine {
     })
     let initialState: string
     if (Object.keys(states).length > 0) {
-      initialState = Object.keys(states).find(
-        (key) => states[key].properties.name == model.initialState
-      ) || states[Object.keys(states)[0]].properties.name
+      initialState =
+        Object.keys(states).find((key) => states[key].properties.name == model.initialState) ||
+        states[Object.keys(states)[0]].properties.name
     } else {
       initialState = ''
     }
 
     let suspendState: string
     if (Object.keys(states).length > 0) {
-      suspendState = Object.keys(states).find(
-        (key) => states[key].properties.name == model.suspendedState
-      ) || states[Object.keys(states)[0]].properties.name
+      suspendState =
+        Object.keys(states).find((key) => states[key].properties.name == model.suspendedState) ||
+        states[Object.keys(states)[0]].properties.name
     } else {
       suspendState = ''
     }
-    
     return new Machine(
       states,
       transitions,

@@ -2,25 +2,23 @@ import CanvasSwitcherItem from './models/CanvasSwitchItem'
 import CanvasSwitcher from './views/CanvasSwitcher'
 import Machine from './models/Machine'
 import { ItemDictionary } from './views/CanvasSwitcher'
-import MachineView, { StateDictionary, TransitionDictionary } from './views/MachineView'
+import MachineView from './views/MachineView'
 import { v4 as uuidv4 } from 'uuid'
 import Arrangement from './models/Arrangement'
 import ArrangementView from './views/ArrangementView'
-import TransitionProperties from './models/TransitionProperties'
-import StateInformation from './models/StateInformation'
 
 type ListData<T> = { [id: string]: T }
 
 export default class AppState {
-  _ids: { [url: string]: string }
-  _urls: { [id: string]: string }
-  _machines: ListData<Machine>
-  _arrangements: ListData<Arrangement>
-  _root: CanvasSwitcherItem | null
-  _selected: string | null
-  _expanded: ItemDictionary<boolean>
-  _sidePanelVisible: boolean
-  _allowSidePanelTogglingVisibility: boolean
+  private _ids: { [url: string]: string }
+  private _urls: { [id: string]: string }
+  private _machines: ListData<Machine>
+  private _arrangements: ListData<Arrangement>
+  private _root: CanvasSwitcherItem | null
+  private _selected: string | null
+  private _expanded: ItemDictionary<boolean>
+  private _sidePanelVisible: boolean
+  private _allowSidePanelTogglingVisibility: boolean
 
   get ids(): { [url: string]: string } {
     return this._ids
