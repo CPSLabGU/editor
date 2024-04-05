@@ -279,7 +279,8 @@ export default function Canvas({
           position={transitionContextMenuPosition![0]}
           id={transitionContextMenuPosition![1]}
           transitions={
-            machine.states[machine.transitions[transitionContextMenuPosition![1]].source].properties.transitions
+            machine.states[machine.transitions[transitionContextMenuPosition![1]].source].properties
+              .transitions
           }
           setTransitions={(newTransitions: string[]) =>
             setStateTransitions(
