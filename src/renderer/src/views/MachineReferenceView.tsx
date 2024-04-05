@@ -25,14 +25,16 @@ export default function MachineReferenceView({
     },
     [machineReference, setMachineReference]
   )
-  // const changeDestination = useCallback(
-  //   (e: ChangeEvent<HTMLInputElement>) => {
-  //     e.preventDefault()
-  //     e.stopPropagation()
-  //     setMapping(new VariableMapping(mapping.source, e.target.value))
-  //   },
-  //   [mapping, setMapping]
-  // )
+  const changePath = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setMachineReference(
+        new MachineReference(machineReference.name, e.target.value, machineReference.mappings)
+      )
+    },
+    [machineReference, setMachineReference]
+  )
   const changeMapping = useCallback(
     (id: string, newMapping: VariableMapping) => {
       const newMappings = { ...machineReference.mappings }
@@ -63,13 +65,22 @@ export default function MachineReferenceView({
             <input type="text" onChange={changeName} value={machineReference.name} />
           </div>
         </div>
-        <div>
+        <div className="flex-element">
+          <h3>Path</h3>
+          <div>
+            <input type="text" onChange={changePath} value={machineReference.path} />
+          </div>
+        </div>
+        <div className="flex-element">
           <button className="remove-suspension" onClick={deleteMachineReference}>
             Delete instance {machineReference.name}
           </button>
         </div>
       </div>
-      <div>{mappingViews}</div>
+      <div>
+        <h3>Variable Mappings</h3>
+        <div>{mappingViews}</div>
+      </div>
     </div>
   )
 }
