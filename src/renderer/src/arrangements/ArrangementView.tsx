@@ -4,8 +4,8 @@ import { useCallback } from 'react'
 import CodeEditor from '../code_editor/CodeEditor'
 import ManageListView from '../manage_list/ManageListView'
 import ClockView from '../clocks/ClockView'
-import MachineReference from './MachineReference'
-import MachineReferenceView from './MachineReferenceView'
+import MachineReference from '../machine_reference/MachineReference'
+import MachineReferenceView from '../machine_reference/MachineReferenceView'
 
 interface ArrangementViewArgs {
   arrangement: Arrangement

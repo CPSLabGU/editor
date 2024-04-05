@@ -1,8 +1,8 @@
 import MachineReference from './MachineReference'
 import '../util/Flex.css'
 import { useCallback, ChangeEvent } from 'react'
-import VariableMappingView from './VariableMappingView'
-import VariableMapping from './VariableMapping'
+import VariableMappingView from '../variable_mapping/VariableMappingView'
+import VariableMapping from '../variable_mapping/VariableMapping'
 
 interface MachineReferenceViewArgs {
   machineReference: MachineReference

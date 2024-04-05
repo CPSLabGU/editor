@@ -1,8 +1,8 @@
 import ArrangementModel, { instanceOfArrangementModel } from './ArrangementModel'
 import Clock from '../clocks/Clock'
-import MachineReference from './MachineReference'
+import MachineReference from '../machine_reference/MachineReference'
 import { v4 as uuidv4 } from 'uuid'
-import MachineReferenceModel from './MachineReferenceModel'
+import MachineReferenceModel from '../machine_reference/MachineReferenceModel'
 
 export default class Arrangement {
   language: string

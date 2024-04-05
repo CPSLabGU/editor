@@ -1,4 +1,4 @@
-import VariableMappingModel, { instanceOfVariableMappingModel } from './VariableMappingModel'
+import VariableMappingModel, { instanceOfVariableMappingModel } from '../variable_mapping/VariableMappingModel'
 
 export default interface MachineReferenceModel {
   name: string

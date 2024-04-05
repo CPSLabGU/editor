@@ -1,5 +1,5 @@
 import MachineReferenceModel from './MachineReferenceModel'
-import VariableMapping from './VariableMapping'
+import VariableMapping from '../variable_mapping/VariableMapping'
 import { v4 as uuidv4 } from 'uuid'
 
 export default class MachineReference {

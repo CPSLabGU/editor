@@ -1,5 +1,5 @@
 import ClockModel, { instanceOfClockModel } from '../clocks/ClockModel'
-import MachineReferenceModel, { instanceOfMachineReferenceModel } from './MachineReferenceModel'
+import MachineReferenceModel, { instanceOfMachineReferenceModel } from '../machine_reference/MachineReferenceModel'
 
 export default interface ArrangementModel {
   clocks: ClockModel[]
