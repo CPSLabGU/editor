@@ -38,9 +38,7 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
-  // ipcMain.on('print', (event: IpcMainEvent, message: string) => {
-  //   console.log(message)
-  // })
+
   ipcMain.on('openArrangement', () => {
     openFileDialog(mainWindow)
   })
@@ -95,10 +93,6 @@ app.whenReady().then(() => {
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
-  // ipcMain.handle('testEvent', incrementNumber)
-
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
 
   createWindow()
 

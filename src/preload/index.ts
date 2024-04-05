@@ -14,8 +14,6 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
     contextBridge.exposeInMainWorld('ipc', {
-      // test: () => ipcRenderer.invoke('testEvent'),
-      // print: (message: string) => ipcRenderer.send('print', message),
       open: (callback: (e: IpcRendererEvent) => void) => ipcRenderer.on('open', callback),
       openArrangement: () => ipcRenderer.send('openArrangement'),
       openMachine: () => ipcRenderer.send('openMachine'),
