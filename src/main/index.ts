@@ -1,13 +1,4 @@
-import {
-  app,
-  shell,
-  BrowserWindow,
-  ipcMain,
-  IpcMainEvent,
-  Menu,
-  dialog,
-  ipcRenderer
-} from 'electron'
+import { app, shell, BrowserWindow, ipcMain, IpcMainEvent, Menu, dialog } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -50,11 +41,11 @@ function createWindow(): void {
   // ipcMain.on('print', (event: IpcMainEvent, message: string) => {
   //   console.log(message)
   // })
-  ipcMain.on('openArrangement', (event: IpcMainEvent) => {
+  ipcMain.on('openArrangement', () => {
     openFileDialog(mainWindow)
   })
 
-  ipcMain.on('openMachine', (event: IpcMainEvent) => {
+  ipcMain.on('openMachine', () => {
     openFileDialog(mainWindow)
   })
 
@@ -131,7 +122,7 @@ app.on('window-all-closed', () => {
 //   return ++number
 // }
 
-function openFileDialog(window: BrowserWindow) {
+function openFileDialog(window: BrowserWindow): void {
   const filePath: string[] | undefined = dialog.showOpenDialogSync(window, {
     properties: ['openDirectory', 'openFile'],
     filters: [
