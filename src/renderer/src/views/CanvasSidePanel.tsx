@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import HiddenView from './HiddenView'
 import PanelIcon from './PanelIcon'
 import SidePanel from './SidePanel'
@@ -7,19 +5,16 @@ import '../styles/CanvasSidePanel.css'
 import { useState } from 'react'
 import PanelChildView from './PanelChildView'
 import Machine from '../models/Machine'
-import StateInformation from '@renderer/models/StateInformation'
 import Clock from '@renderer/models/Clock'
 import ClockView from './ClockView'
 
 export default function CanvasSidePanel({
   machine,
-  states,
   setMachine
 }: {
   machine: Machine
-  states: { [id: string]: StateInformation }
   setMachine: (newMachine: Machine) => void
-}) {
+}): JSX.Element {
   const [hidden, setHidden] = useState(true)
   return (
     <div onContextMenu={(e) => e.stopPropagation()} className="canvas-side-panel">
@@ -38,25 +33,16 @@ export default function CanvasSidePanel({
           <div>
             <h2>State Information</h2>
             <div>
-              <span>{`Initial State: ${states[machine.initialState].properties.name}`}</span>
+              <span>{`Initial State: ${machine.states[machine.initialState]?.properties.name ?? ''}`}</span>
             </div>
             <div>
-              <span>{`Suspended State: ${machine.suspendedState !== undefined ? states[machine.suspendedState].properties.name : 'none'}`}</span>
+              <span>{`Suspended State: ${machine.suspendedState !== undefined ? machine.states[machine.suspendedState].properties.name : 'none'}`}</span>
             </div>
             <div>
               <button
                 className="remove-suspension"
                 onClick={() => {
-                  setMachine(
-                    new Machine(
-                      machine.externalVariables,
-                      machine.machineVariables,
-                      machine.includes,
-                      machine.initialState,
-                      undefined,
-                      machine.clocks
-                    )
-                  )
+                  setMachine(machine.setSuspendedState(undefined))
                 }}
               >
                 Remove Suspended State
@@ -67,13 +53,12 @@ export default function CanvasSidePanel({
             category="External Variables"
             data={machine.externalVariables}
             setData={(newData: string) => {
-              machine.externalVariables = newData
+              setMachine(machine.setExternalVariables(newData))
             }}
           />
           <div>
             <h2>Clocks</h2>
-            {Object.keys(machine.clocks).map((index: number) => {
-              const clock = machine.clocks[index]
+            {machine.clocks.map((clock: Clock, index: number) => {
               return (
                 <ClockView
                   key={`clocks_${index}_${clock.name}_${clock.frequency}`}
@@ -81,30 +66,12 @@ export default function CanvasSidePanel({
                   setClock={(newClock: Clock) => {
                     const clocks = machine.clocks
                     clocks[index] = newClock
-                    setMachine(
-                      new Machine(
-                        machine.externalVariables,
-                        machine.machineVariables,
-                        machine.includes,
-                        machine.initialState,
-                        machine.suspendedState,
-                        clocks
-                      )
-                    )
+                    setMachine(machine.setClocks(clocks))
                   }}
                   deleteClock={() => {
                     const clocks = machine.clocks
                     clocks.splice(index, 1)
-                    setMachine(
-                      new Machine(
-                        machine.externalVariables,
-                        machine.machineVariables,
-                        machine.includes,
-                        machine.initialState,
-                        machine.suspendedState,
-                        clocks
-                      )
-                    )
+                    setMachine(machine.setClocks(clocks))
                   }}
                 />
               )
@@ -115,16 +82,7 @@ export default function CanvasSidePanel({
                 onClick={() => {
                   const clocks = machine.clocks
                   clocks.push(new Clock('clk', '125 MHz'))
-                  setMachine(
-                    new Machine(
-                      machine.externalVariables,
-                      machine.machineVariables,
-                      machine.includes,
-                      machine.initialState,
-                      machine.suspendedState,
-                      clocks
-                    )
-                  )
+                  setMachine(machine.setClocks(clocks))
                 }}
               >
                 New Clock
@@ -135,14 +93,14 @@ export default function CanvasSidePanel({
             category="Machine Variables"
             data={machine.machineVariables}
             setData={(newData: string) => {
-              machine.machineVariables = newData
+              setMachine(machine.setMachineVariables(newData))
             }}
           />
           <PanelChildView
             category="Includes"
             data={machine.includes}
             setData={(newData: string) => {
-              machine.includes = newData
+              setMachine(machine.setIncludes(newData))
             }}
           />
         </SidePanel>

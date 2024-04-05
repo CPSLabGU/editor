@@ -6,6 +6,10 @@ export default class StateInformation {
   properties: StateProperties
   position: Point2D
 
+  get copy(): StateInformation {
+    return new StateInformation(this.id, this.properties.copy, this.position.copy)
+  }
+
   constructor(id: string, properties: StateProperties, position: Point2D) {
     this.id = id
     this.properties = properties

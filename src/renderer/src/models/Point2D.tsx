@@ -4,6 +4,10 @@ export default class Point2D {
   x: number
   y: number
 
+  get copy(): Point2D {
+    return new Point2D(this.x, this.y)
+  }
+
   get toModel(): Point2DModel {
     return { x: this.x, y: this.y }
   }

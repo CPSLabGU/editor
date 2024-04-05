@@ -54,11 +54,15 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 //
 
-import ClockModel, { instanceOfClockModel } from '@renderer/MachineModel/ClockModel'
+import ClockModel, { instanceOfClockModel } from '@renderer/parsing/ClockModel'
 
 export default class Clock {
   name: string
   frequency: string
+
+  get copy(): Clock {
+    return new Clock(this.name, this.frequency)
+  }
 
   get toModel(): ClockModel {
     return { name: this.name, frequency: this.frequency }

@@ -22,6 +22,10 @@ export default class BezierPath {
     )
   }
 
+  get copy(): BezierPath {
+    return new BezierPath(this.source, this.target, this.control0, this.control1)
+  }
+
   get toModel(): BezierPathModel {
     return {
       source: this.source.toModel,

@@ -14,9 +14,6 @@ type ListData<T> = { [id: string]: T }
 export default class AppState {
   _ids: { [url: string]: string }
   _urls: { [id: string]: string }
-  _machineStates: ListData<StateDictionary>
-  _machineTransitions: ListData<TransitionDictionary>
-  _machineEdittingState: ListData<string | undefined>
   _machines: ListData<Machine>
   _arrangements: ListData<Arrangement>
   _root: CanvasSwitcherItem | null
@@ -31,18 +28,6 @@ export default class AppState {
 
   get urls(): { [id: string]: string } {
     return this._urls
-  }
-
-  get machineStates(): ListData<StateDictionary> {
-    return this._machineStates
-  }
-
-  get machineTransitions(): ListData<TransitionDictionary> {
-    return this._machineTransitions
-  }
-
-  get machineEdittingState(): ListData<string | undefined> {
-    return this._machineEdittingState
   }
 
   get machines(): ListData<Machine> {
@@ -96,10 +81,8 @@ export default class AppState {
     const arrangement = this.arrangements[selectedID]
     if (arrangement) return [JSON.stringify(arrangement.toModel), 'arrangement']
     const machine = this.machines[selectedID]
-    const states = this.machineStates[selectedID]
-    const transitions = this.machineTransitions[selectedID]
-    if (!machine || !states || !transitions) return undefined
-    const model = machineToModel(machine, states, transitions)
+    if (!machine) return undefined
+    const model = machine.toModel
     return [JSON.stringify(model), 'machine']
   }
 
@@ -107,9 +90,6 @@ export default class AppState {
     const newState = new AppState()
     newState._ids = { ...this._ids }
     newState._urls = { ...this._urls }
-    newState._machineStates = { ...this._machineStates }
-    newState._machineTransitions = { ...this._machineTransitions }
-    newState._machineEdittingState = { ...this._machineEdittingState }
     newState._machines = { ...this._machines }
     newState._root = this._root
     newState._selected = this._selected
@@ -122,9 +102,6 @@ export default class AppState {
   constructor() {
     this._ids = {}
     this._urls = {}
-    this._machineStates = {}
-    this._machineTransitions = {}
-    this._machineEdittingState = {}
     this._machines = {}
     this._arrangements = {}
     this._root = null
@@ -169,33 +146,17 @@ export default class AppState {
   }
 
   loadRootMachine(data: string, url: string, setAppState: (newState: AppState) => void): AppState {
-    const model = MachineModel.fromData(data)
-    const { machine, states, transitions } = modelToMachine(model)
-    return this.setNewRootMachine(machine, states, transitions, url, setAppState)
+    const machine = Machine.fromData(data)
+    if (!machine) return this
+    return this.setNewRootMachine(machine, url, setAppState)
   }
 
   machineView(id: string, setAppState: (newState: AppState) => void): JSX.Element {
+    const machine = this.machines[id]
+    if (!machine) return <div></div>
     return (
       <MachineView
-        states={this.machineStates[id]}
-        setStates={(setter: (states: StateDictionary) => StateDictionary) => {
-          const newMachineStates = { ...this.machineStates }
-          newMachineStates[id] = setter(newMachineStates[id])
-          setAppState(this.setMachineStates(newMachineStates, setAppState))
-        }}
-        transitions={this.machineTransitions[id]}
-        setTransitions={(setter: (transition: TransitionDictionary) => TransitionDictionary) => {
-          const newMachineTransitions = { ...this.machineTransitions }
-          newMachineTransitions[id] = setter(newMachineTransitions[id])
-          setAppState(this.setMachineTransitions(newMachineTransitions, setAppState))
-        }}
-        edittingState={this.machineEdittingState[id]}
-        setEdittingState={(stateID: string | undefined) => {
-          const newEdittingState = { ...this.machineEdittingState }
-          newEdittingState[id] = stateID
-          setAppState(this.setMachineEdittingState(newEdittingState, setAppState))
-        }}
-        machine={this.machines[id]}
+        machine={machine}
         setMachine={(newMachine: Machine) => {
           const newMachines = { ...this.machines }
           newMachines[id] = newMachine
@@ -211,8 +172,8 @@ export default class AppState {
   }
 
   newRootMachine(setAppState: (newState: AppState) => void): AppState {
-    const [states, transitions, machine] = Machine.defaultMachine
-    return this.setNewRootMachine(machine, states, transitions, null, setAppState)
+    const machine = Machine.defaultMachine
+    return this.setNewRootMachine(machine, null, setAppState)
   }
 
   setArrangement(
@@ -270,8 +231,6 @@ export default class AppState {
 
   setNewRootMachine(
     machine: Machine,
-    states: ListData<StateInformation>,
-    transitions: ListData<TransitionProperties>,
     url: string | null,
     setAppState: (newState: AppState) => void
   ): AppState {
@@ -281,8 +240,6 @@ export default class AppState {
       newState._urls[id] = url
       newState._ids[url] = id
     }
-    newState._machineStates[id] = states
-    newState._machineTransitions[id] = transitions
     newState._machines[id] = machine
     newState._root = new CanvasSwitcherItem(
       id,
@@ -294,69 +251,6 @@ export default class AppState {
     newState._allowSidePanelTogglingVisibility = false
     newState._sidePanelVisible = false
     newState.updateMachineView(id, setAppState)
-    return newState
-  }
-
-  setStates(
-    id: string,
-    state: StateDictionary,
-    setAppState: (newState: AppState) => void
-  ): AppState {
-    const newState = this.copy
-    newState._machineStates[id] = state
-    newState.updateMachineView(id, setAppState)
-    return newState
-  }
-
-  setMachineStates(
-    states: ListData<StateDictionary>,
-    setAppState: (newState: AppState) => void
-  ): AppState {
-    const newState = this.copy
-    newState._machineStates = states
-    newState.updateAllMachineViews(setAppState)
-    return newState
-  }
-
-  setTransitions(
-    id: string,
-    transition: TransitionDictionary,
-    setAppState: (newState: AppState) => void
-  ): AppState {
-    const newState = this.copy
-    newState._machineTransitions[id] = transition
-    newState.updateMachineView(id, setAppState)
-    return newState
-  }
-
-  setMachineTransitions(
-    transition: ListData<TransitionDictionary>,
-    setAppState: (newState: AppState) => void
-  ): AppState {
-    const newState = this.copy
-    newState._machineTransitions = transition
-    newState.updateAllMachineViews(setAppState)
-    return newState
-  }
-
-  setEdittingState(
-    id: string,
-    stateID: string | undefined,
-    setAppState: (newState: AppState) => void
-  ): AppState {
-    const newState = this.copy
-    newState._machineEdittingState[id] = stateID
-    newState.updateMachineView(id, setAppState)
-    return newState
-  }
-
-  setMachineEdittingState(
-    edittingState: ListData<string | undefined>,
-    setAppState: (newState: AppState) => void
-  ): AppState {
-    const newState = this.copy
-    newState._machineEdittingState = edittingState
-    newState.updateAllMachineViews(setAppState)
     return newState
   }
 
@@ -437,9 +331,8 @@ export default class AppState {
   }
 
   updateMachineView(id: string, setAppState: (newAppState: AppState) => void): void {
-    if (!this.machineStates[id] || !this.machineTransitions[id] || !this.machines[id]) {
-      return
-    }
+    const machine = this.machines[id]
+    if (!machine) return
     const machineView = (): JSX.Element => this.machineView(id, setAppState)
     const item = this.root?.findChild(id)
     if (!item) return

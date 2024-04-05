@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { useCallback, useEffect, useState } from 'react'
 import '../styles/Canvas.css'
 import State from '../views/State'
@@ -16,30 +14,15 @@ import BoundingBox from '../models/BoundingBox'
 import CanvasSidePanel from './CanvasSidePanel'
 import Machine from '../models/Machine'
 import TransitionContextMenu from './TransitionContextMenu'
+import StateProperties from '@renderer/models/StateProperties'
 
 export default function Canvas({
-  states,
-  transitions,
   machine,
-  setStates,
-  setTransitions,
-  setEdittingState,
   setMachine
 }: {
-  states: { [id: string]: StateInformation }
-  transitions: { [id: string]: TransitionProperties }
   machine: Machine
-  setStates: (
-    f: (states: { [id: string]: StateInformation }) => { [id: string]: StateInformation }
-  ) => void
-  setTransitions: (
-    f: (transitions: { [id: string]: TransitionProperties }) => {
-      [id: string]: TransitionProperties
-    }
-  ) => void
-  setEdittingState: (id: string | undefined) => void
   setMachine: (newMachine: Machine) => void
-}) {
+}): JSX.Element {
   const [focusedObjects, setFocusedObjects] = useState(new Set<string>())
   const [contextState, setContextState] = useState<string | undefined>(undefined)
   const [stateContextMenuPosition, setStateContextMenuPosition] = useState<
@@ -67,76 +50,37 @@ export default function Canvas({
   )
   const setPath = useCallback(
     (id: string, newPath: BezierPath) => {
-      const transition = transitions[id]
+      const transition = machine.transitions[id]?.shallowCopy
       if (!transition) return
-      const newTransitions: { [id: string]: TransitionProperties } = { ...transitions }
-      newTransitions[id] = new TransitionProperties(
-        transition.source,
-        transition.target,
-        transition.condition,
-        newPath,
-        transition.color
-      )
-      setTransitions(() => newTransitions)
+      transition.path = newPath
+      machine.setTransition(id, transition)
     },
-    [transitions, setTransitions]
+    [machine, setMachine]
   )
   const setCondition = useCallback(
     (id: string, condition: string) => {
-      const transition = transitions[id]
+      const transition = machine.transitions[id]?.shallowCopy
       if (!transition) return
-      const newTransitions: { [id: string]: TransitionProperties } = { ...transitions }
-      newTransitions[id] = new TransitionProperties(
-        transition.source,
-        transition.target,
-        condition,
-        transition.path,
-        transition.color
-      )
-      setTransitions(() => newTransitions)
+      transition.condition = condition
+      machine.setTransition(id, transition)
     },
-    [transitions, setTransitions]
+    [machine, setMachine]
   )
   const deleteSelection = useCallback(() => {
-    setStates((states) => {
-      const newStates: { [id: string]: StateInformation } = {}
-      Object.keys(states).forEach((id) => {
-        if (!focusedObjects.has(id)) {
-          newStates[id] = states[id]
-          newStates[id].properties.transitions = newStates[id].properties.transitions.filter(
-            (v) => !focusedObjects.has(v)
-          )
-        }
-      })
-      return newStates
-    })
-    setTransitions((transitions) => {
-      const newTransitions: { [id: string]: TransitionProperties } = {}
-      Object.keys(transitions).forEach((id) => {
-        if (
-          !focusedObjects.has(id) &&
-          !focusedObjects.has(transitions[id].source) &&
-          !focusedObjects.has(transitions[id].target)
-        ) {
-          newTransitions[id] = transitions[id]
-        }
-      })
-      return newTransitions
-    })
+    setMachine(machine.delete(focusedObjects))
     setFocusedObjects(new Set())
-  }, [focusedObjects, setStates, setTransitions, setFocusedObjects, states])
+  }, [machine, setMachine, focusedObjects, setFocusedObjects])
   const deselectAll = useCallback(() => {
     setContextState(undefined)
     setFocusedObjects(new Set())
     setContextMenuPosition(undefined)
     setStateContextMenuPosition(undefined)
-    setEdittingState(undefined)
+    setMachine(machine.setEdittingState(null))
     setTransitionContextMenuPosition(undefined)
   }, [
     setFocusedObjects,
     setContextMenuPosition,
     setStateContextMenuPosition,
-    setEdittingState,
     setContextState,
     setTransitionContextMenuPosition
   ])
@@ -161,7 +105,7 @@ export default function Canvas({
   useEffect(() => {
     window.addEventListener('keydown', keyDown)
     window.addEventListener('click', deselectAll)
-    return () => {
+    return (): void => {
       window.removeEventListener('keydown', keyDown)
       window.removeEventListener('click', deselectAll)
     }
@@ -172,28 +116,25 @@ export default function Canvas({
   // }, [counter, setCounter]);
   const createState = useCallback(
     (position: Point2D) => {
-      setStates((states) => {
-        const newStates = { ...states }
-        const newUUID = uuidv4()
-        newStates[newUUID] = {
-          id: newUUID,
-          properties: {
-            name: `State ${Object.keys(states).length}`,
-            w: 200,
-            h: 100,
-            expanded: false,
-            transitions: [],
-            actions: { OnEntry: '', OnExit: '', Internal: '' },
-            variables: '',
-            externalVariables: ''
-          },
-          position: position
-        }
-        return newStates
-      })
+      const newUUID = uuidv4()
+      const newState = new StateInformation(
+        newUUID,
+        new StateProperties(
+          `State ${Object.keys(machine.states).length}`,
+          200,
+          100,
+          false,
+          [],
+          { OnEntry: '', OnExit: '', Internal: '' },
+          '',
+          ''
+        ),
+        position
+      )
+      machine.addState(newState)
       deselectAll()
     },
-    [setStates, deselectAll]
+    [machine, setMachine]
   )
   const showStateContextMenu = useCallback(
     (position: Point2D, id: string) => {
@@ -205,93 +146,73 @@ export default function Canvas({
   )
   const deleteState = useCallback(
     (stateId: string) => {
-      setStates((states) => {
-        const newStates = { ...states }
-        delete newStates[stateId]
-        return newStates
-      })
-      setTransitions((transitions) => {
-        const newTransitions: { [id: string]: TransitionProperties } = {}
-        Object.keys(transitions).forEach((id) => {
-          if (transitions[id].source != stateId && transitions[id].target != stateId) {
-            newTransitions[id] = transitions[id]
-          }
-        })
-        return newTransitions
-      })
+      setMachine(machine.deleteState(stateId))
       deselectAll()
     },
-    [setStates, setTransitions, deselectAll]
+    [machine, setMachine, deselectAll]
   )
   const setStateTransitions = useCallback(
     (stateId: string, newTransitions: string[]) => {
-      setStates((states) => {
-        const newStates = { ...states }
-        newStates[stateId] = {
-          ...newStates[stateId],
-          properties: {
-            ...newStates[stateId].properties,
-            transitions: newTransitions
-          }
-        }
-        return newStates
-      })
+      setMachine(machine.setStateTransitions(stateId, newTransitions))
     },
-    [setStates]
+    [machine, setMachine]
   )
-  const deleteTransition = useCallback((transitionId: string) => {
-    deselectAll()
-    setStates((states) => {
-      const stateID = transitions[transitionId].source
-      const state = states[stateID]
-      if (!state) return states
-      const newStates: { [id: string]: StateInformation } = { ...states }
-      newStates[stateID] = {
-        ...state,
-        properties: {
-          ...state.properties,
-          transitions: state.properties.transitions.filter((v) => v != transitionId)
-        }
-      }
-      return newStates
-    })
-    setTransitions((transitions) => {
-      const newTransitions: { [id: string]: TransitionProperties } = { ...transitions }
-      delete newTransitions[transitionId]
-      return newTransitions
-    })
-  })
+  const deleteTransition = useCallback(
+    (transitionId: string) => {
+      deselectAll()
+      setMachine(machine.deleteTransition(transitionId))
+    },
+    [machine, setMachine, deselectAll]
+  )
   const createTransition = useCallback(
     (stateID: string, sourceID: string) => {
-      const sourceState = boundingBox(states[sourceID])
-      const target = boundingBox(states[stateID])
-      const edge = calculateEdge(sourceState, target)
+      const sourceState = machine.states[sourceID]
+      const targetState = machine.states[stateID]
+      if (!sourceState || !targetState) return
+      const source = boundingBox(sourceState)
+      const target = boundingBox(targetState)
+      const edge = calculateEdge(source, target)
       const newUUID = uuidv4()
-      setTransitions((transitions) => {
-        const newTransitions = { ...transitions }
-        newTransitions[newUUID] = new TransitionProperties(sourceID, stateID, 'true', edge, 'white')
-        return newTransitions
-      })
-      setStates((states) => {
-        const newStates = { ...states }
-        if (
-          newStates[sourceID].properties.transitions.find((v) => {
-            return v == newUUID
-          }) === undefined
-        ) {
-          newStates[sourceID].properties.transitions.push(newUUID)
-        }
-        return newStates
-      })
+      const transition = new TransitionProperties(sourceID, stateID, 'true', edge, 'white')
+      setMachine(machine.addTransition(newUUID, transition))
       deselectAll()
     },
-    [setTransitions, setStates, deselectAll, states]
+    [machine, setMachine, deselectAll]
+  )
+  const setStatePosition = useCallback(
+    (id: string, newPosition: Point2D): void => {
+      const state = machine.states[id]?.copy
+      if (!state) return
+      state.position = newPosition
+      setMachine(machine.setState(id, state))
+    },
+    [machine, setMachine]
+  )
+  const setStateDimensions = useCallback(
+    (id: string, newPosition: Point2D, newDimensions: Point2D): void => {
+      const state = machine.states[id]?.copy
+      if (!state) return
+      state.position = newPosition
+      state.properties.w = newDimensions.x
+      state.properties.h = newDimensions.y
+      setMachine(machine.setState(id, state))
+    },
+    [machine, setMachine]
+  )
+  const setEdittingState = useCallback(
+    (newEdittingState: string | null): void => {
+      setMachine(machine.setEdittingState(newEdittingState))
+    },
+    [machine, setMachine]
   )
   return (
     <div className="canvas" onContextMenu={showContextMenu}>
-      {Object.keys(transitions).map((id) => {
-        const transition = transitions[id]
-        const priority = Math.max(states[transition.source].properties.transitions.indexOf(id), 0)
+      {Object.keys(machine.transitions).map((id) => {
+        const transition = machine.transitions[id]
+        const priority = Math.max(
+          machine.states[transition.source].properties.transitions.indexOf(id),
+          0
+        )
         return (
           <div key={id}>
             <Transition
@@ -310,53 +231,17 @@ export default function Canvas({
           </div>
         )
       })}
-      {Object.keys(states).map((id) => {
-        const state = states[id]
-        const setPosition = (newPosition: Point2D) => {
-          setStates((states) => {
-            const newStates: { [id: string]: StateInformation } = {}
-            Object.keys(states).forEach((id2) => {
-              if (id == id2) {
-                newStates[id2] = {
-                  id: id2,
-                  properties: states[id2].properties,
-                  position: newPosition
-                }
-              } else {
-                newStates[id2] = states[id2]
-              }
-            })
-            return newStates
-          })
-        }
-        const setDimensions = (newPosition: Point2D, newDimensions: Point2D) => {
-          setStates((states) => {
-            const newStates: { [id: string]: StateInformation } = {}
-            Object.keys(states).forEach((id2) => {
-              if (id != id2) {
-                newStates[id2] = states[id2]
-                return
-              }
-              newStates[id2] = {
-                ...states[id2],
-                properties: {
-                  ...states[id2].properties,
-                  w: newDimensions.x,
-                  h: newDimensions.y
-                },
-                position: newPosition
-              }
-            })
-            return newStates
-          })
-        }
+      {Object.keys(machine.states).map((id) => {
+        const state = machine.states[id]
         return (
           <div key={state.id}>
             <State
               properties={state.properties}
               position={state.position}
-              setPosition={setPosition}
-              setDimensions={setDimensions}
+              setPosition={(newPosition: Point2D): void => setStatePosition(id, newPosition)}
+              setDimensions={(newPosition: Point2D, newDimensions: Point2D): void =>
+                setStateDimensions(id, newPosition, newDimensions)
+              }
               isSelected={focusedObjects.has(id)}
               addSelection={() => addSelection(id)}
               uniqueSelection={() => uniqueSelection(id)}
@@ -375,33 +260,18 @@ export default function Canvas({
       {stateContextMenuPosition !== undefined && (
         <StateContextMenu
           position={stateContextMenuPosition![0]}
-          states={Object.keys(states).map(
-            (id: string) => new StateIdentifier(id, states[id].properties.name)
+          states={Object.keys(machine.states).map(
+            (id: string) => new StateIdentifier(id, machine.states[id].properties.name)
           )}
           createTransition={(stateID: string) => createTransition(stateID, contextState!)}
           deleteState={() => deleteState(stateContextMenuPosition![1])}
-          setInitialState={() =>
-            setMachine(
-              new Machine(
-                machine.externalVariables,
-                machine.machineVariables,
-                machine.includes,
-                contextState,
-                machine.suspendedState
-              )
-            )
-          }
-          setSuspendedState={() =>
-            setMachine(
-              new Machine(
-                machine.externalVariables,
-                machine.machineVariables,
-                machine.includes,
-                machine.initialState,
-                contextState
-              )
-            )
-          }
+          setInitialState={() => {
+            if (!contextState) return
+            setMachine(machine.setInitialState(contextState))
+          }}
+          setSuspendedState={() => {
+            setMachine(machine.setSuspendedState(contextState))
+          }}
         />
       )}
       {transitionContextMenuPosition !== undefined && (
@@ -409,18 +279,18 @@ export default function Canvas({
           position={transitionContextMenuPosition![0]}
           id={transitionContextMenuPosition![1]}
           transitions={
-            states[transitions[transitionContextMenuPosition![1]].source].properties.transitions
+            machine.states[machine.transitions[transitionContextMenuPosition![1]].source].properties.transitions
           }
           setTransitions={(newTransitions: string[]) =>
             setStateTransitions(
-              transitions[transitionContextMenuPosition![1]].source,
+              machine.transitions[transitionContextMenuPosition![1]].source,
               newTransitions
             )
           }
           deleteTransition={() => deleteTransition(transitionContextMenuPosition![1])}
         />
       )}
-      <CanvasSidePanel machine={machine} states={states} setMachine={setMachine} />
+      <CanvasSidePanel machine={machine} setMachine={setMachine} />
     </div>
   )
 }

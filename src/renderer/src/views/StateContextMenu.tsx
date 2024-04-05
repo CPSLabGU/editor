@@ -14,7 +14,6 @@ function StateContextMenu({
 }: {
   position: Point2D
   states: StateIdentifier[]
-  initialState: string
   createTransition: (stateID: string) => void
   deleteState: () => void
   setInitialState: () => void

@@ -10,6 +10,19 @@ export default class StateProperties {
   variables: string
   externalVariables: string
 
+  get copy(): StateProperties {
+    return new StateProperties(
+      this.name,
+      this.w,
+      this.h,
+      this.expanded,
+      this.transitions,
+      { ...this.actions },
+      this.variables,
+      this.externalVariables
+    )
+  }
+
   constructor(
     name: string,
     w: number,

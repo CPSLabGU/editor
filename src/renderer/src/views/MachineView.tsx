@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import StateInformation from '../models/StateInformation'
 import TransitionProperties from '../models/TransitionProperties'
 import Canvas from '../views/Canvas'
@@ -12,106 +10,79 @@ export type StateDictionary = { [id: string]: StateInformation }
 export type TransitionDictionary = { [id: string]: TransitionProperties }
 
 interface MachineViewArgs {
-  states: StateDictionary
-  setStates: (setter: (states: StateDictionary) => StateDictionary) => void
-  transitions: TransitionDictionary
-  setTransitions: (setter: (transitions: TransitionDictionary) => TransitionDictionary) => void
-  edittingState: string | undefined
-  setEdittingState: (id: string | undefined) => void
   machine: Machine
   setMachine: (newMachine: Machine) => void
 }
 
-export default function MachineView({
-  states,
-  setStates,
-  transitions,
-  setTransitions,
-  edittingState,
-  setEdittingState,
-  machine,
-  setMachine
-}: MachineViewArgs): JSX.Element {
+export default function MachineView({ machine, setMachine }: MachineViewArgs): JSX.Element {
   const setStateName = useCallback(
     (id: string, name: string) => {
-      const state = states[id]
+      const state = machine.states[id]?.copy
       if (!state) return
-      const newStates: { [id: string]: StateInformation } = { ...states }
-      newStates[id] = {
-        id: state.id,
-        properties: {
-          name: name,
-          w: state.properties.w,
-          h: state.properties.h,
-          expanded: state.properties.expanded,
-          transitions: state.properties.transitions,
-          actions: state.properties.actions,
-          variables: state.properties.variables,
-          externalVariables: state.properties.externalVariables
-        },
-        position: state.position
-      }
-      setStates(() => newStates)
+      state.properties.name = name
+      setMachine(machine.setState(id, state))
     },
-    [states, setStates]
+    [machine, setMachine]
   )
   const setStateVariables = useCallback(
     (id: string, variables: string) => {
-      const state = states[id]
+      const state = machine.states[id]?.copy
       if (!state) return
-      const newStates: { [id: string]: StateInformation } = { ...states }
-      newStates[id] = {
-        id: state.id,
-        properties: {
-          name: state.properties.name,
-          w: state.properties.w,
-          h: state.properties.h,
-          expanded: state.properties.expanded,
-          transitions: state.properties.transitions,
-          actions: state.properties.actions,
-          variables: variables,
-          externalVariables: state.properties.externalVariables
-        },
-        position: state.position
-      }
-      setStates(() => newStates)
+      state.properties.variables = variables
+      setMachine(machine.setState(id, state))
     },
-    [states, setStates]
+    [machine, setMachine]
   )
   const setExternalVariables = useCallback(
     (id: string, externalVariables: string) => {
-      const state = states[id]
+      const state = machine.states[id]?.copy
       if (!state) return
-      const newStates: { [id: string]: StateInformation } = { ...states }
-      newStates[id] = {
-        id: state.id,
-        properties: {
-          name: state.properties.name,
-          w: state.properties.w,
-          h: state.properties.h,
-          expanded: state.properties.expanded,
-          transitions: state.properties.transitions,
-          actions: state.properties.actions,
-          variables: state.properties.variables,
-          externalVariables: externalVariables
-        },
-        position: state.position
-      }
-      setStates(() => newStates)
+      state.properties.externalVariables = externalVariables
+      setMachine(machine.setState(id, state))
     },
-    [states, setStates]
+    [machine, setMachine]
   )
-  if (edittingState !== undefined) {
+  const setAction = useCallback(
+    (id: string, action: string, code: string) => {
+      const state = machine.states[id]?.copy
+      if (!state) return
+      state.properties.actions[action] = code
+      setMachine(machine.setState(id, state))
+    },
+    [machine, setMachine]
+  )
+  const setEdittingState = useCallback(
+    (newEdittingState: string | null) => {
+      setMachine(machine.setEdittingState(newEdittingState))
+    },
+    [machine, setMachine]
+  )
+  const setStates = useCallback(
+    (
+      setter: (states: { [id: string]: StateInformation }) => { [id: string]: StateInformation }
+    ): void => setMachine(machine.setStates(setter(machine.states))),
+    [machine, setMachine]
+  )
+  const setTransitions = useCallback(
+    (
+      setter: (transitions: { [id: string]: TransitionProperties }) => {
+        [id: string]: TransitionProperties
+      }
+    ): void => setMachine(machine.setTransitions(setter(machine.transitions))),
+    [machine, setMachine]
+  )
+  if (machine.edittingState !== null && machine.states[machine.edittingState]) {
+    const edittingState = machine.edittingState
     return (
       <>
         <CodeView
-          actions={states[edittingState].properties.actions}
+          actions={machine.states[edittingState].properties.actions}
           language="javascript"
-          state={states[edittingState].properties.name}
-          variables={states[edittingState].properties.variables}
-          externalVariables={states[edittingState].properties.externalVariables}
+          state={machine.states[edittingState].properties.name}
+          variables={machine.states[edittingState].properties.variables}
+          externalVariables={machine.states[edittingState].properties.externalVariables}
           setActions={(action: string, code: string) => {
-            states[edittingState].properties.actions[action] = code
+            setAction(edittingState, action, code)
           }}
           setState={(name: string) => {
             setStateName(edittingState, name)
@@ -122,7 +93,7 @@ export default function MachineView({
           setExternalVariables={(externalVariables: string) => {
             setExternalVariables(edittingState, externalVariables)
           }}
-          onExit={() => setEdittingState(undefined)}
+          onExit={() => setEdittingState(null)}
         />
       </>
     )
@@ -130,8 +101,8 @@ export default function MachineView({
     return (
       <>
         <Canvas
-          states={states}
-          transitions={transitions}
+          states={machine.states}
+          transitions={machine.transitions}
           machine={machine}
           setStates={setStates}
           setTransitions={setTransitions}
