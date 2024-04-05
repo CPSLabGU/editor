@@ -294,19 +294,19 @@ export default class AppState {
     return newState
   }
 
-  updateAllArrangementViews(setAppState: (newAppState: AppState) => void): void {
+  private updateAllArrangementViews(setAppState: (newAppState: AppState) => void): void {
     for (const id in this.arrangements) {
       this.updateArrangementView(id, setAppState)
     }
   }
 
-  updateAllMachineViews(setAppState: (newAppState: AppState) => void): void {
+  private updateAllMachineViews(setAppState: (newAppState: AppState) => void): void {
     for (const id in this.machines) {
       this.updateMachineView(id, setAppState)
     }
   }
 
-  updateArrangementView(id: string, setAppState: (newAppState: AppState) => void): void {
+  private updateArrangementView(id: string, setAppState: (newAppState: AppState) => void): void {
     const item = this.root?.findChild(id)
     if (!item) return
     const arrangement = this.arrangements[id]
@@ -326,7 +326,7 @@ export default class AppState {
     }
   }
 
-  updateMachineView(id: string, setAppState: (newAppState: AppState) => void): void {
+  private updateMachineView(id: string, setAppState: (newAppState: AppState) => void): void {
     const machine = this.machines[id]
     if (!machine) return
     const machineView = (): JSX.Element => this.machineView(id, setAppState)
