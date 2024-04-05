@@ -1,15 +1,25 @@
 // @ts-nocheck
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import './App.css'
 import AppState from './AppState'
+import Welcome from '@renderer/welcome/Welcome'
 
 export default function App(): JSX.Element {
   const [appState, setAppState] = useState(new AppState())
 
-  // useEffect(() => {
-  //   setAppState(appState.newRootArrangement('vhdl'))
-  // }, [])
+  const openArrangement = useCallback((): void => {
+    console.log('openArrangement')
+  }, [])
+  const openMachine = useCallback((): void => {
+    console.log('openMachine')
+  }, [])
+  const createArrangement = useCallback((): void => {
+    setAppState(appState.newRootArrangement('vhdl', setAppState))
+  }, [appState, setAppState])
+  const createMachine = useCallback((): void => {
+    setAppState(appState.newRootMachine(setAppState))
+  }, [appState, setAppState])
 
   useEffect(() => {
     window.ipc.load((e, data, url, type) => {
@@ -27,7 +37,14 @@ export default function App(): JSX.Element {
     })
   }, [appState, setAppState])
   if (!appState.root) {
-    return <div></div>
+    return (
+      <Welcome
+        openArrangement={openArrangement}
+        openMachine={openMachine}
+        createArrangement={createArrangement}
+        createMachine={createMachine}
+      />
+    )
   } else {
     return appState.canvasSwitcher(setAppState)
   }
