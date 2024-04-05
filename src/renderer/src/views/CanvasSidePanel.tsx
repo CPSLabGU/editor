@@ -33,10 +33,10 @@ export default function CanvasSidePanel({
           <div>
             <h2>State Information</h2>
             <div>
-              <span>{`Initial State: ${machine.states[machine.initialState]?.properties.name ?? ''}`}</span>
+              <span>{`Initial State: ${machine.states[machine.initialState]?.properties.name ?? 'none'}`}</span>
             </div>
             <div>
-              <span>{`Suspended State: ${machine.suspendedState !== undefined ? machine.states[machine.suspendedState].properties.name : 'none'}`}</span>
+              <span>{`Suspended State: ${machine.suspendedState !== undefined ? machine.states[machine.suspendedState]?.properties.name ?? 'none' : 'none'}`}</span>
             </div>
             <div>
               <button

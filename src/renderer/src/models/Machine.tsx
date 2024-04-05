@@ -292,6 +292,24 @@ export default class Machine {
       transitions[id] = properties
       states[sourceID].properties.transitions.push(id)
     })
+    let initialState: string
+    if (Object.keys(states).length > 0) {
+      initialState = Object.keys(states).find(
+        (key) => states[key].properties.name == model.initialState
+      ) || states[Object.keys(states)[0]].properties.name
+    } else {
+      initialState = ''
+    }
+
+    let suspendState: string
+    if (Object.keys(states).length > 0) {
+      suspendState = Object.keys(states).find(
+        (key) => states[key].properties.name == model.suspendedState
+      ) || states[Object.keys(states)[0]].properties.name
+    } else {
+      suspendState = ''
+    }
+    
     return new Machine(
       states,
       transitions,
@@ -299,8 +317,8 @@ export default class Machine {
       model.externalVariables,
       model.machineVariables,
       model.includes,
-      model.initialState,
-      model.suspendedState,
+      initialState,
+      suspendState,
       model.clocks.map(Clock.fromModel)
     )
   }
