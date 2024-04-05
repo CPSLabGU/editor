@@ -52,8 +52,8 @@ export default function Canvas({
     (id: string, newPath: BezierPath) => {
       const transition = machine.transitions[id]?.shallowCopy
       if (!transition) return
-      transition.path = newPath
-      machine.setTransition(id, transition)
+      transition.path = newPath.copy
+      setMachine(machine.setTransition(id, transition))
     },
     [machine, setMachine]
   )
@@ -62,7 +62,7 @@ export default function Canvas({
       const transition = machine.transitions[id]?.shallowCopy
       if (!transition) return
       transition.condition = condition
-      machine.setTransition(id, transition)
+      setMachine(machine.setTransition(id, transition))
     },
     [machine, setMachine]
   )
@@ -78,10 +78,12 @@ export default function Canvas({
     setMachine(machine.setEdittingState(null))
     setTransitionContextMenuPosition(undefined)
   }, [
+    machine,
     setFocusedObjects,
     setContextMenuPosition,
     setStateContextMenuPosition,
     setContextState,
+    setMachine,
     setTransitionContextMenuPosition
   ])
   const keyDown = useCallback(
@@ -131,7 +133,7 @@ export default function Canvas({
         ),
         position
       )
-      machine.addState(newState)
+      setMachine(machine.addState(newState))
       deselectAll()
     },
     [machine, setMachine]
@@ -214,41 +216,39 @@ export default function Canvas({
           0
         )
         return (
-          <div key={id}>
-            <Transition
-              id={id}
-              properties={transition}
-              priority={priority}
-              isSelected={focusedObjects.has(id)}
-              setPath={(newPath: BezierPath) => setPath(id, newPath)}
-              setCondition={(condition: string) => setCondition(id, condition)}
-              addSelection={() => addSelection(id)}
-              uniqueSelection={() => uniqueSelection(id)}
-              showContextMenu={(position: Point2D) =>
-                setTransitionContextMenuPosition([position, id])
-              }
-            ></Transition>
-          </div>
+          <Transition
+            key={id}
+            id={id}
+            properties={transition}
+            priority={priority}
+            isSelected={focusedObjects.has(id)}
+            setPath={(newPath: BezierPath) => setPath(id, newPath)}
+            setCondition={(condition: string) => setCondition(id, condition)}
+            addSelection={() => addSelection(id)}
+            uniqueSelection={() => uniqueSelection(id)}
+            showContextMenu={(position: Point2D) =>
+              setTransitionContextMenuPosition([position, id])
+            }
+          />
         )
       })}
       {Object.keys(machine.states).map((id) => {
         const state = machine.states[id]
         return (
-          <div key={state.id}>
-            <State
-              properties={state.properties}
-              position={state.position}
-              setPosition={(newPosition: Point2D): void => setStatePosition(id, newPosition)}
-              setDimensions={(newPosition: Point2D, newDimensions: Point2D): void =>
-                setStateDimensions(id, newPosition, newDimensions)
-              }
-              isSelected={focusedObjects.has(id)}
-              addSelection={() => addSelection(id)}
-              uniqueSelection={() => uniqueSelection(id)}
-              showContextMenu={(position: Point2D) => showStateContextMenu(position, id)}
-              onDoubleClick={() => setEdittingState(id)}
-            />
-          </div>
+          <State
+            key={id}
+            properties={state.properties}
+            position={state.position}
+            setPosition={(newPosition: Point2D): void => setStatePosition(id, newPosition)}
+            setDimensions={(newPosition: Point2D, newDimensions: Point2D): void =>
+              setStateDimensions(id, newPosition, newDimensions)
+            }
+            isSelected={focusedObjects.has(id)}
+            addSelection={() => addSelection(id)}
+            uniqueSelection={() => uniqueSelection(id)}
+            showContextMenu={(position: Point2D) => showStateContextMenu(position, id)}
+            onDoubleClick={() => setEdittingState(id)}
+          />
         )
       })}
       {contextMenuPosition !== undefined && (
