@@ -9,7 +9,7 @@ export default function App(): JSX.Element {
   const [load, setLoad] = useState<{ data: string; url: string; type: string } | undefined>(
     undefined
   )
-  const [didSave, setDidSave] = useState<{ id: string, path: string, type: string } | undefined>(
+  const [didSave, setDidSave] = useState<{ id: string; path: string; type: string } | undefined>(
     undefined
   )
 
