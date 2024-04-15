@@ -5,11 +5,13 @@ import '../util/Flex.css'
 interface VariableMappingViewArgs {
   mapping: VariableMapping
   setMapping: (newMapping: VariableMapping) => void
+  onDelete: () => void
 }
 
 export default function VariableMappingView({
   mapping,
-  setMapping
+  setMapping,
+  onDelete
 }: VariableMappingViewArgs): JSX.Element {
   const changeSource = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -39,6 +41,12 @@ export default function VariableMappingView({
         <h3>Destination</h3>
         <div>
           <input type="text" onChange={changeDestination} value={mapping.destination} />
+        </div>
+      </div>
+      <div className="flex-element">
+        <h3> </h3>
+        <div>
+          <button onClick={onDelete}>Delete</button>
         </div>
       </div>
     </div>

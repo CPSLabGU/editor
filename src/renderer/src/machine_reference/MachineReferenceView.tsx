@@ -39,6 +39,10 @@ export default function MachineReferenceView({
     const [id, mapping] = machineReference.emptyMapping
     setMachineReference(machineReference.addMapping(id, mapping))
   }, [machineReference, setMachineReference])
+  const deleteMapping = useCallback(
+    (id: string): void => setMachineReference(machineReference.removeMapping(id)),
+    [machineReference, setMachineReference]
+  )
   const changeMapping = useCallback(
     (id: string, newMapping: VariableMapping) => {
       const newMappings = { ...machineReference.mappings }
@@ -57,6 +61,7 @@ export default function MachineReferenceView({
         key={key}
         mapping={mapping}
         setMapping={(newMapping: VariableMapping) => changeMapping(key, newMapping)}
+        onDelete={() => deleteMapping(key)}
       />
     )
   }
