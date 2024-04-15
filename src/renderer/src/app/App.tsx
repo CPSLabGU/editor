@@ -6,7 +6,10 @@ import Welcome from '@renderer/welcome/Welcome'
 export default function App(): JSX.Element {
   const [appState, setAppState] = useState(new AppState())
   const [updateData, setUpdateData] = useState<string | null | undefined>(undefined)
-  const [load, setLoad] = useState<{data: string, url: string, type: string} | undefined>(
+  const [load, setLoad] = useState<{ data: string; url: string; type: string } | undefined>(
+    undefined
+  )
+  const [didSave, setDidSave] = useState<{ id: string, path: string, type: string } | undefined>(
     undefined
   )
 
@@ -29,8 +32,8 @@ export default function App(): JSX.Element {
     setUpdateData(undefined)
     const result = appState.selectedData
     if (!result) return
-    const [data, type] = result
-    window.ipc.save(updateData, data, type)
+    const [id, data, type] = result
+    window.ipc.save(id, updateData, data, type)
   }, [updateData, setUpdateData, appState])
   useEffect(() => {
     if (load === undefined) return
@@ -41,6 +44,11 @@ export default function App(): JSX.Element {
       setAppState(appState.loadRootArrangement(load.data, load.url, setAppState))
     }
   }, [load, setLoad, appState, setAppState])
+  useEffect(() => {
+    if (didSave === undefined) return
+    setDidSave(undefined)
+    setAppState(appState.addID(didSave.id, didSave.path))
+  }, [didSave, setDidSave, appState, setAppState])
 
   useEffect(() => {
     window.ipc.updateData((e, path) => {
@@ -53,6 +61,12 @@ export default function App(): JSX.Element {
       setLoad({ data: data, url: url, type: type })
     })
   }, [setLoad])
+  useEffect(() => {
+    console.log('useEffect', appState.selected)
+    window.ipc.didSave((e, id, path, type) => {
+      setDidSave({ id: id, path: path, type: type })
+    })
+  }, [setDidSave])
   if (!appState.root) {
     return (
       <Welcome

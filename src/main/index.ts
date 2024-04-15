@@ -2,7 +2,7 @@ import { app, shell, BrowserWindow, ipcMain, IpcMainEvent, Menu, dialog } from '
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import fs from 'fs'
+import fs from 'fs/promises'
 const { exec } = require('node:child_process')
 // let number = 0
 
@@ -47,36 +47,42 @@ function createWindow(): void {
     openFileDialog(mainWindow, 'machine')
   })
 
-  ipcMain.on('save', (event: IpcMainEvent, path: string | null, data: string, type: string) => {
-    if (path) {
-      fs.writeFileSync(path + '/model.json', data)
-      return
-    }
-    const filters: Electron.FileFilter[] = []
-    if (type == 'arrangement') {
-      filters.push({ name: 'Arrangement', extensions: ['arrangement'] })
-    } else if (type == 'machine') {
-      filters.push({ name: 'Machines', extensions: ['machine'] })
-    }
-    filters.push({ name: 'All Files', extensions: ['*'] })
-    const filePath: string | undefined = dialog.showSaveDialogSync(mainWindow, {
-      properties: ['createDirectory'],
-      filters: filters
-    })
-    if (filePath) {
+  ipcMain.on(
+    'save',
+    async (
+      event: IpcMainEvent,
+      id: string,
+      path: string | null,
+      data: string,
+      type: string
+    ): Promise<void> => {
+      if (path) {
+        await fs.writeFile(path + '/model.json', data)
+        mainWindow.webContents.send('didSave', id, path, type)
+        return
+      }
+      const filters: Electron.FileFilter[] = []
+      if (type == 'arrangement') {
+        filters.push({ name: 'Arrangement', extensions: ['arrangement'] })
+      } else if (type == 'machine') {
+        filters.push({ name: 'Machines', extensions: ['machine'] })
+      }
+      filters.push({ name: 'All Files', extensions: ['*'] })
+      const filePath: string | undefined = dialog.showSaveDialogSync(mainWindow, {
+        properties: ['createDirectory'],
+        filters: filters
+      })
+      if (!filePath) return
       if (!filePath.endsWith(`.${type}`)) {
         console.error('Incorrect file extension.')
         return
       }
-      fs.mkdir(filePath, { recursive: true }, () => {
-        console.error(`Couldn't create ${type} folder`)
-      })
-      fs.writeFile(filePath + '/model.json', data, () => {
-        generateFileMenus(mainWindow, filePath, type)
-        console.log('Finished writing model.')
-      })
+      await fs.mkdir(filePath, { recursive: true })
+      await fs.writeFile(filePath + '/model.json', data)
+      generateFileMenus(mainWindow, filePath, type)
+      mainWindow.webContents.send('didSave', id, filePath, type)
     }
-  })
+  )
   mainWindow.webContents.openDevTools()
 }
 
@@ -116,7 +122,7 @@ app.on('window-all-closed', () => {
 //   return ++number
 // }
 
-function openFileDialog(window: BrowserWindow, type: string): void {
+async function openFileDialog(window: BrowserWindow, type: string): Promise<void> {
   const filters: Electron.FileFilter[] = []
   if (type === 'machine') {
     filters.push({ name: 'Machines', extensions: ['machine'] })
@@ -138,13 +144,7 @@ function openFileDialog(window: BrowserWindow, type: string): void {
   } else if (filePath[0].endsWith('.machine')) {
     newType = 'machine'
   }
-  const fd = fs.openSync(filePath[0] + '/model.json', 'r')
-  if (fd < 0) {
-    console.error('Failed to open file at path: ' + filePath[0])
-    return
-  }
-  const data = fs.readFileSync(fd, 'utf-8')
-  fs.closeSync(fd)
+  const data = await fs.readFile(filePath[0] + '/model.json', 'utf-8')
   window.webContents.send('load', data, filePath[0], newType)
   generateFileMenus(window, filePath[0], newType)
 }
@@ -153,27 +153,27 @@ function generateFileMenus(mainWindow: BrowserWindow, path: string | null, type:
   const fileMenus = [
     {
       label: 'Open',
-      click: (): void => openFileDialog(mainWindow, '')
+      click: async (): Promise<void> => await openFileDialog(mainWindow, '')
     }
   ]
   if (path) {
     fileMenus.push({
       label: 'Save',
-      click: () => {
+      click: async (): Promise<void> => {
         mainWindow.webContents.send('updateData', path, type)
       }
     })
   }
   fileMenus.push({
     label: 'Save As',
-    click: () => {
+    click: async (): Promise<void> => {
       mainWindow.webContents.send('updateData', null, type)
     }
   })
   if (path && type == 'machine') {
     fileMenus.push({
       label: 'Export to Machine',
-      click: () => {
+      click: async (): Promise<void> => {
         exec('llfsmgenerate model ' + path, (error, stdout, stderr) => {
           if (error) {
             console.error(`exec error: ${error}`)
@@ -186,7 +186,7 @@ function generateFileMenus(mainWindow: BrowserWindow, path: string | null, type:
     })
     fileMenus.push({
       label: 'Generate VHDL',
-      click: () => {
+      click: async (): Promise<void> => {
         exec('llfsmgenerate vhdl ' + path, (error, stdout, stderr) => {
           if (error) {
             console.error(`exec error: ${error}`)
@@ -199,7 +199,7 @@ function generateFileMenus(mainWindow: BrowserWindow, path: string | null, type:
     })
     fileMenus.push({
       label: 'Create Kripke Structure Generator',
-      click: () => {
+      click: async (): Promise<void> => {
         exec('llfsmgenerate vhdl --include-kripke-structure ' + path, (error, stdout, stderr) => {
           if (error) {
             console.error(`exec error: ${error}`)

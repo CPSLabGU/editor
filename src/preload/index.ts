@@ -21,8 +21,10 @@ if (process.contextIsolated) {
         ipcRenderer.on('load', callback),
       updateData: (callback: (e: IpcRendererEvent, path: string | null, type: string) => void) =>
         ipcRenderer.on('updateData', callback),
-      save: (path: string | null, data: string, type: string) =>
-        ipcRenderer.send('save', path, data, type)
+      save: (id: string, path: string | null, data: string, type: string) =>
+        ipcRenderer.send('save', id, path, data, type),
+      didSave: (callback: (e: IpcRendererEvent, id: string, path: string, type: string) => void) =>
+        ipcRenderer.on('didSave', callback)
     })
   } catch (error) {
     console.error(error)

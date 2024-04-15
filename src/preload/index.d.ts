@@ -6,8 +6,9 @@ interface IPCInterface {
   open: (callback: (e: IpcRendererEvent) => void) => void
   openArrangement: () => void
   openMachine: () => void
-  save: (path: string | null, data: string, type: string) => void
+  save: (id: string, path: string | null, data: string, type: string) => void
   updateData: (callback: (e: IpcRendererEvent, path: string | null, type: string) => void) => void
+  didSave: (callback: (e: IpcRendererEvent, id: string, path: string, type: string) => void) => void
 }
 
 declare global {
