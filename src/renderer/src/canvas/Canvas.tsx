@@ -70,22 +70,26 @@ export default function Canvas({
     setMachine(machine.delete(focusedObjects))
     setFocusedObjects(new Set())
   }, [machine, setMachine, focusedObjects, setFocusedObjects])
-  const deselectAll = useCallback(() => {
-    setContextState(undefined)
-    setFocusedObjects(new Set())
-    setContextMenuPosition(undefined)
-    setStateContextMenuPosition(undefined)
-    setMachine(machine.setEdittingState(null))
-    setTransitionContextMenuPosition(undefined)
-  }, [
-    machine,
-    setFocusedObjects,
-    setContextMenuPosition,
-    setStateContextMenuPosition,
-    setContextState,
-    setMachine,
-    setTransitionContextMenuPosition
-  ])
+  const deselectAll = useCallback(
+    (latestMachine: Machine | null = null) => {
+      const m: Machine = latestMachine ?? machine
+      setContextState(undefined)
+      setFocusedObjects(new Set())
+      setContextMenuPosition(undefined)
+      setStateContextMenuPosition(undefined)
+      setMachine(m.setEdittingState(null))
+      setTransitionContextMenuPosition(undefined)
+    },
+    [
+      machine,
+      setFocusedObjects,
+      setContextMenuPosition,
+      setStateContextMenuPosition,
+      setContextState,
+      setMachine,
+      setTransitionContextMenuPosition
+    ]
+  )
   const keyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key == 'Escape') {
@@ -106,10 +110,10 @@ export default function Canvas({
   )
   useEffect(() => {
     window.addEventListener('keydown', keyDown)
-    window.addEventListener('click', deselectAll)
+    window.addEventListener('click', () => deselectAll())
     return (): void => {
       window.removeEventListener('keydown', keyDown)
-      window.removeEventListener('click', deselectAll)
+      window.removeEventListener('click', () => deselectAll())
     }
   }, [keyDown, deselectAll])
   // const clickMeCB = useCallback(() => {
@@ -133,10 +137,9 @@ export default function Canvas({
         ),
         position
       )
-      setMachine(machine.addState(newState))
-      deselectAll()
+      deselectAll(machine.addState(newState))
     },
-    [machine, setMachine]
+    [machine, deselectAll]
   )
   const showStateContextMenu = useCallback(
     (position: Point2D, id: string) => {
