@@ -103,10 +103,10 @@ export default function Canvas({
   )
   useEffect(() => {
     window.addEventListener('keydown', keyDown)
-    window.addEventListener('click', () => deselectAll())
+    window.addEventListener('click', deselectAll)
     return (): void => {
       window.removeEventListener('keydown', keyDown)
-      window.removeEventListener('click', () => deselectAll())
+      window.removeEventListener('click', deselectAll)
     }
   }, [keyDown, deselectAll])
   // const clickMeCB = useCallback(() => {
