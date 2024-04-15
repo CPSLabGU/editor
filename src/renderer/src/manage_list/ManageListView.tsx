@@ -3,6 +3,7 @@ import { useCallback } from 'react'
 interface ManageListViewArgs<Element> {
   list: { [id: string]: Element }
   setList: (setter: (currentList: { [id: string]: Element }) => { [id: string]: Element }) => void
+  emptyElement: () => [id: string, element: Element]
   view: (
     id: string,
     element: Element,
@@ -14,8 +15,17 @@ interface ManageListViewArgs<Element> {
 export default function ManageListView<Element>({
   list,
   setList,
+  emptyElement,
   view
 }: ManageListViewArgs<Element>): JSX.Element {
+  const createNewEntry = useCallback(() => {
+    setList((currentList) => {
+      const newList = { ...currentList }
+      const [newId, newElement] = emptyElement()
+      newList[newId] = newElement
+      return newList
+    })
+  }, [setList, emptyElement])
   const changeElement = useCallback(
     (id: string, newElement: Element) => {
       setList((currentList) => {
@@ -46,5 +56,12 @@ export default function ManageListView<Element>({
       )}
     </div>
   ))
-  return <div>{elementViews}</div>
+  return (
+    <>
+      <div>
+        <button onClick={createNewEntry}>Add</button>
+      </div>
+      <div>{elementViews}</div>
+    </>
+  )
 }

@@ -31,6 +31,14 @@ export default class Arrangement {
     return this._globalVariables
   }
 
+  get emptyClock(): [id: string, clock: Clock] {
+    return [uuidv4(), new Clock('', '')]
+  }
+
+  get emptyMachine(): [id: string, machine: MachineReference] {
+    return [uuidv4(), new MachineReference('', '', {})]
+  }
+
   get shallowCopy(): Arrangement {
     return new Arrangement(
       this.language,

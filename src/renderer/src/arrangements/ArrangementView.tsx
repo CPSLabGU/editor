@@ -16,6 +16,7 @@ export default function ArrangementView({
   arrangement,
   setArrangement
 }: ArrangementViewArgs): JSX.Element {
+  const emptyClock = useCallback(() => arrangement.emptyClock, [arrangement])
   const changeClocks = useCallback(
     (setter: (currentClocks: { [id: string]: Clock }) => { [id: string]: Clock }) => {
       const newClocks = setter(arrangement.clocks)
@@ -41,6 +42,7 @@ export default function ArrangementView({
     },
     [arrangement, setArrangement]
   )
+  const emptyMachine = useCallback(() => arrangement.emptyMachine, [arrangement])
   const changeMachines = useCallback(
     (
       setter: (currentMachines: { [id: string]: MachineReference }) => {
@@ -72,7 +74,12 @@ export default function ArrangementView({
     <div>
       <form onSubmit={(e) => e.preventDefault()}>
         <h2>Clocks</h2>
-        <ManageListView list={arrangement.clocks} setList={changeClocks} view={viewForClock} />
+        <ManageListView
+          list={arrangement.clocks}
+          setList={changeClocks}
+          emptyElement={emptyClock}
+          view={viewForClock}
+        />
         <h2>External Variables</h2>
         <CodeEditor
           language={arrangement.language}
@@ -89,6 +96,7 @@ export default function ArrangementView({
         <ManageListView
           list={arrangement.machines}
           setList={changeMachines}
+          emptyElement={emptyMachine}
           view={viewForMachine}
         />
       </form>

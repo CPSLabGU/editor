@@ -35,6 +35,10 @@ export default function MachineReferenceView({
     },
     [machineReference, setMachineReference]
   )
+  const createNewMapping = useCallback(() => {
+    const [id, mapping] = machineReference.emptyMapping
+    setMachineReference(machineReference.addMapping(id, mapping))
+  }, [machineReference, setMachineReference])
   const changeMapping = useCallback(
     (id: string, newMapping: VariableMapping) => {
       const newMappings = { ...machineReference.mappings }
@@ -79,6 +83,9 @@ export default function MachineReferenceView({
       </div>
       <div>
         <h3>Variable Mappings</h3>
+        <div>
+          <button onClick={createNewMapping}>Add</button>
+        </div>
         <div>{mappingViews}</div>
       </div>
     </div>
