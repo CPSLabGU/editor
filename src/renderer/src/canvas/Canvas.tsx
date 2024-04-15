@@ -70,26 +70,19 @@ export default function Canvas({
     setMachine(machine.delete(focusedObjects))
     setFocusedObjects(new Set())
   }, [machine, setMachine, focusedObjects, setFocusedObjects])
-  const deselectAll = useCallback(
-    (latestMachine: Machine | null = null) => {
-      const m: Machine = latestMachine ?? machine
-      setContextState(undefined)
-      setFocusedObjects(new Set())
-      setContextMenuPosition(undefined)
-      setStateContextMenuPosition(undefined)
-      setMachine(m.setEdittingState(null))
-      setTransitionContextMenuPosition(undefined)
-    },
-    [
-      machine,
-      setFocusedObjects,
-      setContextMenuPosition,
-      setStateContextMenuPosition,
-      setContextState,
-      setMachine,
-      setTransitionContextMenuPosition
-    ]
-  )
+  const deselectAll = useCallback(() => {
+    setContextState(undefined)
+    setFocusedObjects(new Set())
+    setContextMenuPosition(undefined)
+    setStateContextMenuPosition(undefined)
+    setTransitionContextMenuPosition(undefined)
+  }, [
+    setFocusedObjects,
+    setContextMenuPosition,
+    setStateContextMenuPosition,
+    setContextState,
+    setTransitionContextMenuPosition
+  ])
   const keyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key == 'Escape') {
@@ -137,9 +130,10 @@ export default function Canvas({
         ),
         position
       )
-      deselectAll(machine.addState(newState))
+      deselectAll()
+      setMachine(machine.addState(newState))
     },
-    [machine, deselectAll]
+    [machine, setMachine, deselectAll]
   )
   const showStateContextMenu = useCallback(
     (position: Point2D, id: string) => {
@@ -151,9 +145,10 @@ export default function Canvas({
   )
   const deleteState = useCallback(
     (stateId: string) => {
-      deselectAll(machine.deleteState(stateId))
+      deselectAll()
+      setMachine(machine.deleteState(stateId))
     },
-    [machine, deselectAll]
+    [machine, setMachine, deselectAll]
   )
   const setStateTransitions = useCallback(
     (stateId: string, newTransitions: string[]) => {
@@ -163,7 +158,8 @@ export default function Canvas({
   )
   const deleteTransition = useCallback(
     (transitionId: string) => {
-      deselectAll(machine.deleteTransition(transitionId))
+      deselectAll()
+      setMachine(machine.deleteTransition(transitionId))
     },
     [machine, setMachine, deselectAll]
   )
@@ -177,7 +173,8 @@ export default function Canvas({
       const edge = calculateEdge(source, target)
       const newUUID = uuidv4()
       const transition = new TransitionProperties(sourceID, stateID, 'true', edge, 'white')
-      deselectAll(machine.addTransition(newUUID, transition))
+      deselectAll()
+      setMachine(machine.addTransition(newUUID, transition))
     },
     [machine, setMachine, deselectAll]
   )
