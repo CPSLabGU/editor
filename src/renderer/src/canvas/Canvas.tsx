@@ -151,10 +151,9 @@ export default function Canvas({
   )
   const deleteState = useCallback(
     (stateId: string) => {
-      setMachine(machine.deleteState(stateId))
-      deselectAll()
+      deselectAll(machine.deleteState(stateId))
     },
-    [machine, setMachine, deselectAll]
+    [machine, deselectAll]
   )
   const setStateTransitions = useCallback(
     (stateId: string, newTransitions: string[]) => {
@@ -164,8 +163,7 @@ export default function Canvas({
   )
   const deleteTransition = useCallback(
     (transitionId: string) => {
-      deselectAll()
-      setMachine(machine.deleteTransition(transitionId))
+      deselectAll(machine.deleteTransition(transitionId))
     },
     [machine, setMachine, deselectAll]
   )
@@ -179,8 +177,7 @@ export default function Canvas({
       const edge = calculateEdge(source, target)
       const newUUID = uuidv4()
       const transition = new TransitionProperties(sourceID, stateID, 'true', edge, 'white')
-      setMachine(machine.addTransition(newUUID, transition))
-      deselectAll()
+      deselectAll(machine.addTransition(newUUID, transition))
     },
     [machine, setMachine, deselectAll]
   )
