@@ -82,9 +82,7 @@ export default function ClockView({
           setData={(newData: string) => setClock(new Clock(clock.name, newData))}
         />
       </div>
-      <button className="remove-suspension" onClick={deleteClock}>
-        Delete clock {clock.name}
-      </button>
+      <button onClick={deleteClock}>Delete clock {clock.name}</button>
     </div>
   )
 }

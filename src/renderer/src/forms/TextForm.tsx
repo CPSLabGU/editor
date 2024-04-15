@@ -87,14 +87,12 @@ export default function TextForm({
     [setData]
   )
   return (
-    <form onSubmit={finishEditting}>
-      <input
-        type={data}
-        value={tempData}
-        onChange={changeTempData}
-        onBlur={finishEditting}
-        onKeyDown={keyPress}
-      />
-    </form>
+    <input
+      type={data}
+      value={tempData}
+      onChange={changeTempData}
+      onBlur={finishEditting}
+      onKeyDown={keyPress}
+    />
   )
 }

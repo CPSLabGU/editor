@@ -27,7 +27,6 @@ export default function App(): JSX.Element {
   }, [appState, setAppState])
 
   useEffect(() => {
-    console.log('updateData', appState.selected)
     if (updateData === undefined) return
     setUpdateData(undefined)
     const result = appState.selectedData
@@ -56,7 +55,6 @@ export default function App(): JSX.Element {
     })
   }, [setUpdateData])
   useEffect(() => {
-    console.log('useEffect', appState.selected)
     window.ipc.load((e, data, url, type) => {
       setLoad({ data: data, url: url, type: type })
     })

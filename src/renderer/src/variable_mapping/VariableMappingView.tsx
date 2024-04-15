@@ -44,7 +44,6 @@ export default function VariableMappingView({
         </div>
       </div>
       <div className="flex-element">
-        <h3> </h3>
         <div>
           <button onClick={onDelete}>Delete</button>
         </div>

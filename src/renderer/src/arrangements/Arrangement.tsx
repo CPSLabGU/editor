@@ -76,7 +76,6 @@ export default class Arrangement {
 
   static fromData(data: string): Arrangement | null {
     const json = JSON.parse(data)
-    console.log(json)
     if (!(typeof json === 'object')) return null
     if (!instanceOfArrangementModel(json as object)) return null
     const model = json as ArrangementModel

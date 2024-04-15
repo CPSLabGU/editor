@@ -80,11 +80,6 @@ export default function MachineReferenceView({
             <input type="text" onChange={changePath} value={machineReference.path} />
           </div>
         </div>
-        <div className="flex-element">
-          <button className="remove-suspension" onClick={deleteMachineReference}>
-            Delete instance {machineReference.name}
-          </button>
-        </div>
       </div>
       <div>
         <h3>Variable Mappings</h3>
@@ -92,6 +87,11 @@ export default function MachineReferenceView({
           <button onClick={createNewMapping}>Add</button>
         </div>
         <div>{mappingViews}</div>
+      </div>
+      <div>
+        <button onClick={deleteMachineReference}>
+          Delete instance {machineReference.name}
+        </button>
       </div>
     </div>
   )
