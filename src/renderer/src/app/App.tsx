@@ -5,6 +5,10 @@ import Welcome from '@renderer/welcome/Welcome'
 
 export default function App(): JSX.Element {
   const [appState, setAppState] = useState(new AppState())
+  const [updateData, setUpdateData] = useState<string | null | undefined>(undefined)
+  const [load, setLoad] = useState<{data: string, url: string, type: string} | undefined>(
+    undefined
+  )
 
   const openArrangement = useCallback((): void => {
     window.ipc.openArrangement()
@@ -20,20 +24,35 @@ export default function App(): JSX.Element {
   }, [appState, setAppState])
 
   useEffect(() => {
-    window.ipc.load((e, data, url, type) => {
-      if (type == 'machine') {
-        setAppState(appState.loadRootMachine(data, url, setAppState))
-      } else if (type == 'arrangement') {
-        setAppState(appState.loadRootArrangement(data, url, setAppState))
-      }
-    })
+    console.log('updateData', appState.selected)
+    if (updateData === undefined) return
+    setUpdateData(undefined)
+    const result = appState.selectedData
+    if (!result) return
+    const [data, type] = result
+    window.ipc.save(updateData, data, type)
+  }, [updateData, setUpdateData, appState])
+  useEffect(() => {
+    if (load === undefined) return
+    setLoad(undefined)
+    if (load.type == 'machine') {
+      setAppState(appState.loadRootMachine(load.data, load.url, setAppState))
+    } else if (load.type == 'arrangement') {
+      setAppState(appState.loadRootArrangement(load.data, load.url, setAppState))
+    }
+  }, [load, setLoad, appState, setAppState])
+
+  useEffect(() => {
     window.ipc.updateData((e, path) => {
-      const result = appState.selectedData
-      if (!result) return
-      const [data, type] = result
-      window.ipc.save(path, data, type)
+      setUpdateData(path)
     })
-  }, [appState, setAppState])
+  }, [setUpdateData])
+  useEffect(() => {
+    console.log('useEffect', appState.selected)
+    window.ipc.load((e, data, url, type) => {
+      setLoad({ data: data, url: url, type: type })
+    })
+  }, [setLoad])
   if (!appState.root) {
     return (
       <Welcome
