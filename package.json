@@ -1,10 +1,20 @@
 {
-  "name": "electron-app",
+  "name": "llfsm-editor",
   "version": "1.0.0",
-  "description": "An Electron application with React and TypeScript",
-  "main": "./out/main/index.js",
-  "author": "example.com",
-  "homepage": "https://electron-vite.org",
+  "description": "An IDE for developing Logic-Labelled Finite-State Machines.",
+  "main": "./vite_out/main/index.js",
+  "author": {
+      "name": "Morgan McColl",
+      "email": "morgan.mccoll92@gmail.com",
+      "url": "https://github.com/Morgan2010"
+  },
+  "contributors": [
+    {
+        "name": "Callum McColl",
+        "url": "https://github.com/callummccoll"
+    }
+  ],
+  "homepage": "https://github.com/CPSLabGU",
   "license": "(BSD-4-Clause OR GFDL-1.2-or-later)",
   "scripts": {
     "format": "prettier --write .",
@@ -13,13 +23,13 @@
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "start": "electron-forge start",
-    "dev": "electron-vite dev",
-    "build": "npm run typecheck && electron-vite build",
+    "dev": "electron-vite dev --outDir vite_out",
+    "build": "electron-vite build --outDir vite_out",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
-    "build:mac": "electron-vite build && electron-builder --mac",
-    "build:linux": "electron-vite build && electron-builder --linux",
+    "build:mac": "electron-vite build --outDir vite_out && electron-builder --mac",
+    "build:linux": "electron-vite build --outDir vite_out && electron-builder --linux",
     "package": "electron-forge package",
     "make": "electron-forge make"
   },
