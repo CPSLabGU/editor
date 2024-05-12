@@ -5,6 +5,7 @@
   "main": "./out/main/index.js",
   "author": "example.com",
   "homepage": "https://electron-vite.org",
+  "license": "(BSD-4-Clause OR GFDL-1.2-or-later)",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
