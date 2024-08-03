@@ -6,6 +6,7 @@ import MachineView from '../machines/MachineView'
 import { v4 as uuidv4 } from 'uuid'
 import Arrangement from '../arrangements/Arrangement'
 import ArrangementView from '../arrangements/ArrangementView'
+import SpecView from '../spec/SpecView'
 
 type ListData<T> = { [id: string]: T }
 
@@ -19,6 +20,7 @@ export default class AppState {
   private _expanded: ItemDictionary<boolean>
   private _sidePanelVisible: boolean
   private _allowSidePanelTogglingVisibility: boolean
+  private _specs: ListData<string>
 
   get ids(): { [url: string]: string } {
     return this._ids
@@ -54,6 +56,10 @@ export default class AppState {
 
   get allowSidePanelTogglingVisibility(): boolean {
     return this._allowSidePanelTogglingVisibility
+  }
+
+  get specs(): ListData<string> {
+    return this._specs
   }
 
   canvasSwitcher(setAppState: (newState: AppState) => void): JSX.Element {
@@ -94,6 +100,7 @@ export default class AppState {
     newState._expanded = { ...this._expanded }
     newState._sidePanelVisible = this._sidePanelVisible
     newState._allowSidePanelTogglingVisibility = this._allowSidePanelTogglingVisibility
+    newState._specs = this._specs
     return newState
   }
 
@@ -107,6 +114,7 @@ export default class AppState {
     this._expanded = {}
     this._sidePanelVisible = false
     this._allowSidePanelTogglingVisibility = false
+    this._specs = {}
   }
 
   addID(id: string, url: string): AppState {
@@ -144,9 +152,14 @@ export default class AppState {
   }
 
   loadRootMachine(data: string, url: string, setAppState: (newState: AppState) => void): AppState {
-    const machine = Machine.fromData(data)
+    const obj = JSON.parse(data)
+    const machine = Machine.fromData(obj.data)
     if (!machine) return this
-    return this.setNewRootMachine(machine, url, setAppState)
+    const spec = obj.spec
+    const newState = this.setNewRootMachine(machine, url, setAppState)
+    const id = newState.id(url)
+    if (!id) return newState
+    return newState.setSpec(id, spec)
   }
 
   machineView(id: string, setAppState: (newState: AppState) => void): JSX.Element {
@@ -157,6 +170,17 @@ export default class AppState {
         machine={machine}
         setMachine={(newMachine: Machine) => {
           setAppState(this.setMachine(id, newMachine, setAppState))
+        }}
+      />
+    )
+  }
+
+  specView(id: string, setAppState: (newState: AppState) => void): JSX.Element {
+    return (
+      <SpecView
+        spec={this.specs[id] ?? ''}
+        setSpec={(newSpec: string) => {
+          setAppState(this.setSpec(id, newSpec))
         }}
       />
     )
@@ -291,6 +315,12 @@ export default class AppState {
   setAllowSidePanelTogglingVisibility(allow: boolean): AppState {
     const newState = this.copy
     newState._allowSidePanelTogglingVisibility = allow
+    return newState
+  }
+
+  setSpec(id: string, spec: string): AppState {
+    const newState = this.copy
+    newState._specs[id] = spec
     return newState
   }
 

@@ -13,6 +13,8 @@ export default function App(): JSX.Element {
     undefined
   )
 
+  const [openSpec, setOpenSpec] = useState<{ id: string } | undefined>(undefined)
+
   const openArrangement = useCallback((): void => {
     window.ipc.openArrangement()
   }, [])
@@ -65,6 +67,16 @@ export default function App(): JSX.Element {
       setDidSave({ id: id, path: path, type: type })
     })
   }, [setDidSave])
+  useEffect(() => {
+    window.ipc.openSpec((e, url) => {
+      const id = appState.id(url)
+      if (!id) return
+      setOpenSpec({ id: id })
+    })
+  }, [appState, setOpenSpec])
+  if (openSpec) {
+    return appState.specView(openSpec.id, setAppState)
+  }
   if (!appState.root) {
     return (
       <Welcome

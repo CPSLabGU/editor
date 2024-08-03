@@ -139,12 +139,16 @@ async function openFileDialog(window: BrowserWindow, type: string): Promise<void
     return
   }
   let newType: string = ''
+  let data: string = ''
+  const obj: string = await fs.readFile(filePath[0] + '/model.json', 'utf-8')
   if (filePath[0].endsWith('.arrangement')) {
     newType = 'arrangement'
+    data = obj
   } else if (filePath[0].endsWith('.machine')) {
     newType = 'machine'
+    const spec = await fs.readFile(filePath[0] + '/spec.tctl', 'utf-8')
+    data = JSON.stringify({ data: obj, spec: spec })
   }
-  const data = await fs.readFile(filePath[0] + '/model.json', 'utf-8')
   window.webContents.send('load', data, filePath[0], newType)
   generateFileMenus(window, filePath[0], newType)
 }
