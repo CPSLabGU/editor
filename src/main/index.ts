@@ -47,6 +47,14 @@ function createWindow(): void {
     openFileDialog(mainWindow, 'machine')
   })
 
+  ipcMain.on('didOpenSpec', (event: IpcMainEvent, path: string) => {
+    generateFileMenus(mainWindow, path, 'spec')
+  })
+
+  ipcMain.on('didCloseSpec', (event: IpcMainEvent, path: string) => {
+    generateFileMenus(mainWindow, path, 'machine')
+  })
+
   ipcMain.on(
     'save',
     async (
@@ -222,14 +230,26 @@ function generateFileMenus(mainWindow: BrowserWindow, path: string | null, type:
     }
   ]
   if (path) {
-    const viewMenus = [
-      {
-        label: 'Specifcation',
-        click: async (): Promise<void> => {
-          mainWindow.webContents.send('openSpec', path)
+    let viewMenus
+    if (type == 'spec') {
+      viewMenus = [
+        {
+          label: 'Machine',
+          click: async (): Promise<void> => {
+            mainWindow.webContents.send('closeSpec', path)
+          }
         }
-      }
-    ]
+      ]
+    } else {
+      viewMenus = [
+        {
+          label: 'Specifcation',
+          click: async (): Promise<void> => {
+            mainWindow.webContents.send('openSpec', path)
+          }
+        }
+      ]
+    }
     menuItems.push({
       label: 'View',
       submenu: viewMenus

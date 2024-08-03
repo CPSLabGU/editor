@@ -10,6 +10,9 @@ interface IPCInterface {
   updateData: (callback: (e: IpcRendererEvent, path: string | null, type: string) => void) => void
   didSave: (callback: (e: IpcRendererEvent, id: string, path: string, type: string) => void) => void
   openSpec: (callback: (e: IpcRendererEvent, path: string) => void) => void
+  didOpenSpec: (path: string) => void
+  closeSpec: (callback: (e: IpcRendererEvent, path: string) => void) => void
+  didCloseSpec: (path: string) => void
 }
 
 declare global {

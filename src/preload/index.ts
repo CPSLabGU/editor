@@ -26,7 +26,10 @@ if (process.contextIsolated) {
       didSave: (callback: (e: IpcRendererEvent, id: string, path: string, type: string) => void) =>
         ipcRenderer.on('didSave', callback),
       openSpec: (callback: (e: IpcRendererEvent, path: string) => void) =>
-        ipcRenderer.on('openSpec', callback)
+        ipcRenderer.on('openSpec', callback),
+      didOpenSpec: (path: string) => ipcRenderer.send('didOpenSpec', path),
+      closeSpec: (callback: (e: IpcRendererEvent, path: string) => void) => ipcRenderer.on('closeSpec', callback),
+      didCloseSpec: (path: string) => ipcRenderer.send('didCloseSpec', path)
     })
   } catch (error) {
     console.error(error)

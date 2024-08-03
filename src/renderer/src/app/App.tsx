@@ -27,6 +27,12 @@ export default function App(): JSX.Element {
   const createMachine = useCallback((): void => {
     setAppState(appState.newRootMachine(setAppState))
   }, [appState, setAppState])
+  const didOpenSpec = useCallback((path: string): void => {
+    window.ipc.didOpenSpec(path)
+  }, [])
+  const didCloseSpec = useCallback((path: string): void => {
+    window.ipc.didCloseSpec(path)
+  }, [])
 
   useEffect(() => {
     if (updateData === undefined) return
@@ -72,8 +78,15 @@ export default function App(): JSX.Element {
       const id = appState.id(url)
       if (!id) return
       setOpenSpec({ id: id })
+      didOpenSpec(url)
     })
-  }, [appState, setOpenSpec])
+  }, [appState, setOpenSpec, didOpenSpec])
+  useEffect(() => {
+    window.ipc.closeSpec((e, url) => {
+      setOpenSpec(undefined)
+      didCloseSpec(url)
+    })
+  }, [setOpenSpec])
   if (openSpec) {
     return appState.specView(openSpec.id, setAppState)
   }
