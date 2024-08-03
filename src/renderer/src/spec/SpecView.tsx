@@ -61,5 +61,9 @@ interface SpecViewArgs {
 }
 
 export default function SpecView({ spec, setSpec }: SpecViewArgs): JSX.Element {
-  return <CodeEditor language={'haskell'} sourcecode={spec} setSourceCode={setSpec} />
+  return (
+    <div className="canvas-switcher">
+      <CodeEditor language={'haskell'} sourcecode={spec} setSourceCode={setSpec} />
+    </div>
+  )
 }
