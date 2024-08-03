@@ -4,14 +4,14 @@
   "description": "An IDE for developing Logic-Labelled Finite-State Machines.",
   "main": "./vite_out/main/index.js",
   "author": {
-      "name": "Morgan McColl",
-      "email": "morgan.mccoll92@gmail.com",
-      "url": "https://github.com/Morgan2010"
+    "name": "Morgan McColl",
+    "email": "morgan.mccoll92@gmail.com",
+    "url": "https://github.com/Morgan2010"
   },
   "contributors": [
     {
-        "name": "Callum McColl",
-        "url": "https://github.com/callummccoll"
+      "name": "Callum McColl",
+      "url": "https://github.com/callummccoll"
     }
   ],
   "homepage": "https://github.com/CPSLabGU",
@@ -38,6 +38,7 @@
     "@electron-toolkit/utils": "^3.0.0",
     "@uiw/codemirror-theme-vscode": "^4.21.22",
     "@uiw/react-codemirror": "^4.21.22",
+    "electron-builder": "^24.13.3",
     "electron-squirrel-startup": "^1.0.0",
     "electron-updater": "^6.1.7",
     "uuid": "^9.0.1"
