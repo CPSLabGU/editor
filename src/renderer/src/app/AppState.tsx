@@ -82,12 +82,18 @@ export default class AppState {
   get selectedData(): [string, string, string] | undefined {
     const selectedID = this.selected
     if (!selectedID) return undefined
+    const spec = this.specs[selectedID] ?? ''
     const arrangement = this.arrangements[selectedID]
-    if (arrangement) return [selectedID, JSON.stringify(arrangement.toModel), 'arrangement']
+    if (arrangement)
+      return [
+        selectedID,
+        JSON.stringify({ data: JSON.stringify(arrangement.toModel), spec: spec }),
+        'arrangement'
+      ]
     const machine = this.machines[selectedID]
     if (!machine) return undefined
     const model = machine.toModel
-    return [selectedID, JSON.stringify(model), 'machine']
+    return [selectedID, JSON.stringify({ data: JSON.stringify(model), spec: spec }), 'machine']
   }
 
   get copy(): AppState {

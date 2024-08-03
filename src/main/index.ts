@@ -64,8 +64,11 @@ function createWindow(): void {
       data: string,
       type: string
     ): Promise<void> => {
+      const obj = JSON.parse(data)
+      if (!obj) return
       if (path) {
-        await fs.writeFile(path + '/model.json', data)
+        await fs.writeFile(path + '/model.json', obj.data)
+        await fs.writeFile(path + '/spec.tctl', obj.spec)
         mainWindow.webContents.send('didSave', id, path, type)
         return
       }
@@ -86,7 +89,8 @@ function createWindow(): void {
         return
       }
       await fs.mkdir(filePath, { recursive: true })
-      await fs.writeFile(filePath + '/model.json', data)
+      await fs.writeFile(filePath + '/model.json', obj.data)
+      await fs.writeFile(path + '/spec.tctl', obj.spec)
       generateFileMenus(mainWindow, filePath, type)
       mainWindow.webContents.send('didSave', id, filePath, type)
     }
