@@ -1,4 +1,4 @@
-// TabbedView.tsx
+// TabBarView.tsx
 // editor
 // 
 // Created by Morgan McColl.
@@ -53,76 +53,43 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-import TabBarView from "./TabBarView"
+import TabView from "./TabView";
 
-interface TabbedViewArgs {
+interface TabBarViewArgs {
   views: { [id: string]: { [viewType: string]: JSX.Element | undefined } }
-  focusedView: { id: string, viewType: string} | undefined
+  focusedView: { id: string; viewType: string } | undefined
   setViews: (newViews: { [id: string]: { [viewType: string]: JSX.Element | undefined } }) => void
   setFocus: (id: string, viewType: string) => void
 }
 
-export default function TabbedView({
+export default function TabBarView({
   views,
   focusedView,
   setViews,
   setFocus
-}: TabbedViewArgs): JSX.Element {
-  console.log('In tabbed view!')
-  if (Object.keys(views).length == 0) {
-    return <div>Empty Views!</div>
+}: TabBarViewArgs): JSX.Element {
+  const deleteView: (id: string, viewType: string) => void = (id, viewType) => {
+    const idViews = views[id] ?? {}
+    idViews[viewType] = undefined
+    const newViews = views
+    newViews[id] = idViews
+    setViews(newViews)
   }
-  if (!focusedView) return <div>Empty Views!</div>
-  const focusedID = focusedView.id
-  const focusedViewType = focusedView.viewType
-  console.log(
-    `Have focused view: ${focusedID} ${focusedViewType}: `, views[focusedID][focusedViewType]
-  )
-  const openViews: { [id: string]: [string] } = {}
-  for (const id in views) {
-    const view = views[id]
-    for (const subViewType in view) {
-      if (view[subViewType]) {
-        const currentOpenViews = openViews[id] ?? {}
-        currentOpenViews[subViewType] = view[subViewType]
-        openViews[id] = currentOpenViews
-      }
-    }
-  }
-  let count = 0
-  for (const id in openViews) {
-    if (!openViews[id]) continue
-    for (const subViewType in openViews[id]) {
-      if (openViews[id][subViewType]) {
-        count++
-      }
-    }
-  }
-  if (count == 1) {
-    const id = Object.keys(openViews)[0]
-    const viewType = Object.keys(openViews[id])[0]
-    return openViews[id][viewType]
-  }
-  const focusedViewElement = views[focusedID][focusedViewType]
-  let element: JSX.Element | undefined = undefined
-  if (focusedViewElement) {
-    element = focusedViewElement
-  } else {
-    const id = Object.keys(openViews)[0]
-    const viewType = Object.keys(openViews[id])[0]
-    element = openViews[id][viewType]
-  }
-  return (
-    <div>
-      <div>
-        <TabBarView
-          views={views}
-          focusedView={focusedView}
-          setViews={setViews}
-          setFocus={setFocus}
-        />
-      </div>
-      <div>{element}</div>
-    </div>
-  )
+  const elements = Object.entries(views).flatMap(([id, view]) => {
+    return Object.entries(view).map(([viewType, element]) => {
+      return (
+        <div key={`${id}.${viewType}`}>
+          <li>
+            <TabView
+              name={viewType}
+              isFocused={focusedView?.id == id && focusedView.viewType == viewType}
+              deleteView={() => deleteView(id, viewType)}
+              focus={() => setFocus(id, viewType)}
+            />
+          </li>
+        </div>
+      )
+    })
+  })
+  return <ol>{elements}</ol>
 }

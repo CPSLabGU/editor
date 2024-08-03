@@ -139,7 +139,12 @@ export default function App(): JSX.Element {
   } else {
     console.log('Multiple views open!')
     return (
-      <TabbedView views={appState.views} focusedView={focusedView} setViews={appState.setViews} />
+      <TabbedView
+        views={appState.views}
+        focusedView={focusedView}
+        setViews={appState.setViews}
+        setFocus={(id: string, viewType: string) => setFocusedView({ id: id, viewType: viewType })}
+      />
     )
   }
 }
