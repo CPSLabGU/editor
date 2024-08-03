@@ -31,7 +31,7 @@ if (process.contextIsolated) {
       closeSpec: (callback: (e: IpcRendererEvent, path: string) => void) =>
         ipcRenderer.on('closeSpec', callback),
       didCloseSpec: (path: string) => ipcRenderer.send('didCloseSpec', path),
-      didGenerateGraph: (callback: (e: IpcRendererEvent, data: string) => void) =>
+      didGenerateGraph: (callback: (e: IpcRendererEvent, url: string, data: string) => void) =>
         ipcRenderer.on('didGenerateGraph', callback)
     })
   } catch (error) {

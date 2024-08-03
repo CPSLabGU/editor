@@ -307,7 +307,7 @@ function createGraph(mainWindow: BrowserWindow, path: string): void {
       }
       fs.readFile(path + '/build/verification/graph.svg', 'utf-8').then((data: string) => {
         console.log('Finished converting graph')
-        mainWindow.webContents.send('didGenerateGraph', data)
+        mainWindow.webContents.send('didGenerateGraph', path, data)
       })
     }
   )

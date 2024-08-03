@@ -46,11 +46,15 @@ export default function App(): JSX.Element {
   useEffect(() => {
     if (load === undefined) return
     setLoad(undefined)
+    let newState: AppState = appState
     if (load.type == 'machine') {
-      setAppState(appState.loadRootMachine(load.data, load.url, setAppState))
+      newState = appState.loadRootMachine(load.data, load.url, setAppState)
     } else if (load.type == 'arrangement') {
-      setAppState(appState.loadRootArrangement(load.data, load.url, setAppState))
+      newState = appState.loadRootArrangement(load.data, load.url, setAppState)
     }
+    const id = newState.id(load.url)
+    if (!id) return
+    setAppState(newState.setView(id, load.type, true))
   }, [load, setLoad, appState, setAppState])
   useEffect(() => {
     if (didSave === undefined) return
@@ -80,37 +84,61 @@ export default function App(): JSX.Element {
       if (!id) return
       setOpenSpec({ id: id })
       didOpenSpec(url)
+      setAppState(appState.setView(id, 'spec', true))
     })
-  }, [appState, setOpenSpec, didOpenSpec])
+  }, [appState, setAppState, setOpenSpec, didOpenSpec])
   useEffect(() => {
     window.ipc.closeSpec((e, url) => {
       setOpenSpec(undefined)
       didCloseSpec(url)
+      const id = appState.id(url)
+      if (!id) return
+      setAppState(appState.setView(id, 'spec', false))
     })
-  }, [setOpenSpec])
+  }, [setOpenSpec, appState, setAppState])
   useEffect(() => {
     console.log('Getting graph!')
-    window.ipc.didGenerateGraph((e, data) => {
+    window.ipc.didGenerateGraph((e, url, data) => {
       console.log('Got graph!')
       setCurrentGraph({ data: data })
+      const id = appState.id(url)
+      if (!id) return
+      setAppState(appState.setView(id, 'graph', true))
     })
-  }, [setCurrentGraph])
-  if (currentGraph) {
-    return <img src={`data:image/svg+xml;utf8,${encodeURIComponent(currentGraph.data)}`} />
-  }
-  if (openSpec) {
-    return appState.specView(openSpec.id, setAppState)
-  }
-  if (!appState.root) {
-    return (
-      <Welcome
-        openArrangement={openArrangement}
-        openMachine={openMachine}
-        createArrangement={createArrangement}
-        createMachine={createMachine}
-      />
-    )
+  }, [setCurrentGraph, appState, setAppState])
+  if (appState.numberOfOpenViews() == 1) {
+    if (currentGraph) {
+      return <img src={`data:image/svg+xml;utf8,${encodeURIComponent(currentGraph.data)}`} />
+    }
+    if (openSpec) {
+      return appState.specView(openSpec.id, setAppState)
+    }
+    if (!appState.root) {
+      return (
+        <Welcome
+          openArrangement={openArrangement}
+          openMachine={openMachine}
+          createArrangement={createArrangement}
+          createMachine={createMachine}
+        />
+      )
+    } else {
+      return appState.canvasSwitcher(setAppState)
+    }
+  } else if (appState.numberOfOpenViews() == 0) {
+    if (!appState.root) {
+      return (
+        <Welcome
+          openArrangement={openArrangement}
+          openMachine={openMachine}
+          createArrangement={createArrangement}
+          createMachine={createMachine}
+        />
+      )
+    } else {
+      return appState.canvasSwitcher(setAppState)
+    }
   } else {
-    return appState.canvasSwitcher(setAppState)
+    console.log('Multiple views open!')
   }
 }

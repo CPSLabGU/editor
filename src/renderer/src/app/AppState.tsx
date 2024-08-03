@@ -21,6 +21,7 @@ export default class AppState {
   private _sidePanelVisible: boolean
   private _allowSidePanelTogglingVisibility: boolean
   private _specs: ListData<string>
+  private _views: ListData<{ [viewType: string]: boolean }>
 
   get ids(): { [url: string]: string } {
     return this._ids
@@ -60,6 +61,10 @@ export default class AppState {
 
   get specs(): ListData<string> {
     return this._specs
+  }
+
+  get views(): ListData<{ [viewType: string]: boolean }> {
+    return this._views
   }
 
   canvasSwitcher(setAppState: (newState: AppState) => void): JSX.Element {
@@ -107,6 +112,7 @@ export default class AppState {
     newState._sidePanelVisible = this._sidePanelVisible
     newState._allowSidePanelTogglingVisibility = this._allowSidePanelTogglingVisibility
     newState._specs = this._specs
+    newState._views = this._views
     return newState
   }
 
@@ -121,6 +127,7 @@ export default class AppState {
     this._sidePanelVisible = false
     this._allowSidePanelTogglingVisibility = false
     this._specs = {}
+    this._views = {}
   }
 
   addID(id: string, url: string): AppState {
@@ -205,6 +212,30 @@ export default class AppState {
   newRootMachine(setAppState: (newState: AppState) => void): AppState {
     const machine = Machine.defaultMachine
     return this.setNewRootMachine(machine, null, setAppState)
+  }
+
+  numberOfOpenViews(): number {
+    const openViews = this.openViews()
+    let count = 0
+    for (const id in openViews) {
+      count += openViews[id].length
+    }
+    return count
+  }
+
+  openViews(): ListData<[string]> {
+    const views: ListData<[string]> = {}
+    for (const id in this.views) {
+      const view = this.views[id]
+      for (const viewType in view) {
+        if (view[viewType]) {
+          const currentView = views[id] ?? []
+          currentView.push(viewType)
+          views[id] = currentView
+        }
+      }
+    }
+    return views
   }
 
   setArrangement(
@@ -332,6 +363,21 @@ export default class AppState {
   setSpec(id: string, spec: string): AppState {
     const newState = this.copy
     newState._specs[id] = spec
+    return newState
+  }
+
+  setView(id: string, viewType: string, visible: boolean): AppState {
+    const newState = this.copy
+    const currentViews = newState.views
+    const currentView = currentViews[id] ?? {}
+    currentView[viewType] = visible
+    currentViews[id] = currentView
+    return newState.setViews(currentViews)
+  }
+
+  setViews(views: ListData<{ [viewType: string]: boolean }>): AppState {
+    const newState = this.copy
+    newState._views = views
     return newState
   }
 
