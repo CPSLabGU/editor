@@ -152,9 +152,14 @@ export default class AppState {
     url: string,
     setAppState: (newState: AppState) => void
   ): AppState {
-    const arrangement = Arrangement.fromData(data)
+    const obj = JSON.parse(data)
+    if (!obj) return this
+    const arrangement = Arrangement.fromData(obj.data)
     if (!arrangement) return this
-    return this.setNewRootArrangement(arrangement, url, setAppState)
+    const newState = this.setNewRootArrangement(arrangement, url, setAppState)
+    const id = newState.id(url)
+    if (!id) return newState
+    return newState.setSpec(id, obj.spec)
   }
 
   loadRootMachine(data: string, url: string, setAppState: (newState: AppState) => void): AppState {
