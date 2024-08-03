@@ -251,21 +251,7 @@ function generateFileMenus(mainWindow: BrowserWindow, path: string | null, type:
             } else if (stderr) {
               console.error(`stderr: ${stderr}`)
             }
-            exec(
-              `dot -Tsvg ${path}/build/verification/graph.dot -o ${path}/build/verification/graph.svg`,
-              (error2, stdout2, stderr2) => {
-                if (error2) {
-                  console.error(`exec error: ${error2}`)
-                  return
-                } else if (stdout2) {
-                  console.log(`stdout: ${stdout2}`)
-                } else if (stderr2) {
-                  console.error(`stderr: ${stderr2}`)
-                  return
-                }
-              }
-            )
-            console.log('Finished generating graph.')
+            createGraph(mainWindow, path)
           }
         )
       }
@@ -306,6 +292,25 @@ function generateFileMenus(mainWindow: BrowserWindow, path: string | null, type:
   const menu = Menu.buildFromTemplate(menuItems)
   Menu.setApplicationMenu(menu)
   return
+}
+
+function createGraph(mainWindow: BrowserWindow, path: string): void {
+  exec(
+    `dot -Tsvg ${path}/build/verification/graph.dot -o ${path}/build/verification/graph.svg`,
+    (error2, stdout2, stderr2) => {
+      if (error2) {
+        console.error(`exec error: ${error2}`)
+      } else if (stdout2) {
+        console.log(`stdout: ${stdout2}`)
+      } else if (stderr2) {
+        console.error(`stderr: ${stderr2}`)
+      }
+      fs.readFile(path + '/build/verification/graph.svg', 'utf-8').then((data: string) => {
+        console.log('Finished converting graph')
+        mainWindow.webContents.send('didGenerateGraph', data)
+      })
+    }
+  )
 }
 
 // In this file you can include the rest of your app"s specific main process

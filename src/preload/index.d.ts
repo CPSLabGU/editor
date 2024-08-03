@@ -13,6 +13,7 @@ interface IPCInterface {
   didOpenSpec: (path: string) => void
   closeSpec: (callback: (e: IpcRendererEvent, path: string) => void) => void
   didCloseSpec: (path: string) => void
+  didGenerateGraph: (callback: (e: IpcRendererEvent, data: string) => void) => void
 }
 
 declare global {

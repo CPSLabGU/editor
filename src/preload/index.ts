@@ -28,8 +28,11 @@ if (process.contextIsolated) {
       openSpec: (callback: (e: IpcRendererEvent, path: string) => void) =>
         ipcRenderer.on('openSpec', callback),
       didOpenSpec: (path: string) => ipcRenderer.send('didOpenSpec', path),
-      closeSpec: (callback: (e: IpcRendererEvent, path: string) => void) => ipcRenderer.on('closeSpec', callback),
-      didCloseSpec: (path: string) => ipcRenderer.send('didCloseSpec', path)
+      closeSpec: (callback: (e: IpcRendererEvent, path: string) => void) =>
+        ipcRenderer.on('closeSpec', callback),
+      didCloseSpec: (path: string) => ipcRenderer.send('didCloseSpec', path),
+      didGenerateGraph: (callback: (e: IpcRendererEvent, data: string) => void) =>
+        ipcRenderer.on('didGenerateGraph', callback)
     })
   } catch (error) {
     console.error(error)

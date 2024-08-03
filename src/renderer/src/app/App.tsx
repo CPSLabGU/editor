@@ -14,6 +14,7 @@ export default function App(): JSX.Element {
   )
 
   const [openSpec, setOpenSpec] = useState<{ id: string } | undefined>(undefined)
+  const [currentGraph, setCurrentGraph] = useState<{ data: string } | undefined>(undefined)
 
   const openArrangement = useCallback((): void => {
     window.ipc.openArrangement()
@@ -87,6 +88,16 @@ export default function App(): JSX.Element {
       didCloseSpec(url)
     })
   }, [setOpenSpec])
+  useEffect(() => {
+    console.log('Getting graph!')
+    window.ipc.didGenerateGraph((e, data) => {
+      console.log('Got graph!')
+      setCurrentGraph({ data: data })
+    })
+  }, [setCurrentGraph])
+  if (currentGraph) {
+    return <img src={`data:image/svg+xml;utf8,${encodeURIComponent(currentGraph.data)}`} />
+  }
   if (openSpec) {
     return appState.specView(openSpec.id, setAppState)
   }
