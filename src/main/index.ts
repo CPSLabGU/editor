@@ -211,12 +211,27 @@ function generateFileMenus(mainWindow: BrowserWindow, path: string | null, type:
       }
     })
   }
-  const menu = Menu.buildFromTemplate([
+  const menuItems = [
     {
       label: 'File',
       submenu: fileMenus
     }
-  ])
+  ]
+  if (path) {
+    const viewMenus = [
+      {
+        label: 'Specifcation',
+        click: async (): Promise<void> => {
+          mainWindow.webContents.send('openSpec', path)
+        }
+      }
+    ]
+    menuItems.push({
+      label: 'View',
+      submenu: viewMenus
+    })
+  }
+  const menu = Menu.buildFromTemplate(menuItems)
   Menu.setApplicationMenu(menu)
   return
 }

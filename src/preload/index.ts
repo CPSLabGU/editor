@@ -24,7 +24,9 @@ if (process.contextIsolated) {
       save: (id: string, path: string | null, data: string, type: string) =>
         ipcRenderer.send('save', id, path, data, type),
       didSave: (callback: (e: IpcRendererEvent, id: string, path: string, type: string) => void) =>
-        ipcRenderer.on('didSave', callback)
+        ipcRenderer.on('didSave', callback),
+      openSpec: (callback: (e: IpcRendererEvent, path: string) => void) =>
+        ipcRenderer.on('openSpec', callback)
     })
   } catch (error) {
     console.error(error)
