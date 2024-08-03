@@ -184,7 +184,7 @@ function generateFileMenus(mainWindow: BrowserWindow, path: string | null, type:
       mainWindow.webContents.send('updateData', null, type)
     }
   })
-  if (path && type == 'machine') {
+  if (path && (type == 'machine' || type == 'spec')) {
     fileMenus.push({
       label: 'Export to Machine',
       click: async (): Promise<void> => {
@@ -222,6 +222,52 @@ function generateFileMenus(mainWindow: BrowserWindow, path: string | null, type:
           console.log(`stdout: ${stdout}`)
           console.error(`stderr: ${stderr}`)
         })
+      }
+    })
+    fileMenus.push({
+      label: 'Clean Build Artifacts',
+      click: async (): Promise<void> => {
+        exec('llfsmgenerate clean ' + path, (error, stdout, stderr) => {
+          if (error) {
+            console.error(`exec error: ${error}`)
+            return
+          }
+          console.log(`stdout: ${stdout}`)
+          console.error(`stderr: ${stderr}`)
+        })
+      }
+    })
+    fileMenus.push({
+      label: 'Verify',
+      click: async (): Promise<void> => {
+        exec(
+          'llfsm-verify --machine ' + path + ' ' + path + '/spec.tctl' + ' --write-graphviz',
+          (error, stdout, stderr) => {
+            if (error) {
+              console.error(`exec error: ${error}`)
+            } else if (stdout) {
+              console.log(`stdout: ${stdout}`)
+              return
+            } else if (stderr) {
+              console.error(`stderr: ${stderr}`)
+            }
+            exec(
+              `dot -Tsvg ${path}/build/verification/graph.dot -o ${path}/build/verification/graph.svg`,
+              (error2, stdout2, stderr2) => {
+                if (error2) {
+                  console.error(`exec error: ${error2}`)
+                  return
+                } else if (stdout2) {
+                  console.log(`stdout: ${stdout2}`)
+                } else if (stderr2) {
+                  console.error(`stderr: ${stderr2}`)
+                  return
+                }
+              }
+            )
+            console.log('Finished generating graph.')
+          }
+        )
       }
     })
   }
