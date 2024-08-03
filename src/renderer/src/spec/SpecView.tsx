@@ -54,6 +54,7 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
 import CodeEditor from '../code_editor/CodeEditor'
+import './SpecView.css'
 
 interface SpecViewArgs {
   spec: string
@@ -62,7 +63,7 @@ interface SpecViewArgs {
 
 export default function SpecView({ spec, setSpec }: SpecViewArgs): JSX.Element {
   return (
-    <div className="canvas-switcher">
+    <div className="spec-view">
       <CodeEditor language={'haskell'} sourcecode={spec} setSourceCode={setSpec} />
     </div>
   )
