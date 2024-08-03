@@ -50,7 +50,7 @@ export default function App(): JSX.Element {
     const id = newState.id(load.url)
     if (!id) return
     const type = load.type ?? 'welcome'
-    const view = appState.createView(id, type, undefined, setAppState) ?? (
+    const view = newState.createView(id, type, undefined, setAppState) ?? (
       <Welcome
         openArrangement={openArrangement}
         openMachine={openMachine}
