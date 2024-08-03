@@ -264,26 +264,16 @@ function generateFileMenus(mainWindow: BrowserWindow, path: string | null, type:
     }
   ]
   if (path) {
-    let viewMenus
-    if (type == 'spec') {
-      viewMenus = [
-        {
-          label: 'Machine',
-          click: async (): Promise<void> => {
-            mainWindow.webContents.send('closeSpec', path)
-          }
+    const viewMenus = [
+      {
+        label: 'Specifcation',
+        click: async (): Promise<void> => {
+          fs.readFile(path + '/spec.tctl', 'utf-8').then((data: string) => {
+            mainWindow.webContents.send('openView', path, 'spec', data)
+          })
         }
-      ]
-    } else {
-      viewMenus = [
-        {
-          label: 'Specifcation',
-          click: async (): Promise<void> => {
-            mainWindow.webContents.send('openSpec', path)
-          }
-        }
-      ]
-    }
+      }
+    ]
     menuItems.push({
       label: 'View',
       submenu: viewMenus
@@ -307,7 +297,7 @@ function createGraph(mainWindow: BrowserWindow, path: string): void {
       }
       fs.readFile(path + '/build/verification/graph.svg', 'utf-8').then((data: string) => {
         console.log('Finished converting graph')
-        mainWindow.webContents.send('didGenerateGraph', path, data)
+        mainWindow.webContents.send('openView', path, 'graph', data)
       })
     }
   )

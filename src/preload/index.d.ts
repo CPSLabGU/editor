@@ -9,11 +9,14 @@ interface IPCInterface {
   save: (id: string, path: string | null, data: string, type: string) => void
   updateData: (callback: (e: IpcRendererEvent, path: string | null, type: string) => void) => void
   didSave: (callback: (e: IpcRendererEvent, id: string, path: string, type: string) => void) => void
-  openSpec: (callback: (e: IpcRendererEvent, path: string) => void) => void
-  didOpenSpec: (path: string) => void
-  closeSpec: (callback: (e: IpcRendererEvent, path: string) => void) => void
-  didCloseSpec: (path: string) => void
-  didGenerateGraph: (callback: (e: IpcRendererEvent, url: string, data: string) => void) => void
+  openView: (
+    callback: (
+      e: IpcRendererEvent,
+      path: string,
+      viewType: string,
+      data: string | undefined
+    ) => void
+  ) => void
 }
 
 declare global {

@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid'
 import Arrangement from '../arrangements/Arrangement'
 import ArrangementView from '../arrangements/ArrangementView'
 import SpecView from '../spec/SpecView'
+import KripkeStructureView from '../kripke/KripkeStructureView'
 
 type ListData<T> = { [id: string]: T }
 
@@ -21,7 +22,7 @@ export default class AppState {
   private _sidePanelVisible: boolean
   private _allowSidePanelTogglingVisibility: boolean
   private _specs: ListData<string>
-  private _views: ListData<{ [viewType: string]: boolean }>
+  private _views: ListData<{ [viewType: string]: JSX.Element | undefined }>
 
   get ids(): { [url: string]: string } {
     return this._ids
@@ -63,7 +64,7 @@ export default class AppState {
     return this._specs
   }
 
-  get views(): ListData<{ [viewType: string]: boolean }> {
+  get views(): ListData<{ [viewType: string]: JSX.Element | undefined }> {
     return this._views
   }
 
@@ -150,8 +151,33 @@ export default class AppState {
     )
   }
 
+  createView(
+    id: string,
+    viewType: string,
+    data: string | undefined,
+    setAppState: (newAppState: AppState) => void
+  ): JSX.Element | undefined {
+    switch (viewType) {
+      case 'arrangement':
+        return this.arrangementView(id, setAppState)
+      case 'machine':
+        return this.machineView(id, setAppState)
+      case 'spec':
+        return this.specView(id, setAppState)
+      case 'graph':
+        if (!data) return undefined
+        return this.kripkeStructureView(data)
+      default:
+        return undefined
+    }
+  }
+
   id(url: string): string | undefined {
     return this._ids[url]
+  }
+
+  kripkeStructureView(data: string): JSX.Element {
+    return <KripkeStructureView data={data} />
   }
 
   loadRootArrangement(
@@ -188,17 +214,6 @@ export default class AppState {
         machine={machine}
         setMachine={(newMachine: Machine) => {
           setAppState(this.setMachine(id, newMachine, setAppState))
-        }}
-      />
-    )
-  }
-
-  specView(id: string, setAppState: (newState: AppState) => void): JSX.Element {
-    return (
-      <SpecView
-        spec={this.specs[id] ?? ''}
-        setSpec={(newSpec: string) => {
-          setAppState(this.setSpec(id, newSpec))
         }}
       />
     )
@@ -366,19 +381,53 @@ export default class AppState {
     return newState
   }
 
-  setView(id: string, viewType: string, visible: boolean): AppState {
+  setView(id: string, viewType: string, element: JSX.Element | undefined): AppState {
     const newState = this.copy
     const currentViews = newState.views
     const currentView = currentViews[id] ?? {}
-    currentView[viewType] = visible
+    currentView[viewType] = element
     currentViews[id] = currentView
     return newState.setViews(currentViews)
   }
 
-  setViews(views: ListData<{ [viewType: string]: boolean }>): AppState {
+  setViews(views: ListData<{ [viewType: string]: JSX.Element | undefined }>): AppState {
     const newState = this.copy
     newState._views = views
     return newState
+  }
+
+  setOpenViews(openViews: ListData<[string]>): AppState {
+    const newState = this.copy
+    const views = newState.views
+    for (const id in views) {
+      if (!openViews[id]) {
+        for (const viewType in views[id]) {
+          views[id][viewType] = undefined
+        }
+      }
+    }
+    for (const id in openViews) {
+      const currentViews = views[id] ?? {}
+      for (const viewType of openViews[id]) {
+        currentViews[viewType] = openViews[id][viewType]
+      }
+      for (const viewType in currentViews) {
+        currentViews[viewType] = openViews[id][viewType]
+      }
+      views[id] = currentViews
+    }
+    return newState.setViews(views)
+  }
+
+  specView(id: string, setAppState: (newState: AppState) => void): JSX.Element {
+    return (
+      <SpecView
+        spec={this.specs[id] ?? ''}
+        setSpec={(newSpec: string) => {
+          setAppState(this.setSpec(id, newSpec))
+        }}
+      />
+    )
   }
 
   private updateAllArrangementViews(setAppState: (newAppState: AppState) => void): void {

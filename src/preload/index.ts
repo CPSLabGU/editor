@@ -25,14 +25,14 @@ if (process.contextIsolated) {
         ipcRenderer.send('save', id, path, data, type),
       didSave: (callback: (e: IpcRendererEvent, id: string, path: string, type: string) => void) =>
         ipcRenderer.on('didSave', callback),
-      openSpec: (callback: (e: IpcRendererEvent, path: string) => void) =>
-        ipcRenderer.on('openSpec', callback),
-      didOpenSpec: (path: string) => ipcRenderer.send('didOpenSpec', path),
-      closeSpec: (callback: (e: IpcRendererEvent, path: string) => void) =>
-        ipcRenderer.on('closeSpec', callback),
-      didCloseSpec: (path: string) => ipcRenderer.send('didCloseSpec', path),
-      didGenerateGraph: (callback: (e: IpcRendererEvent, url: string, data: string) => void) =>
-        ipcRenderer.on('didGenerateGraph', callback)
+      openView: (
+        callback: (
+          e: IpcRendererEvent,
+          path: string,
+          viewType: string,
+          data: string | undefined
+        ) => void
+      ) => ipcRenderer.on('openView', callback)
     })
   } catch (error) {
     console.error(error)
