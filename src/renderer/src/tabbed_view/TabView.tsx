@@ -53,21 +53,30 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
+import './TabView.css'
+
 interface TabViewArgs {
   name: string
   isFocused: boolean
+  key: string
   deleteView: () => void
   focus: () => void
 }
 
-export default function TabView({ name, isFocused, deleteView, focus }: TabViewArgs): JSX.Element {
+export default function TabView({
+  name,
+  isFocused,
+  key,
+  deleteView,
+  focus
+}: TabViewArgs): JSX.Element {
   const className = isFocused ? 'focused' : ''
   return (
-    <div>
+    <div className="tab" key={key}>
       <button className={className} onClick={focus}>
         {name}
       </button>
-      <button onClick={deleteView}>Close</button>
+      <button onClick={deleteView}>✖</button>
     </div>
   )
 }

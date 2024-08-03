@@ -53,11 +53,11 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-import TabBarView from "./TabBarView"
+import TabBarView from './TabBarView'
 
 interface TabbedViewArgs {
   views: { [id: string]: { [viewType: string]: JSX.Element | undefined } }
-  focusedView: { id: string, viewType: string} | undefined
+  focusedView: { id: string; viewType: string } | undefined
   setViews: (newViews: { [id: string]: { [viewType: string]: JSX.Element | undefined } }) => void
   setFocus: (id: string, viewType: string) => void
 }
@@ -68,16 +68,12 @@ export default function TabbedView({
   setViews,
   setFocus
 }: TabbedViewArgs): JSX.Element {
-  console.log('In tabbed view!')
   if (Object.keys(views).length == 0) {
     return <div>Empty Views!</div>
   }
   if (!focusedView) return <div>Empty Views!</div>
   const focusedID = focusedView.id
   const focusedViewType = focusedView.viewType
-  console.log(
-    `Have focused view: ${focusedID} ${focusedViewType}: `, views[focusedID][focusedViewType]
-  )
   const openViews: { [id: string]: [string] } = {}
   for (const id in views) {
     const view = views[id]

@@ -78,18 +78,19 @@ export default function TabBarView({
   const elements = Object.entries(views).flatMap(([id, view]) => {
     return Object.entries(view).map(([viewType, element]) => {
       return (
-        <div key={`${id}.${viewType}`}>
-          <li>
-            <TabView
-              name={viewType}
-              isFocused={focusedView?.id == id && focusedView.viewType == viewType}
-              deleteView={() => deleteView(id, viewType)}
-              focus={() => setFocus(id, viewType)}
-            />
-          </li>
-        </div>
+        <TabView
+          name={viewType}
+          isFocused={focusedView?.id == id && focusedView.viewType == viewType}
+          key={`${id}.${viewType}`}
+          deleteView={() => deleteView(id, viewType)}
+          focus={() => setFocus(id, viewType)}
+        />
       )
     })
   })
-  return <ol>{elements}</ol>
+  return (
+    <div>
+      <nav>{elements}</nav>
+    </div>
+  )
 }
