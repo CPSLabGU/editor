@@ -8,6 +8,7 @@ import Arrangement from '../arrangements/Arrangement'
 import ArrangementView from '../arrangements/ArrangementView'
 import SpecView from '../spec/SpecView'
 import KripkeStructureView from '../kripke/KripkeStructureView'
+import ViewData from '@renderer/tabbed_view/ViewData'
 
 type ListData<T> = { [id: string]: T }
 
@@ -131,6 +132,23 @@ export default class AppState {
     this._views = {}
   }
 
+  static fromViewData(data: {
+    [id: string]: { [viewType: string]: ViewData | undefined }
+  }): ListData<{ [viewType: string]: JSX.Element }> {
+    const newViews: ListData<{ [viewType: string]: JSX.Element }> = {}
+    for (const id in data) {
+      const view = data[id]
+      const newView: { [viewType: string]: JSX.Element } = {}
+      for (const viewType in view) {
+        const data = view[viewType]?.view
+        if (!data) continue
+        newView[viewType] = data
+      }
+      newViews[id] = newView
+    }
+    return newViews
+  }
+
   addID(id: string, url: string): AppState {
     const newState = this.copy
     newState._ids[url] = id
@@ -217,6 +235,20 @@ export default class AppState {
         }}
       />
     )
+  }
+
+  name(id: string, viewType: string): string {
+    const url = this.url(id)
+    if (!url) return this.toName(viewType)
+    const components = url.split('/')
+    while (components.length > 0) {
+      const lastComponent = components.pop()?.trim()
+      if (!lastComponent) return this.toName(viewType)
+      if (lastComponent == '') continue
+      const typeName = this.toName(viewType)
+      return lastComponent + ' ' + typeName
+    }
+    return this.toName(viewType)
   }
 
   newRootArrangement(language: string, setAppState: (newState: AppState) => void): AppState {
@@ -428,6 +460,21 @@ export default class AppState {
         }}
       />
     )
+  }
+
+  toName(viewType: string): string {
+    switch (viewType) {
+      case 'arrangement':
+        return 'Arrangement'
+      case 'machine':
+        return 'Machine'
+      case 'spec':
+        return 'Specification'
+      case 'graph':
+        return 'Kripke Structure'
+      default:
+        return viewType
+    }
   }
 
   private updateAllArrangementViews(setAppState: (newAppState: AppState) => void): void {

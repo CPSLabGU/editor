@@ -53,12 +53,13 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-import TabView from "./TabView";
+import TabView from './TabView'
+import ViewData from './ViewData'
 
 interface TabBarViewArgs {
-  views: { [id: string]: { [viewType: string]: JSX.Element | undefined } }
+  views: { [id: string]: { [viewType: string]: ViewData | undefined } }
   focusedView: { id: string; viewType: string } | undefined
-  setViews: (newViews: { [id: string]: { [viewType: string]: JSX.Element | undefined } }) => void
+  setViews: (newViews: { [id: string]: { [viewType: string]: ViewData | undefined } }) => void
   setFocus: (id: string, viewType: string) => void
 }
 
@@ -79,7 +80,7 @@ export default function TabBarView({
     return Object.entries(view).map(([viewType, element]) => {
       return (
         <TabView
-          name={viewType}
+          name={element?.name ?? viewType}
           isFocused={focusedView?.id == id && focusedView.viewType == viewType}
           key={`${id}.${viewType}`}
           deleteView={() => deleteView(id, viewType)}

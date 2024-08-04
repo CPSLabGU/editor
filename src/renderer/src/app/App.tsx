@@ -3,6 +3,7 @@ import './App.css'
 import AppState from './AppState'
 import Welcome from '@renderer/welcome/Welcome'
 import TabbedView from '@renderer/tabbed_view/TabbedView'
+import ViewData from '@renderer/tabbed_view/ViewData'
 
 export default function App(): JSX.Element {
   const [appState, setAppState] = useState(new AppState())
@@ -138,11 +139,23 @@ export default function App(): JSX.Element {
     }
   } else {
     console.log('Multiple views open!')
+    const transformedViews: { [id: string]: { [viewType: string]: ViewData } } = {}
+    for (const id in appState.views) {
+      for (const viewType in appState.views[id]) {
+        const currentViews = transformedViews[id] ?? {}
+        const data = ViewData.fromAppState(appState, id, viewType)
+        if (!data) continue
+        currentViews[viewType] = data
+        transformedViews[id] = currentViews
+      }
+    }
     return (
       <TabbedView
-        views={appState.views}
+        views={transformedViews}
         focusedView={focusedView}
-        setViews={appState.setViews}
+        setViews={(newViews: { [id: string]: { [viewType: string]: ViewData | undefined } }) => {
+          setAppState(appState.setViews(AppState.fromViewData(newViews)))
+        }}
         setFocus={(id: string, viewType: string) => setFocusedView({ id: id, viewType: viewType })}
       />
     )
