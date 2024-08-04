@@ -106,7 +106,7 @@ export default function TabbedView({
   }
   return (
     <div>
-      <div>
+      <div className="nav-bar">
         <TabBarView
           views={views}
           focusedView={focusedView}
@@ -114,7 +114,7 @@ export default function TabbedView({
           setFocus={setFocus}
         />
       </div>
-      <div>{element}</div>
+      <div className="page-container">{element}</div>
     </div>
   )
 }
