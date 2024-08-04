@@ -136,11 +136,11 @@ app.on('window-all-closed', () => {
 
 async function openFileDialog(window: BrowserWindow, type: string): Promise<void> {
   const filters: Electron.FileFilter[] = []
-  if (type === 'machine') {
-    filters.push({ name: 'Machines', extensions: ['machine'] })
-  } else if (type == 'arrangement') {
-    filters.push({ name: 'Arrangements', extensions: ['arrangement'] })
-  }
+  // if (type === 'machine') {
+  //   filters.push({ name: 'Machines', extensions: ['machine'] })
+  // } else if (type == 'arrangement') {
+  //   filters.push({ name: 'Arrangements', extensions: ['arrangement'] })
+  // }
   filters.push({ name: 'All Files', extensions: ['*'] })
   const filePath: string[] | undefined = dialog.showOpenDialogSync(window, {
     properties: ['openDirectory', 'openFile'],
@@ -274,6 +274,15 @@ function generateFileMenus(mainWindow: BrowserWindow, path: string | null, type:
         }
       }
     ]
+    if (type == 'machine' || type == 'arrangement') {
+      const fileType = type == 'machine' ? 'Machine' : 'Arrangement'
+      viewMenus.push({
+        label: fileType,
+        click: async (): Promise<void> => {
+          mainWindow.webContents.send('openView', path, type, undefined)
+        }
+      })
+    }
     menuItems.push({
       label: 'View',
       submenu: viewMenus
