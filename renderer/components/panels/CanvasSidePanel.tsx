@@ -76,7 +76,7 @@ export default function CanvasSidePanel({
             <Accordion type="multiple">
               {machine.clocks.map((clock: Clock, index: number) => {
                 return <>
-                  <AccordionItem value={`clocks_${index}_${clock.name}_${clock.frequency}`}>
+                  <AccordionItem key={`clocks_${index}_${clock.name}_${clock.frequency}`} value={`clocks_${index}_${clock.name}_${clock.frequency}`}>
                     <AccordionTrigger>{clock.name}</AccordionTrigger>
                     <AccordionContent>
                       <ClockView

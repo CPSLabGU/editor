@@ -49,6 +49,7 @@ export default function App(): JSX.Element {
     } else if (load.type == 'arrangement') {
       setAppState(appState.loadRootArrangement(load.data, load.url, setAppState))
     }
+    window.ipc.didLoad();
   }, [load, setLoad, appState, setAppState])
   useEffect(() => {
     if (didSave === undefined) return

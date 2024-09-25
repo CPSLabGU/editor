@@ -17,50 +17,92 @@ async function createMainWindow(): Promise<void> {
   const mainWindow = createWindow('main', {
     width: 1000,
     height: 600,
+    show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
-  const webContentsId = mainWindow.webContents.id;
+  mainWindow.center();
+  const mainId = mainWindow.webContents.id;
+  const splashWindow = createWindow('splash', {
+    width: 600,
+    height: 400,
+    alwaysOnTop: true,
+    frame: false,
+    resizable: false,
+    hasShadow: false,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+    },
+  })
+  splashWindow.center();
+  let splashOpen = true;
+  const splashId = splashWindow.webContents.id;
 
-  const messageListener = async (event: IpcMainEvent, args) => {
-    if (event.sender.id != webContentsId) return;
+  const mainMessageListener = async (event: IpcMainEvent, args) => {
+    if (event.sender.id != mainId) return;
     event.reply('message', `${args} World!`)
   }
-  const openArrangementLisener = (event: IpcMainEvent) => {
-    if (event.sender.id != webContentsId) return;
+  const mainOpenArrangementLisener = (event: IpcMainEvent) => {
+    if (event.sender.id != mainId) return;
     openFileDialog(mainWindow, 'arrangement')
   }
-  const openMachineListener = (event: IpcMainEvent) => {
-    if (event.sender.id != webContentsId) return;
+  const mainOpenMachineListener = (event: IpcMainEvent) => {
+    if (event.sender.id != mainId) return;
     openFileDialog(mainWindow, 'machine')
   }
-  const saveListener = async (
+  const mainDidLoad = (event: IpcMainEvent) => {
+    if (event.sender.id != mainId) return;
+    if (splashOpen) {
+      splashWindow.close();
+      mainWindow.show();
+    }
+  }
+  const mainSaveListener = async (
     event: IpcMainEvent,
     id: string,
     path: string | null,
     data: string,
     type: string
   ): Promise<void> => {
-    if (event.sender.id != webContentsId) return;
+    if (event.sender.id != mainId) return;
     await saveEntity(mainWindow, id, path, data, type);
   }
-  ipcMain.addListener('message', messageListener);
-  ipcMain.addListener('openArrangement', openArrangementLisener);
-  ipcMain.addListener('openMachine', openMachineListener);
-  ipcMain.addListener('save', saveListener);
+  ipcMain.addListener('message', mainMessageListener);
+  ipcMain.addListener('openArrangement', mainOpenArrangementLisener);
+  ipcMain.addListener('openMachine', mainOpenMachineListener);
+  ipcMain.addListener('save', mainSaveListener);
+  ipcMain.addListener('didLoad', mainDidLoad);
   mainWindow.on('closed', () => {
-    ipcMain.removeListener('message', messageListener);
-    ipcMain.removeListener('openArrangement', openArrangementLisener);
-    ipcMain.removeListener('openMachine', openMachineListener);
-    ipcMain.removeListener('save', saveListener);
+    ipcMain.removeListener('message', mainMessageListener);
+    ipcMain.removeListener('openArrangement', mainOpenArrangementLisener);
+    ipcMain.removeListener('openMachine', mainOpenMachineListener);
+    ipcMain.removeListener('save', mainSaveListener);
+    ipcMain.removeListener('didLoad', mainDidLoad);
+  })
+  const splashOpenArrangementLisener = (event: IpcMainEvent) => {
+    if (event.sender.id != splashId) return;
+    openFileDialog(mainWindow, 'arrangement')
+  }
+  const splashOpenMachineListener = (event: IpcMainEvent) => {
+    if (event.sender.id != splashId) return;
+    openFileDialog(mainWindow, 'machine')
+  }
+  ipcMain.addListener('openArrangement', splashOpenArrangementLisener);
+  ipcMain.addListener('openMachine', splashOpenMachineListener);
+  splashWindow.on('closed', () => {
+    splashOpen = false;
+    ipcMain.removeListener('openArrangement', splashOpenArrangementLisener);
+    ipcMain.removeListener('openMachine', splashOpenMachineListener);
   })
 
   if (isProd) {
     await mainWindow.loadURL('app://./home')
+    await splashWindow.loadURL('app://./home')
   } else {
     const port = process.argv[2]
     await mainWindow.loadURL(`http://localhost:${port}/home`)
+    await splashWindow.loadURL(`http://localhost:${port}/home`)
     mainWindow.webContents.openDevTools()
   }
 }

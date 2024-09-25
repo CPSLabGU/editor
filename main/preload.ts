@@ -22,6 +22,9 @@ const handler = {
   load(callback: (e: IpcRendererEvent, data: string, url: string, type: string) => void) {
     ipcRenderer.on('load', callback)
   },
+  didLoad() {
+    ipcRenderer.send('didLoad');
+  },
   updateData(callback: (e: IpcRendererEvent, path: string | null, type: string) => void) {
     ipcRenderer.on('updateData', callback)
   },
