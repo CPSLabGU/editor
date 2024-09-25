@@ -1,5 +1,4 @@
 import HiddenView from '../util/HiddenView'
-import PanelIcon from './PanelIcon'
 import SidePanel from './SidePanel'
 import { useState } from 'react'
 import PanelChildView from './PanelChildView'
@@ -7,8 +6,8 @@ import Machine from '../machines/Machine'
 import Clock from '../clocks/Clock'
 import ClockView from '../clocks/ClockView'
 import { Button } from '../ui/button'
-import { Separator } from '../ui/separator'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'
+import { PanelRightClose, PanelRightOpen } from 'lucide-react'
 
 export default function CanvasSidePanel({
   machine,
@@ -21,16 +20,20 @@ export default function CanvasSidePanel({
   return (
     <div onContextMenu={(e) => e.stopPropagation()}>
       <HiddenView hidden={!hidden}>
-        <div className="fixed top-0 right-0">
-          <div className="p-2 h-5 w-5 ml-auto mr-auto" onClick={() => setHidden(!hidden)}>
-            <PanelIcon />
+        <div className="fixed top-0 right-0 mr-4">
+          <div className="flex items-center">
+            <Button className="p-1" variant="ghost" onClick={() => setHidden(!hidden)}>
+              <PanelRightOpen />
+            </Button>
           </div>
         </div>
       </HiddenView>
       <HiddenView hidden={hidden}>
         <SidePanel>
-          <div className="p-2 h-5 w-5 ml-auto mr-auto" onClick={() => setHidden(!hidden)}>
-            <PanelIcon />
+          <div className="fixed top-0 right-0 mr-4">
+            <Button className="p-1" variant="link" onClick={() => setHidden(!hidden)}>
+              <PanelRightClose />
+            </Button>
           </div>
           <div className="mt-2">
             <h2>State Information</h2>

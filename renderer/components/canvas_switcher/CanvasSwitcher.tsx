@@ -2,8 +2,8 @@ import CanvasSwitcherItem from './CanvasSwitchItem'
 import LoadingView from '../util/LoadingView'
 import TreeView from '../treeview/TreeView'
 import TreeViewItem from '../treeview/TreeViewItem'
-import PanelIcon from '../panels/PanelIcon'
 import HiddenView from '../util/HiddenView'
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 
 export type ItemDictionary<T> = { [key: string]: T }
 
@@ -46,7 +46,7 @@ export default function CanvasSwitcher({
               className="p-2 h-5 w-5"
               onClick={() => setSidePanelVisible(!sidePanelVisible)}
             >
-              <PanelIcon />
+              <PanelLeftOpen />
             </div>
           </div>
         </HiddenView>
@@ -59,7 +59,7 @@ export default function CanvasSwitcher({
                 className="p-2 h-5 w-5"
                 onClick={() => setSidePanelVisible(!sidePanelVisible)}
               >
-                <PanelIcon />
+                <PanelLeftClose />
               </div>
             </HiddenView>
             <TreeView root={treeItem} />
