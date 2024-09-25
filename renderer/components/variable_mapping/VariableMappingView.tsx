@@ -31,7 +31,7 @@ export default function VariableMappingView({
     [mapping, setMapping]
   )
   return (
-    <div className="flex flex-row">
+    <div className="flex flex-row gap-1">
       <div className="w-full">
         <h3>Source</h3>
         <div>
@@ -44,10 +44,8 @@ export default function VariableMappingView({
           <Input type="text" className="w-full min-w-80" onChange={changeDestination} value={mapping.destination} />
         </div>
       </div>
-      <div className="w-full">
-        <div>
-          <Button onClick={onDelete}>Delete</Button>
-        </div>
+      <div className="w-full mt-auto">
+        <Button variant="secondary" onClick={onDelete}>Delete</Button>
       </div>
     </div>
   )

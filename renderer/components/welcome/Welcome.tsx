@@ -15,10 +15,10 @@ export default function Welcome({
 }: WelcomeArgs): JSX.Element {
   return (
     <div>
-      <Button onClick={openArrangement}>Open arrangement</Button>
-      <Button onClick={openMachine}>Open machine</Button>
-      <Button onClick={createArrangement}>Create arrangement</Button>
-      <Button onClick={createMachine}>Create machine</Button>
+      <Button variant="secondary" onClick={openArrangement}>Open arrangement</Button>
+      <Button variant="secondary" onClick={openMachine}>Open machine</Button>
+      <Button variant="secondary" onClick={createArrangement}>Create arrangement</Button>
+      <Button variant="secondary" onClick={createMachine}>Create machine</Button>
     </div>
   )
 }

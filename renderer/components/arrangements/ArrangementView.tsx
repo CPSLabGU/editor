@@ -26,7 +26,7 @@ export default function ArrangementView({
   )
   const viewForClock = useCallback(
     (id: string, clock: Clock, setClock: (newClock: Clock) => void, deleteClock: () => void) => (
-      <ClockView key={id} clock={clock} setClock={setClock} deleteClock={deleteClock} />
+      <ClockView key={id} buttonVariant='secondary' clock={clock} setClock={setClock} deleteClock={deleteClock} />
     ),
     []
   )
@@ -71,7 +71,7 @@ export default function ArrangementView({
     []
   )
   return (
-    <div>
+    <div className="p-4">
       <form onSubmit={(e) => e.preventDefault()}>
         <h2>Clocks</h2>
         <ManageListView

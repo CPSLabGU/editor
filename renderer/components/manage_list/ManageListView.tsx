@@ -60,7 +60,7 @@ export default function ManageListView<Element>({
   return (
     <>
       <div>
-        <Button onClick={createNewEntry}>Add</Button>
+        <Button variant="secondary" onClick={createNewEntry}>Add</Button>
       </div>
       <div>{elementViews}</div>
     </>

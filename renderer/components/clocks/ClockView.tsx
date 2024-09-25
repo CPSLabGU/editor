@@ -61,11 +61,13 @@ import { Button } from '../ui/button'
 export default function ClockView({
   clock,
   setClock,
-  deleteClock
+  deleteClock,
+  buttonVariant,
 }: {
   clock: Clock
   setClock: (newClock: Clock) => void
-  deleteClock: () => void
+  deleteClock: () => void,
+  buttonVariant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost",
 }) {
   return (
     <div>
@@ -83,7 +85,7 @@ export default function ClockView({
           setData={(newData: string) => setClock(new Clock(clock.name, newData))}
         />
       </div>
-      <Button onClick={deleteClock}>Delete clock {clock.name}</Button>
+      <Button variant={buttonVariant ?? 'default'} onClick={deleteClock}>Delete clock {clock.name}</Button>
     </div>
   )
 }

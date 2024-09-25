@@ -4,6 +4,7 @@ import VariableMappingView from '../variable_mapping/VariableMappingView'
 import VariableMapping from '../variable_mapping/VariableMapping'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
+import { Separator } from '../ui/separator'
 
 interface MachineReferenceViewArgs {
   machineReference: MachineReference
@@ -68,31 +69,29 @@ export default function MachineReferenceView({
   }
   return (
     <div>
-      <div className="flex flex-row">
+      <Separator className="mt-2 mb-1" />
+      <div className="flex flex-row gap-1">
         <div className="w-full">
           <h3>Name</h3>
           <div>
-            <Input type="text" className="w-full min-w-80" onChange={changeName} value={machineReference.name} />
+          <Input type="text" className="w-full min-w-80" onChange={changeName} value={machineReference.name} />
           </div>
         </div>
         <div className="w-full">
           <h3>Path</h3>
           <div>
-            <Input type="text" className="w-full min-w-80" onChange={changePath} value={machineReference.path} />
+          <Input type="text" className="w-full min-w-80" onChange={changePath} value={machineReference.path} />
           </div>
         </div>
-      </div>
-      <div>
-        <h3>Variable Mappings</h3>
-        <div>
-          <Button onClick={createNewMapping}>Add</Button>
+        <div className="w-full mt-auto">
+          <Button variant="secondary" className="mt-2" onClick={deleteMachineReference}>
+            Delete instance {machineReference.name}
+          </Button>
         </div>
-        <div>{mappingViews}</div>
       </div>
       <div>
-        <Button onClick={deleteMachineReference}>
-          Delete instance {machineReference.name}
-        </Button>
+        <h3>Variable Mappings <Button variant="secondary" onClick={createNewMapping}>Add</Button></h3>
+        <div>{mappingViews}</div>
       </div>
     </div>
   )
