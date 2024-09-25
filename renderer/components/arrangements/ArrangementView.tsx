@@ -6,6 +6,7 @@ import ManageListView from '../manage_list/ManageListView'
 import ClockView from '../clocks/ClockView'
 import MachineReference from '../machine_reference/MachineReference'
 import MachineReferenceView from '../machine_reference/MachineReferenceView'
+import { machine } from 'os'
 
 interface ArrangementViewArgs {
   arrangement: Arrangement
@@ -23,6 +24,13 @@ export default function ArrangementView({
       setArrangement(arrangement.setClocks(newClocks))
     },
     [arrangement, setArrangement]
+  )
+  const titleViewForClocks = useCallback((button: JSX.Element) => <h2>Clocks {button}</h2>, [])
+  const triggerViewForClock = useCallback(
+    (id: string, clock: Clock) => (
+      <>{clock.name}</>
+    ),
+    []
   )
   const viewForClock = useCallback(
     (id: string, clock: Clock, setClock: (newClock: Clock) => void, deleteClock: () => void) => (
@@ -54,6 +62,13 @@ export default function ArrangementView({
     },
     [arrangement, setArrangement]
   )
+  const titleViewForMachines = useCallback((button: JSX.Element) => <h2>Machines {button}</h2>, [])
+  const triggerViewForMachine = useCallback(
+    (id: string, machine: MachineReference) => (
+      <>{machine.name}</>
+    ),
+    []
+  )
   const viewForMachine = useCallback(
     (
       id: string,
@@ -73,11 +88,12 @@ export default function ArrangementView({
   return (
     <div className="p-4">
       <form onSubmit={(e) => e.preventDefault()}>
-        <h2>Clocks</h2>
         <ManageListView
           list={arrangement.clocks}
           setList={changeClocks}
           emptyElement={emptyClock}
+          titleView={titleViewForClocks}
+          triggerView={triggerViewForClock}
           view={viewForClock}
         />
         <h2>External Variables</h2>
@@ -92,11 +108,12 @@ export default function ArrangementView({
           sourcecode={arrangement.globalVariables}
           setSourceCode={changeGlobalVariables}
         />
-        <h2>Machines</h2>
         <ManageListView
+          titleView={titleViewForMachines}
           list={arrangement.machines}
           setList={changeMachines}
           emptyElement={emptyMachine}
+          triggerView={triggerViewForMachine}
           view={viewForMachine}
         />
       </form>

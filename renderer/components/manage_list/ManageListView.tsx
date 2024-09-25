@@ -1,10 +1,13 @@
 import { useCallback } from 'react'
 import { Button } from '../ui/button'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'
 
 interface ManageListViewArgs<Element> {
   list: { [id: string]: Element }
   setList: (setter: (currentList: { [id: string]: Element }) => { [id: string]: Element }) => void
   emptyElement: () => [id: string, element: Element]
+  titleView: (button: JSX.Element) => JSX.Element
+  triggerView: (id: string, element: Element) => JSX.Element,
   view: (
     id: string,
     element: Element,
@@ -17,6 +20,8 @@ export default function ManageListView<Element>({
   list,
   setList,
   emptyElement,
+  titleView,
+  triggerView,
   view
 }: ManageListViewArgs<Element>): JSX.Element {
   const createNewEntry = useCallback(() => {
@@ -48,21 +53,26 @@ export default function ManageListView<Element>({
     [list, setList]
   )
   const elementViews = Object.entries(list).map(([id, element]) => (
-    <div key={id}>
-      {view(
-        id,
-        element,
-        (newElement: Element) => changeElement(id, newElement),
-        () => deleteElement(id)
-      )}
-    </div>
+    <AccordionItem value={id}>
+      <AccordionTrigger>{triggerView(id, element)}</AccordionTrigger>
+      <AccordionContent>
+        {view(
+          id,
+          element,
+          (newElement: Element) => changeElement(id, newElement),
+          () => deleteElement(id)
+        )}
+      </AccordionContent>
+    </AccordionItem>
   ))
   return (
     <>
       <div>
-        <Button variant="secondary" onClick={createNewEntry}>Add</Button>
+        {titleView(<Button variant="secondary" onClick={createNewEntry}>Add</Button>)}
       </div>
-      <div>{elementViews}</div>
+      <Accordion type="single" collapsible>
+        {elementViews}
+      </Accordion>
     </>
   )
 }
