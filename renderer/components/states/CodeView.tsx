@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useState, useCallback, useEffect } from 'react'
 import CodeEditor from '../code_editor/CodeEditor'
+import { Input } from '../ui/input'
 
 export default function CodeView({
   actions,
@@ -70,7 +71,7 @@ export default function CodeView({
       <div className="p-5 bg-background">
         <form onSubmit={finishedEditingStateName}>
           <h1>
-            <input
+            <Input
               type="text"
               className="text-[length:inherit] border-none bg-transparant w-full text-inherit outline-none"
               value={stateName}

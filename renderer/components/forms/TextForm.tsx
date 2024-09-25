@@ -55,6 +55,7 @@
 //
 
 import { useState, useCallback } from 'react'
+import { Input } from '../ui/input'
 
 export default function TextForm({
   data,
@@ -87,7 +88,7 @@ export default function TextForm({
     [setData]
   )
   return (
-    <input
+    <Input
       type={data}
       value={tempData}
       onChange={changeTempData}

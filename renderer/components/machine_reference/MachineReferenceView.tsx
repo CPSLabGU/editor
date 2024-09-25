@@ -2,6 +2,7 @@ import MachineReference from './MachineReference'
 import { useCallback, ChangeEvent } from 'react'
 import VariableMappingView from '../variable_mapping/VariableMappingView'
 import VariableMapping from '../variable_mapping/VariableMapping'
+import { Input } from '../ui/input'
 
 interface MachineReferenceViewArgs {
   machineReference: MachineReference
@@ -70,13 +71,13 @@ export default function MachineReferenceView({
         <div className="w-full">
           <h3>Name</h3>
           <div>
-            <input type="text" className="w-full min-w-80" onChange={changeName} value={machineReference.name} />
+            <Input type="text" className="w-full min-w-80" onChange={changeName} value={machineReference.name} />
           </div>
         </div>
         <div className="w-full">
           <h3>Path</h3>
           <div>
-            <input type="text" className="w-full min-w-80" onChange={changePath} value={machineReference.path} />
+            <Input type="text" className="w-full min-w-80" onChange={changePath} value={machineReference.path} />
           </div>
         </div>
       </div>
