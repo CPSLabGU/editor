@@ -22,7 +22,6 @@ async function createMainWindow(): Promise<void> {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
-  mainWindow.center();
   const mainId = mainWindow.webContents.id;
   const splashWindow = createWindow('splash', {
     width: 600,
@@ -105,7 +104,6 @@ async function createMainWindow(): Promise<void> {
     await mainWindow.loadURL(`http://localhost:${port}/home`)
     await splashWindow.loadURL(`http://localhost:${port}/home`)
     mainWindow.webContents.openDevTools()
-    splashWindow.webContents.openDevTools()
   }
 }
 

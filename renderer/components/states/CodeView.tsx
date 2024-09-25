@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState, useCallback, useEffect } from 'react'
 import CodeEditor from '../code_editor/CodeEditor'
 import { Input } from '../ui/input'
@@ -43,8 +42,9 @@ export default function CodeView({
   const keyPress = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === 'Escape') {
-        setStateName(e.target.value)
-        e.target.blur()
+        const target = e.target as unknown as { value: string, blur: () => void };
+        setStateName(target.value)
+        target.blur()
       }
     },
     [setStateName]

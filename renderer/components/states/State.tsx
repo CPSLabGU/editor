@@ -1,7 +1,5 @@
-// @ts-nocheck
-
 import { useCallback } from 'react'
-import StateProperties from './StateProperties'
+import StateProperties, { type StatePropertiesInterface } from './StateProperties'
 import Point2D from '../util/Point2D'
 import Positionable from '../util/Positionable'
 import Resizable from '../util/Resizable'
@@ -75,7 +73,7 @@ function State({
   )
 }
 
-function CollapsedState({ name, w, h, expanded, isSelected }: StateProperties & { isSelected: boolean }): JSX.Element {
+function CollapsedState({ name, w, h, expanded, isSelected }: StatePropertiesInterface & { isSelected: boolean }): JSX.Element {
   return (
     <Card className={`h-[calc(100%-1rem)] overflow:hidden ${isSelected ? 'text-blue-700 border-blue-700' : ''}`}>
       <CardHeader className="h-full justify-center">
@@ -85,7 +83,7 @@ function CollapsedState({ name, w, h, expanded, isSelected }: StateProperties & 
   );
 }
 
-function ExpandedState({ name, w, h, expanded, isSelected }: StateProperties & { isSelected: boolean }): JSX.Element {
+function ExpandedState({ name, w, h, expanded, isSelected }: StatePropertiesInterface & { isSelected: boolean }): JSX.Element {
   return (
     <Card className={`h-[calc(100%-1rem)] overflow:hidden ${isSelected ? 'text-blue-700 border-blue-700' : ''}`}>
       <CardHeader className="h-full justify-center">

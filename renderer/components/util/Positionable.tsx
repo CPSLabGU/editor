@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { useCallback, useState, MouseEvent, useEffect, useMemo } from 'react'
 import Point2D from './Point2D'
 
@@ -7,7 +5,7 @@ function Positionable({
   position,
   setPosition,
   enabled = true,
-  onClick = () => {},
+  onClick = (e: any) => {},
   onContextMenu = (e) => {},
   onDoubleClick = () => {},
   children
@@ -40,7 +38,7 @@ function Positionable({
 
 function DisabledView({
   position,
-  onClick = () => {},
+  onClick = (e: any) => {},
   onContextMenu = (e) => {},
   onDoubleClick = () => {},
   children
@@ -107,7 +105,7 @@ function EnabledView({
   const positionStyle = {
     left: isDragging ? mousePosition.x : position.x,
     top: isDragging ? mousePosition.y : position.y,
-    position: 'absolute',
+    position: 'absolute' as 'absolute',
     cursor: isDragging ? 'grabbing' : 'grab'
   }
   const dragStyle = {

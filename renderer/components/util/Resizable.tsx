@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { useCallback, useState, MouseEvent, useEffect } from 'react'
 import Point2D from './Point2D'
 

@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { useCallback } from 'react'
 import TreeViewItem from './TreeViewItem'
 

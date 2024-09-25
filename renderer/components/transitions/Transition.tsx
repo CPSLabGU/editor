@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { useCallback, useEffect, useState } from 'react'
 import TransitionProperties from './TransitionProperties'
 import BezierPath from '../util/BezierPath'
@@ -95,15 +93,15 @@ function Transition({
     new Point2D(path.control1.x + relativeOffset.x, path.control1.y + relativeOffset.y)
   )
   const parentStyle = {
-    position: 'absolute',
+    position: 'absolute' as 'absolute',
     left: boundingBox.x - padding / 2,
     top: boundingBox.y - padding / 2
   }
   const conditionStyle = {
-    position: 'absolute',
+    position: 'absolute' as 'absolute',
     left: `calc(${conditionX + relativeOffset.x}px - 0.2em * ${condition.length})`,
     top: `calc(${conditionY + relativeOffset.y}px - 0.5em)`,
-    textAlign: 'center',
+    textAlign: 'center' as 'center',
     color: isSelected ? 'rgb(58, 58, 228)' : color
   }
   const svgStyle = {

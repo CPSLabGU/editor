@@ -1,6 +1,17 @@
 import StateModel from './StateModel'
 
-export default class StateProperties {
+export interface StatePropertiesInterface {
+  name: string
+  w: number
+  h: number
+  expanded: boolean
+  transitions: string[]
+  actions: { [action: string]: string }
+  variables: string
+  externalVariables: string
+}
+
+export default class StateProperties implements StatePropertiesInterface {
   name: string
   w: number
   h: number
