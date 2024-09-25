@@ -1,0 +1,97 @@
+import MachineReference from './MachineReference'
+import { useCallback, ChangeEvent } from 'react'
+import VariableMappingView from '../variable_mapping/VariableMappingView'
+import VariableMapping from '../variable_mapping/VariableMapping'
+
+interface MachineReferenceViewArgs {
+  machineReference: MachineReference
+  setMachineReference: (newMachineReference: MachineReference) => void
+  deleteMachineReference: () => void
+}
+
+export default function MachineReferenceView({
+  machineReference,
+  setMachineReference,
+  deleteMachineReference
+}: MachineReferenceViewArgs): JSX.Element {
+  const changeName = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setMachineReference(
+        new MachineReference(e.target.value, machineReference.path, machineReference.mappings)
+      )
+    },
+    [machineReference, setMachineReference]
+  )
+  const changePath = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setMachineReference(
+        new MachineReference(machineReference.name, e.target.value, machineReference.mappings)
+      )
+    },
+    [machineReference, setMachineReference]
+  )
+  const createNewMapping = useCallback(() => {
+    const [id, mapping] = machineReference.emptyMapping
+    setMachineReference(machineReference.addMapping(id, mapping))
+  }, [machineReference, setMachineReference])
+  const deleteMapping = useCallback(
+    (id: string): void => setMachineReference(machineReference.removeMapping(id)),
+    [machineReference, setMachineReference]
+  )
+  const changeMapping = useCallback(
+    (id: string, newMapping: VariableMapping) => {
+      const newMappings = { ...machineReference.mappings }
+      newMappings[id] = newMapping
+      setMachineReference(
+        new MachineReference(machineReference.name, machineReference.path, newMappings)
+      )
+    },
+    [machineReference, setMachineReference]
+  )
+  const mappingViews: JSX.Element[] = []
+  for (const key in machineReference.mappings) {
+    const mapping = machineReference.mappings[key]
+    mappingViews.push(
+      <VariableMappingView
+        key={key}
+        mapping={mapping}
+        setMapping={(newMapping: VariableMapping) => changeMapping(key, newMapping)}
+        onDelete={() => deleteMapping(key)}
+      />
+    )
+  }
+  return (
+    <div>
+      <div className="flex flex-row">
+        <div className="w-full">
+          <h3>Name</h3>
+          <div>
+            <input type="text" className="w-full min-w-80" onChange={changeName} value={machineReference.name} />
+          </div>
+        </div>
+        <div className="w-full">
+          <h3>Path</h3>
+          <div>
+            <input type="text" className="w-full min-w-80" onChange={changePath} value={machineReference.path} />
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3>Variable Mappings</h3>
+        <div>
+          <button onClick={createNewMapping}>Add</button>
+        </div>
+        <div>{mappingViews}</div>
+      </div>
+      <div>
+        <button onClick={deleteMachineReference}>
+          Delete instance {machineReference.name}
+        </button>
+      </div>
+    </div>
+  )
+}
