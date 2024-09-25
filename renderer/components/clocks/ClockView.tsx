@@ -85,7 +85,9 @@ export default function ClockView({
           setData={(newData: string) => setClock(new Clock(clock.name, newData))}
         />
       </div>
-      <Button variant={buttonVariant ?? 'default'} onClick={deleteClock}>Delete clock {clock.name}</Button>
+      <div className="mt-2">
+        <Button variant={buttonVariant ?? 'default'} onClick={deleteClock}>Delete</Button>
+      </div>
     </div>
   )
 }

@@ -7,6 +7,8 @@ import Machine from '../machines/Machine'
 import Clock from '../clocks/Clock'
 import ClockView from '../clocks/ClockView'
 import { Button } from '../ui/button'
+import { Separator } from '../ui/separator'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'
 
 export default function CanvasSidePanel({
   machine,
@@ -30,16 +32,15 @@ export default function CanvasSidePanel({
           <div className="p-2 h-5 w-5 ml-auto mr-auto" onClick={() => setHidden(!hidden)}>
             <PanelIcon />
           </div>
-          <div>
+          <div className="mt-2">
             <h2>State Information</h2>
             <div>
               <span>{`Initial State: ${machine.states[machine.initialState]?.properties.name ?? 'none'}`}</span>
             </div>
             <div>
               <span>{`Suspended State: ${machine.suspendedState !== undefined ? machine.states[machine.suspendedState]?.properties.name ?? 'none' : 'none'}`}</span>
-            </div>
-            <div>
               <Button
+                className="ml-2"
                 onClick={() => {
                   setMachine(machine.setSuspendedState(undefined))
                 }}
@@ -55,37 +56,45 @@ export default function CanvasSidePanel({
               setMachine(machine.setExternalVariables(newData))
             }}
           />
-          <div>
-            <h2>Clocks</h2>
-            {machine.clocks.map((clock: Clock, index: number) => {
-              return (
-                <ClockView
-                  key={`clocks_${index}_${clock.name}_${clock.frequency}`}
-                  clock={clock}
-                  setClock={(newClock: Clock) => {
-                    const clocks = machine.clocks
-                    clocks[index] = newClock
-                    setMachine(machine.setClocks(clocks))
-                  }}
-                  deleteClock={() => {
-                    const clocks = machine.clocks
-                    clocks.splice(index, 1)
-                    setMachine(machine.setClocks(clocks))
-                  }}
-                />
-              )
-            })}
-            <div>
+          <div className="mt-2">
+            <h2>
+              Clocks
               <Button
+                className="ml-2"
                 onClick={() => {
                   const clocks = machine.clocks
                   clocks.push(new Clock('clk', '125 MHz'))
                   setMachine(machine.setClocks(clocks))
                 }}
               >
-                New Clock
+                Add
               </Button>
-            </div>
+            </h2>
+            <Accordion type="multiple">
+              {machine.clocks.map((clock: Clock, index: number) => {
+                return <>
+                  <AccordionItem value={`clocks_${index}_${clock.name}_${clock.frequency}`}>
+                    <AccordionTrigger>{clock.name}</AccordionTrigger>
+                    <AccordionContent>
+                      <ClockView
+                        key={`clocks_${index}_${clock.name}_${clock.frequency}`}
+                        clock={clock}
+                        setClock={(newClock: Clock) => {
+                          const clocks = machine.clocks
+                          clocks[index] = newClock
+                          setMachine(machine.setClocks(clocks))
+                        }}
+                        deleteClock={() => {
+                          const clocks = machine.clocks
+                          clocks.splice(index, 1)
+                          setMachine(machine.setClocks(clocks))
+                        }}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                </>
+              })}
+            </Accordion>
           </div>
           <PanelChildView
             category="Machine Variables"

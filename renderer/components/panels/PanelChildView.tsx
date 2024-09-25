@@ -10,7 +10,7 @@ export default function PanelChildView({
   setData: (newData: string) => void
 }): JSX.Element {
   return (
-    <div key={category}>
+    <div key={category} className="mt-2">
       <h2>{category}</h2>
       <CodeEditor language={'javascript'} sourcecode={data} setSourceCode={setData} />
     </div>

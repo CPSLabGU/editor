@@ -89,6 +89,7 @@ export default function TextForm({
   )
   return (
     <Input
+      className="bg-background"
       type={data}
       value={tempData}
       onChange={changeTempData}
