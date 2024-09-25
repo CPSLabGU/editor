@@ -20,56 +20,41 @@ async function createMainWindow(): Promise<void> {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
-  })
+  });
+  const webContentsId = mainWindow.webContents.id;
 
-  ipcMain.on('message', async (event, arg) => {
-    event.reply('message', `${arg} World!`)
-  })
-  
-  ipcMain.on('openArrangement', () => {
+  const messageListener = async (event: IpcMainEvent, args) => {
+    if (event.sender.id != webContentsId) return;
+    event.reply('message', `${args} World!`)
+  }
+  const openArrangementLisener = (event: IpcMainEvent) => {
+    if (event.sender.id != webContentsId) return;
     openFileDialog(mainWindow, 'arrangement')
-  })
-  
-  ipcMain.on('openMachine', () => {
+  }
+  const openMachineListener = (event: IpcMainEvent) => {
+    if (event.sender.id != webContentsId) return;
     openFileDialog(mainWindow, 'machine')
+  }
+  const saveListener = async (
+    event: IpcMainEvent,
+    id: string,
+    path: string | null,
+    data: string,
+    type: string
+  ): Promise<void> => {
+    if (event.sender.id != webContentsId) return;
+    await saveEntity(mainWindow, id, path, data, type);
+  }
+  ipcMain.addListener('message', messageListener);
+  ipcMain.addListener('openArrangement', openArrangementLisener);
+  ipcMain.addListener('openMachine', openMachineListener);
+  ipcMain.addListener('save', saveListener);
+  mainWindow.on('closed', () => {
+    ipcMain.removeListener('message', messageListener);
+    ipcMain.removeListener('openArrangement', openArrangementLisener);
+    ipcMain.removeListener('openMachine', openMachineListener);
+    ipcMain.removeListener('save', saveListener);
   })
-  
-  ipcMain.on(
-    'save',
-    async (
-      event: IpcMainEvent,
-      id: string,
-      path: string | null,
-      data: string,
-      type: string
-    ): Promise<void> => {
-      if (path) {
-        await fs.writeFile(path + '/model.json', data)
-        mainWindow.webContents.send('didSave', id, path, type)
-        return
-      }
-      const filters: Electron.FileFilter[] = []
-      if (type == 'arrangement') {
-        filters.push({ name: 'Arrangement', extensions: ['arrangement'] })
-      } else if (type == 'machine') {
-        filters.push({ name: 'Machines', extensions: ['machine'] })
-      }
-      filters.push({ name: 'All Files', extensions: ['*'] })
-      const filePath: string | undefined = dialog.showSaveDialogSync(mainWindow, {
-        properties: ['createDirectory'],
-        filters: filters
-      })
-      if (!filePath) return
-      if (!filePath.endsWith(`.${type}`)) {
-        console.error('Incorrect file extension.')
-        return
-      }
-      await fs.mkdir(filePath, { recursive: true })
-      await fs.writeFile(filePath + '/model.json', data)
-      generateFileMenus(mainWindow, filePath, type)
-      mainWindow.webContents.send('didSave', id, filePath, type)
-    }
-  )
 
   if (isProd) {
     await mainWindow.loadURL('app://./home')
@@ -89,7 +74,39 @@ app.on('window-all-closed', () => {
   app.quit()
 })
 
-
+async function saveEntity(
+  window: BrowserWindow,
+  id: string,
+  path: string | null,
+  data: string,
+  type: string
+) {
+  if (path) {
+    await fs.writeFile(path + '/model.json', data)
+    window.webContents.send('didSave', id, path, type)
+    return
+  }
+  const filters: Electron.FileFilter[] = []
+  if (type == 'arrangement') {
+    filters.push({ name: 'Arrangement', extensions: ['arrangement'] })
+  } else if (type == 'machine') {
+    filters.push({ name: 'Machines', extensions: ['machine'] })
+  }
+  filters.push({ name: 'All Files', extensions: ['*'] })
+  const filePath: string | undefined = dialog.showSaveDialogSync(window, {
+    properties: ['createDirectory'],
+    filters: filters
+  })
+  if (!filePath) return
+  if (!filePath.endsWith(`.${type}`)) {
+    console.error('Incorrect file extension.')
+    return
+  }
+  await fs.mkdir(filePath, { recursive: true })
+  await fs.writeFile(filePath + '/model.json', data)
+  generateFileMenus(window, filePath, type)
+  window.webContents.send('didSave', id, filePath, type)
+}
 
 async function openFileDialog(window: BrowserWindow, type: string): Promise<void> {
   const filters: Electron.FileFilter[] = []
@@ -118,25 +135,25 @@ async function openFileDialog(window: BrowserWindow, type: string): Promise<void
   generateFileMenus(window, filePath[0], newType)
 }
 
-function generateFileMenus(mainWindow: BrowserWindow, path: string | null, type: string): void {
+function generateFileMenus(window: BrowserWindow, path: string | null, type: string): void {
   const fileMenus = [
     {
       label: 'Open',
-      click: async (): Promise<void> => await openFileDialog(mainWindow, '')
+      click: async (): Promise<void> => await openFileDialog(window, '')
     }
   ]
   if (path) {
     fileMenus.push({
       label: 'Save',
       click: async (): Promise<void> => {
-        mainWindow.webContents.send('updateData', path, type)
+        window.webContents.send('updateData', path, type)
       }
     })
   }
   fileMenus.push({
     label: 'Save As',
     click: async (): Promise<void> => {
-      mainWindow.webContents.send('updateData', null, type)
+      window.webContents.send('updateData', null, type)
     }
   })
   if (path && type == 'machine') {
