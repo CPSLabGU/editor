@@ -70,7 +70,7 @@ export default function ManageListView<Element>({
       <div>
         {titleView(<Button variant="secondary" onClick={createNewEntry}>Add</Button>)}
       </div>
-      <Accordion type="single" collapsible>
+      <Accordion type="multiple">
         {elementViews}
       </Accordion>
     </>
