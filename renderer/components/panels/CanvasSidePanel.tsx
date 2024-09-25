@@ -16,7 +16,7 @@ export default function CanvasSidePanel({
 }): JSX.Element {
   const [hidden, setHidden] = useState(true)
   return (
-    <div onContextMenu={(e) => e.stopPropagation()} className="text-white">
+    <div onContextMenu={(e) => e.stopPropagation()} className="bg-card">
       <HiddenView hidden={!hidden}>
         <div className="fixed top-0 right-0">
           <div className="p-2 h-5 w-5 ml-auto mr-auto" onClick={() => setHidden(!hidden)}>
@@ -39,7 +39,7 @@ export default function CanvasSidePanel({
             </div>
             <div>
               <button
-                className="border-solid border-2 border-black p-2 my-2 mx-0 bg-gray-500 text-xs w-full text-white shadow-md"
+                className="border-solid border-2 border-muted p-2 my-2 mx-0 bg-muted text-xs w-full shadow-md"
                 onClick={() => {
                   setMachine(machine.setSuspendedState(undefined))
                 }}

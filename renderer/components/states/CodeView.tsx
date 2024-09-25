@@ -67,7 +67,7 @@ export default function CodeView({
   }, [escapePress])
   return (
     <>
-      <div className="p-5 bg-gray-800 text-white">
+      <div className="p-5 bg-background">
         <form onSubmit={finishedEditingStateName}>
           <h1>
             <input

@@ -1,6 +1,7 @@
 import React from 'react'
 import Head from 'next/head'
-import App from './_components/app/App'
+import App from '../components/app/App'
+import { ThemeProvider } from '../components/ui/theme-provider'
 
 export default function HomePage() {
   return (
@@ -8,7 +9,14 @@ export default function HomePage() {
       <Head>
         <title>Home - Nextron (with-tailwindcss)</title>
       </Head>
-      <App />
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        <App />
+      </ThemeProvider>
     </React.Fragment>
   )
 }

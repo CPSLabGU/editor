@@ -1,3 +1,4 @@
+import { Input } from '../ui/input'
 import VariableMapping from './VariableMapping'
 import { useCallback, ChangeEvent } from 'react'
 
@@ -33,13 +34,13 @@ export default function VariableMappingView({
       <div className="w-full">
         <h3>Source</h3>
         <div>
-          <input type="text" className="w-full min-w-80" onChange={changeSource} value={mapping.source} />
+          <Input type="text" className="w-full min-w-80" onChange={changeSource} value={mapping.source} />
         </div>
       </div>
       <div className="w-full">
         <h3>Destination</h3>
         <div>
-          <input type="text" className="w-full min-w-80" onChange={changeDestination} value={mapping.destination} />
+          <Input type="text" className="w-full min-w-80" onChange={changeDestination} value={mapping.destination} />
         </div>
       </div>
       <div className="w-full">

@@ -5,6 +5,7 @@ import TransitionProperties from './TransitionProperties'
 import BezierPath from '../util/BezierPath'
 import ControlPoint from './ControlPoint'
 import Point2D from '../util/Point2D'
+import { useTheme } from 'next-themes'
 
 function Transition({
   id,
@@ -29,6 +30,7 @@ function Transition({
 }): JSX.Element {
   const [isEditing, setIsEditing] = useState(false)
   const [localCondition, setLocalCondition] = useState(properties.condition)
+  const { resolvedTheme, theme } = useTheme()
   const changeCondition = useCallback(
     (e) => {
       setLocalCondition(e.target.value)
@@ -61,7 +63,7 @@ function Transition({
 
   const path = properties.path
   const condition = properties.condition
-  const color = properties.color
+  const color = (resolvedTheme ?? theme) == 'dark' ? 'white' : 'black';
   const focus = useCallback(
     (e) => {
       e.preventDefault()

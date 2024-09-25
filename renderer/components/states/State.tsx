@@ -46,7 +46,7 @@ function State({
     [showContextMenu]
   )
   const child = (
-    <div onClick={focus} className={`h-full my-2 text-2xl text-center text-white bg-gray-900 border-2 border-solid border-black shadow-lg m-2 mx-auto overflow-hidden text-ellipsis whitespace-nowrap ${isSelected ? 'text-blue-700 border-blue-700' : ''}`}>
+    <div onClick={focus} className={`h-full my-2 text-2xl text-center bg-muted-foreground border-2 border-solid border-muted shadow-lg m-2 mx-auto overflow-hidden text-ellipsis whitespace-nowrap ${isSelected ? 'text-blue-700 border-blue-700' : ''}`}>
       {properties.expanded ? <ExpandedState {...properties} /> : <CollapsedState {...properties} />}
     </div>
   )

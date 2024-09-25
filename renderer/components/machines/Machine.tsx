@@ -60,7 +60,7 @@ export default class Machine {
     return this._clocks
   }
 
-  static get defaultMachine(): Machine {
+  static defaultMachine(theme: 'light' | 'dark'): Machine {
     const initialStates: { [id: string]: StateInformation } = {}
     const initialTransitions: { [id: string]: TransitionProperties } = {}
     function addState(...states: StateInformation[]): void {
@@ -116,7 +116,7 @@ export default class Machine {
         new Point2D(100, 135),
         new Point2D(100, 170)
       ),
-      'white'
+      theme == 'dark' ? 'white' : 'black',
     )
     initialStates[initialState!].properties.transitions = [newUUID]
     const machine = new Machine(
@@ -243,15 +243,15 @@ export default class Machine {
     this._clocks = clocks
   }
 
-  static fromData(data: string): Machine | null {
+  static fromData(data: string, theme: 'dark' | 'light'): Machine | null {
     const parsedModel = JSON.parse(data)
     if (!(typeof parsedModel === 'object')) return null
     if (!instanceOfMachineModel(parsedModel as object)) return null
     const model = parsedModel as MachineModel
-    return Machine.fromModel(model)
+    return Machine.fromModel(model, theme);
   }
 
-  static fromModel(model: MachineModel): Machine {
+  static fromModel(model: MachineModel, theme: 'light' | 'dark'): Machine {
     const states: { [id: string]: StateInformation } = {}
     model.states.forEach((stateModel) => {
       const stateID = uuidv4()
@@ -279,7 +279,7 @@ export default class Machine {
         Object.keys(states).find((key) => states[key].properties.name == transitionModel.target)!,
         transitionModel.condition,
         BezierPath.fromModel(transitionModel.layout.path),
-        'white'
+        theme == 'dark' ? 'white' : 'black',
       )
       transitions[id] = properties
       states[sourceID].properties.transitions.push(id)

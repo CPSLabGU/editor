@@ -9,8 +9,8 @@ export default function ContextMenu({
   menuItems: MenuItem[]
 }): JSX.Element {
   return (
-    <div className="absolute z-50 bg-gray-950 border border-solid border-gray-950" style={{ top: position.y, left: position.x }}>
-      <ul className="list-none p-0 m-0 hover:bg-gray-600 font-bold text-black">
+    <div className="absolute z-50 bg-muted border border-solid border-muted-foreground" style={{ top: position.y, left: position.x }}>
+      <ul className="list-none p-0 m-0 bg-muted-foreground font-bold">
         {menuItems.map((menuItem) => (
           <li className="p-1 cursor-pointer " key={menuItem.id} onClick={menuItem.action}>
             {menuItem.label}

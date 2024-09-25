@@ -19,6 +19,7 @@ export default class AppState {
   private _expanded: ItemDictionary<boolean>
   private _sidePanelVisible: boolean
   private _allowSidePanelTogglingVisibility: boolean
+  private _theme: 'dark' | 'light';
 
   get ids(): { [url: string]: string } {
     return this._ids
@@ -54,6 +55,10 @@ export default class AppState {
 
   get allowSidePanelTogglingVisibility(): boolean {
     return this._allowSidePanelTogglingVisibility
+  }
+
+  get theme(): 'dark' | 'light' {
+    return this._theme;
   }
 
   canvasSwitcher(setAppState: (newState: AppState) => void): JSX.Element {
@@ -107,6 +112,7 @@ export default class AppState {
     this._expanded = {}
     this._sidePanelVisible = false
     this._allowSidePanelTogglingVisibility = false
+    this._theme = 'light';
   }
 
   addID(id: string, url: string): AppState {
@@ -144,7 +150,7 @@ export default class AppState {
   }
 
   loadRootMachine(data: string, url: string, setAppState: (newState: AppState) => void): AppState {
-    const machine = Machine.fromData(data)
+    const machine = Machine.fromData(data, this._theme)
     if (!machine) return this
     return this.setNewRootMachine(machine, url, setAppState)
   }
@@ -168,7 +174,7 @@ export default class AppState {
   }
 
   newRootMachine(setAppState: (newState: AppState) => void): AppState {
-    const machine = Machine.defaultMachine
+    const machine = Machine.defaultMachine(this._theme);
     return this.setNewRootMachine(machine, null, setAppState)
   }
 
@@ -292,6 +298,13 @@ export default class AppState {
     const newState = this.copy
     newState._allowSidePanelTogglingVisibility = allow
     return newState
+  }
+
+  setTheme(theme: 'dark' | 'light', setAppState: (newState: AppState) => void): AppState {
+    const newState = this.copy;
+    newState._theme = theme;
+    newState.updateAllMachineViews(setAppState);
+    return newState;
   }
 
   private updateAllArrangementViews(setAppState: (newAppState: AppState) => void): void {

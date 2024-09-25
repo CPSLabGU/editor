@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import AppState from './AppState'
 import Welcome from '../welcome/Welcome'
+import { useTheme } from 'next-themes'
 
 export default function App(): JSX.Element {
   const [appState, setAppState] = useState(new AppState())
+  const { theme, resolvedTheme } = useTheme();
   const [updateData, setUpdateData] = useState<string | null | undefined>(undefined)
   const [load, setLoad] = useState<{ data: string; url: string; type: string } | undefined>(
     undefined
@@ -33,6 +35,12 @@ export default function App(): JSX.Element {
     const [id, data, type] = result
     window.ipc.save(id, updateData, data, type)
   }, [updateData, setUpdateData, appState])
+  useEffect(() => {
+    console.error((resolvedTheme ?? theme));
+    if ((resolvedTheme ?? theme) == appState.theme) return;
+    if ((resolvedTheme ?? theme) == 'system') return;
+    setAppState(appState.setTheme((resolvedTheme ?? theme) as 'dark' | 'light', setAppState));
+  }, [resolvedTheme, theme, setAppState, appState]);
   useEffect(() => {
     if (load === undefined) return
     setLoad(undefined)
