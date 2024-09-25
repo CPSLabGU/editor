@@ -40,7 +40,7 @@ function TreeViewLabel({ item }: TreeViewLabelArgs): JSX.Element {
     },
     [item]
   )
-  const classes = item.isSelected() ? 'bg-cyan-300' : ''
+  const classes = 'p-1' + (item.isSelected() ? ' bg-secondary' : '')
   const expandedClasses = item.isExpanded() ? 'inline-block rotate-90' : ''
   return (
     <p className={classes} onClick={changeSelection} key={item.key}>

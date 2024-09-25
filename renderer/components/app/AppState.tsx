@@ -225,7 +225,7 @@ export default class AppState {
       () => null
     )
     newState._allowSidePanelTogglingVisibility = true
-    newState._sidePanelVisible = true
+    newState._sidePanelVisible = false
     newState._selected = id
     newState.updateArrangementView(id, setAppState)
     return newState

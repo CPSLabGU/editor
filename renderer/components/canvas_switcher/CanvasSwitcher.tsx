@@ -4,6 +4,7 @@ import TreeView from '../treeview/TreeView'
 import TreeViewItem from '../treeview/TreeViewItem'
 import HiddenView from '../util/HiddenView'
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { Button } from '../ui/button'
 
 export type ItemDictionary<T> = { [key: string]: T }
 
@@ -37,39 +38,37 @@ export default function CanvasSwitcher({
   const selectedKey = getSelected()
   const selectedView: (() => JSX.Element | null) | undefined =
     selectedKey !== null ? item.findChild(selectedKey)?.view : undefined
-  return (
-    <div className="w-full h-full">
-      <HiddenView hidden={sidePanelVisible}>
-        <HiddenView hidden={!allowTogglingVisibilty}>
-          <div className="min-w-52 max-w-80 h-full">
-            <div
-              className="p-2 h-5 w-5"
-              onClick={() => setSidePanelVisible(!sidePanelVisible)}
-            >
+  return <>
+    <div className="w-full bg-muted-foreground flex flex-center">
+      <div className="h-full w-full flex flex-row items-start p-1 gap-0.5 justify-left">
+        <HiddenView hidden={sidePanelVisible}>
+          <HiddenView hidden={!allowTogglingVisibilty}>
+            <Button variant="ghost" className="p-1" onClick={() => setSidePanelVisible(true)}>
               <PanelLeftOpen />
-            </div>
-          </div>
+            </Button>
+          </HiddenView>
         </HiddenView>
-      </HiddenView>
-      <HiddenView hidden={!sidePanelVisible}>
-        <div className="p-2 float-left overflow-y-auto">
-          <div>
-            <HiddenView hidden={!allowTogglingVisibilty}>
-              <div
-                className="p-2 h-5 w-5"
-                onClick={() => setSidePanelVisible(!sidePanelVisible)}
-              >
-                <PanelLeftClose />
-              </div>
-            </HiddenView>
-            <TreeView root={treeItem} />
-          </div>
-        </div>
-      </HiddenView>
-      <div className="relative w-full h-full">
-        {selectedView !== undefined && <LoadingView subView={selectedView} />}
+        <HiddenView hidden={!sidePanelVisible}>
+          <HiddenView hidden={!allowTogglingVisibilty}>
+            <Button variant="ghost" className="p-1" onClick={() => setSidePanelVisible(false)}>
+              <PanelLeftClose />
+            </Button>
+          </HiddenView>
+        </HiddenView>
       </div>
-      <div className="clear-both"></div>
+      <div className="h-full w-full flex flex-row items-end p-1 gap-0.5 justify-end">
+      </div>
     </div>
-  )
+    <div className="w-full h-full flex flex-row items-start gap-2">
+      <HiddenView hidden={!sidePanelVisible}>
+        <TreeView root={treeItem} />
+      </HiddenView>
+      <div className="w-full h-full">
+        <div className="relative w-full h-full">
+          {selectedView !== undefined && <LoadingView subView={selectedView} />}
+        </div>
+        <div className="clear-both"></div>
+      </div>
+    </div>
+  </>
 }
