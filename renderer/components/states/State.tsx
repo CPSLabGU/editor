@@ -5,6 +5,7 @@ import StateProperties from './StateProperties'
 import Point2D from '../util/Point2D'
 import Positionable from '../util/Positionable'
 import Resizable from '../util/Resizable'
+import { Card, CardHeader, CardTitle } from '../ui/card'
 
 function State({
   properties,
@@ -46,8 +47,8 @@ function State({
     [showContextMenu]
   )
   const child = (
-    <div onClick={focus} className={`h-full my-2 text-2xl text-center bg-muted-foreground border-2 border-solid border-muted shadow-lg m-2 mx-auto overflow-hidden text-ellipsis whitespace-nowrap ${isSelected ? 'text-blue-700 border-blue-700' : ''}`}>
-      {properties.expanded ? <ExpandedState {...properties} /> : <CollapsedState {...properties} />}
+    <div onClick={focus} className={`h-full my-2 text-md text-center m-2 mx-auto overflow-hidden text-ellipsis whitespace-nowrap`}>
+      {properties.expanded ? <ExpandedState isSelected={isSelected} {...properties} /> : <CollapsedState isSelected={isSelected} {...properties} />}
     </div>
   )
   return (
@@ -74,12 +75,24 @@ function State({
   )
 }
 
-function CollapsedState({ name, w, h, expanded }: StateProperties): JSX.Element {
-  return <div className="p-2">{name}</div>
+function CollapsedState({ name, w, h, expanded, isSelected }: StateProperties & { isSelected: boolean }): JSX.Element {
+  return (
+    <Card className={`${isSelected ? 'text-blue-700 border-blue-700' : ''}`}>
+      <CardHeader>
+        <CardTitle>{name}</CardTitle>
+      </CardHeader>
+    </Card>
+  );
 }
 
-function ExpandedState({ name, w, h, expanded }: StateProperties): JSX.Element {
-  return <div className="p-2">{name}</div>
+function ExpandedState({ name, w, h, expanded, isSelected }: StateProperties & { isSelected: boolean }): JSX.Element {
+  return (
+    <Card className={`${isSelected ? 'text-blue-700 border-blue-700' : ''}`}>
+      <CardHeader>
+        <CardTitle>{name}</CardTitle>
+      </CardHeader>
+    </Card>
+  );
 }
 
 export default State
