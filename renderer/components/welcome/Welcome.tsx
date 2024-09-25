@@ -1,3 +1,5 @@
+import { Button } from "../ui/button"
+
 interface WelcomeArgs {
   openArrangement: () => void
   openMachine: () => void
@@ -13,10 +15,10 @@ export default function Welcome({
 }: WelcomeArgs): JSX.Element {
   return (
     <div>
-      <button onClick={openArrangement}>Open arrangement</button>
-      <button onClick={openMachine}>Open machine</button>
-      <button onClick={createArrangement}>Create arrangement</button>
-      <button onClick={createMachine}>Create machine</button>
+      <Button onClick={openArrangement}>Open arrangement</Button>
+      <Button onClick={openMachine}>Open machine</Button>
+      <Button onClick={createArrangement}>Create arrangement</Button>
+      <Button onClick={createMachine}>Create machine</Button>
     </div>
   )
 }

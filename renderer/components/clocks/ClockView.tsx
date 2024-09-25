@@ -56,6 +56,7 @@
 
 import Clock from './Clock'
 import TextForm from '../forms/TextForm'
+import { Button } from '../ui/button'
 
 export default function ClockView({
   clock,
@@ -82,7 +83,7 @@ export default function ClockView({
           setData={(newData: string) => setClock(new Clock(clock.name, newData))}
         />
       </div>
-      <button onClick={deleteClock}>Delete clock {clock.name}</button>
+      <Button onClick={deleteClock}>Delete clock {clock.name}</Button>
     </div>
   )
 }

@@ -6,6 +6,7 @@ import PanelChildView from './PanelChildView'
 import Machine from '../machines/Machine'
 import Clock from '../clocks/Clock'
 import ClockView from '../clocks/ClockView'
+import { Button } from '../ui/button'
 
 export default function CanvasSidePanel({
   machine,
@@ -38,14 +39,13 @@ export default function CanvasSidePanel({
               <span>{`Suspended State: ${machine.suspendedState !== undefined ? machine.states[machine.suspendedState]?.properties.name ?? 'none' : 'none'}`}</span>
             </div>
             <div>
-              <button
-                className="border-solid border-2 border-muted p-2 my-2 mx-0 bg-muted text-xs w-full shadow-md"
+              <Button
                 onClick={() => {
                   setMachine(machine.setSuspendedState(undefined))
                 }}
               >
                 Remove Suspended State
-              </button>
+              </Button>
             </div>
           </div>
           <PanelChildView
@@ -76,8 +76,7 @@ export default function CanvasSidePanel({
               )
             })}
             <div>
-              <button
-                className="underline cursor-pointer"
+              <Button
                 onClick={() => {
                   const clocks = machine.clocks
                   clocks.push(new Clock('clk', '125 MHz'))
@@ -85,7 +84,7 @@ export default function CanvasSidePanel({
                 }}
               >
                 New Clock
-              </button>
+              </Button>
             </div>
           </div>
           <PanelChildView

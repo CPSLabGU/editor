@@ -3,6 +3,7 @@ import { useCallback, ChangeEvent } from 'react'
 import VariableMappingView from '../variable_mapping/VariableMappingView'
 import VariableMapping from '../variable_mapping/VariableMapping'
 import { Input } from '../ui/input'
+import { Button } from '../ui/button'
 
 interface MachineReferenceViewArgs {
   machineReference: MachineReference
@@ -84,14 +85,14 @@ export default function MachineReferenceView({
       <div>
         <h3>Variable Mappings</h3>
         <div>
-          <button onClick={createNewMapping}>Add</button>
+          <Button onClick={createNewMapping}>Add</Button>
         </div>
         <div>{mappingViews}</div>
       </div>
       <div>
-        <button onClick={deleteMachineReference}>
+        <Button onClick={deleteMachineReference}>
           Delete instance {machineReference.name}
-        </button>
+        </Button>
       </div>
     </div>
   )

@@ -1,3 +1,4 @@
+import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import VariableMapping from './VariableMapping'
 import { useCallback, ChangeEvent } from 'react'
@@ -45,7 +46,7 @@ export default function VariableMappingView({
       </div>
       <div className="w-full">
         <div>
-          <button onClick={onDelete}>Delete</button>
+          <Button onClick={onDelete}>Delete</Button>
         </div>
       </div>
     </div>

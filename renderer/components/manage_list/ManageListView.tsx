@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import { Button } from '../ui/button'
 
 interface ManageListViewArgs<Element> {
   list: { [id: string]: Element }
@@ -59,7 +60,7 @@ export default function ManageListView<Element>({
   return (
     <>
       <div>
-        <button onClick={createNewEntry}>Add</button>
+        <Button onClick={createNewEntry}>Add</Button>
       </div>
       <div>{elementViews}</div>
     </>
