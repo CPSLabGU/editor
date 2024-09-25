@@ -39,33 +39,35 @@ export default function CanvasSwitcher({
   const selectedView: (() => JSX.Element | null) | undefined =
     selectedKey !== null ? item.findChild(selectedKey)?.view : undefined
   return <>
-    <HiddenView hidden={!allowTogglingVisibilty}>
-      <div className="w-full bg-muted-foreground flex flex-center">
-        <div className="h-full w-full flex flex-row items-start p-1 gap-0.5 justify-left">
-          <HiddenView hidden={sidePanelVisible}>
-            <Button variant="ghost" className="p-1" onClick={() => setSidePanelVisible(true)}>
-              <PanelLeftOpen />
-            </Button>
-          </HiddenView>
-          <HiddenView hidden={!sidePanelVisible}>
-            <Button variant="ghost" className="p-1" onClick={() => setSidePanelVisible(false)}>
-              <PanelLeftClose />
-            </Button>
-          </HiddenView>
+    <div className="bg-background">
+      <HiddenView hidden={!allowTogglingVisibilty}>
+        <div className="w-full bg-muted-foreground flex flex-center">
+          <div className="h-full w-full flex flex-row items-start p-1 gap-0.5 justify-left">
+            <HiddenView hidden={sidePanelVisible}>
+              <Button variant="ghost" className="p-1" onClick={() => setSidePanelVisible(true)}>
+                <PanelLeftOpen />
+              </Button>
+            </HiddenView>
+            <HiddenView hidden={!sidePanelVisible}>
+              <Button variant="ghost" className="p-1" onClick={() => setSidePanelVisible(false)}>
+                <PanelLeftClose />
+              </Button>
+            </HiddenView>
+          </div>
+          <div className="h-full w-full flex flex-row items-end p-1 gap-0.5 justify-end">
+          </div>
         </div>
-        <div className="h-full w-full flex flex-row items-end p-1 gap-0.5 justify-end">
-        </div>
-      </div>
-    </HiddenView>
-    <div className="w-full h-full flex flex-row items-start gap-2">
-      <HiddenView hidden={!sidePanelVisible}>
-        <TreeView root={treeItem} />
       </HiddenView>
-      <div className="w-full h-full">
-        <div className="relative w-full h-full">
-          {selectedView !== undefined && <LoadingView subView={selectedView} />}
+      <div className="w-full h-full flex flex-row items-start gap-2">
+        <HiddenView hidden={!sidePanelVisible}>
+          <TreeView root={treeItem} />
+        </HiddenView>
+        <div className="w-full h-full">
+          <div className="relative w-full h-full">
+            {selectedView !== undefined && <LoadingView subView={selectedView} />}
+          </div>
+          <div className="clear-both"></div>
         </div>
-        <div className="clear-both"></div>
       </div>
     </div>
   </>

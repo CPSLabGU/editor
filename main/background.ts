@@ -31,6 +31,7 @@ async function createMainWindow(): Promise<void> {
     frame: false,
     resizable: false,
     hasShadow: false,
+    transparent: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
@@ -104,6 +105,7 @@ async function createMainWindow(): Promise<void> {
     await mainWindow.loadURL(`http://localhost:${port}/home`)
     await splashWindow.loadURL(`http://localhost:${port}/home`)
     mainWindow.webContents.openDevTools()
+    splashWindow.webContents.openDevTools()
   }
 }
 
