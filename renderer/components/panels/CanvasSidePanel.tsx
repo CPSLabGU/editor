@@ -16,7 +16,7 @@ export default function CanvasSidePanel({
 }): JSX.Element {
   const [hidden, setHidden] = useState(true)
   return (
-    <div onContextMenu={(e) => e.stopPropagation()} className="bg-card">
+    <div onContextMenu={(e) => e.stopPropagation()}>
       <HiddenView hidden={!hidden}>
         <div className="fixed top-0 right-0">
           <div className="p-2 h-5 w-5 ml-auto mr-auto" onClick={() => setHidden(!hidden)}>
@@ -77,7 +77,7 @@ export default function CanvasSidePanel({
             })}
             <div>
               <button
-                className="underline cursor-pointer bg-gray-400"
+                className="underline cursor-pointer"
                 onClick={() => {
                   const clocks = machine.clocks
                   clocks.push(new Clock('clk', '125 MHz'))
