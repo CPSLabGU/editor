@@ -36,7 +36,7 @@ export function instanceOfMachineModel(obj: object): obj is MachineModel {
         !(typeof element === 'object') || !instanceOfTransitionModel(element as object)
     ) === undefined &&
     typeof obj.initialState === 'string' &&
-    (!('suspendState' in obj) || typeof obj.suspendedState === 'string') &&
+    (!('suspendState' in obj) || typeof obj.suspendState === 'string') &&
     Array.isArray(obj.clocks) &&
     (obj.clocks as unknown[]).find(
       (element: unknown): boolean =>

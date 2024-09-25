@@ -59,7 +59,7 @@ function DisabledView({
 function EnabledView({
   position,
   setPosition,
-  onClick = () => {},
+  onClick = (e: any) => {},
   onContextMenu = (e) => {},
   onDoubleClick = () => {},
   children

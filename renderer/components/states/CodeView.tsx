@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import * as React from 'react'
 import CodeEditor from '../code_editor/CodeEditor'
 import { Input } from '../ui/input'
 
@@ -25,22 +25,22 @@ export default function CodeView({
   setExternalVariables: (externalVariables: string) => void
   onExit: () => void
 }): JSX.Element {
-  const [stateName, setStateName] = useState(state)
-  const changeStateName = useCallback(
+  const [stateName, setStateName] = React.useState(state)
+  const changeStateName = React.useCallback(
     (e) => {
       setStateName(e.target.value)
     },
     [setStateName]
   )
-  const finishedEditingStateName = useCallback(
+  const finishedEditingStateName = React.useCallback(
     (e) => {
       e.preventDefault()
       setState(stateName)
     },
     [setState, stateName]
   )
-  const keyPress = useCallback(
-    (e: KeyboardEvent) => {
+  const keyPress = React.useCallback(
+    (e: KeyboardEvent | React.KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === 'Escape') {
         const target = e.target as unknown as { value: string, blur: () => void };
         setStateName(target.value)
@@ -49,18 +49,18 @@ export default function CodeView({
     },
     [setStateName]
   )
-  useEffect(() => {
+  React.useEffect(() => {
     setStateName(state)
   }, [state, setStateName])
-  const escapePress = useCallback(
-    (e: KeyboardEvent) => {
+  const escapePress = React.useCallback(
+    (e: KeyboardEvent | React.KeyboardEvent) => {
       if (e.key === 'Escape') {
         onExit()
       }
     },
     [onExit]
   )
-  useEffect(() => {
+  React.useEffect(() => {
     window.addEventListener('keydown', escapePress)
     return () => {
       window.removeEventListener('keydown', escapePress)
