@@ -39,7 +39,7 @@ export default function CanvasSwitcher({
   const selectedView: (() => JSX.Element | null) | undefined =
     selectedKey !== null ? item.findChild(selectedKey)?.view : undefined
   return <>
-    <div className="bg-background">
+    <div className="bg-background h-screen overflow-clip">
       <HiddenView hidden={!allowTogglingVisibilty}>
         <div className="w-full bg-muted-foreground flex flex-center">
           <div className="h-full w-full flex flex-row items-start p-1 gap-0.5 justify-left">

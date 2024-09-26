@@ -205,7 +205,7 @@ export default function Canvas({
     [machine, setMachine]
   )
   return (
-    <div className="bg-background w-full h-full" onContextMenu={showContextMenu}>
+    <div className="bg-background w-full h-full bg-" style={{backgroundSize: "4rem 4rem", backgroundImage: "linear-gradient(to right, hsl(var(--secondary)) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--secondary)) 1px, transparent 1px)"}} onContextMenu={showContextMenu}>
       <canvas className="-z-10" ref={canvasRef}></canvas>
       {Object.keys(machine.transitions).map((id) => {
         const transition = machine.transitions[id]
