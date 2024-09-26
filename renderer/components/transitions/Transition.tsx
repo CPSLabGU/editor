@@ -1,15 +1,18 @@
-import { useCallback, useEffect, useState } from 'react'
+import { RefObject, useCallback, useEffect, useState } from 'react'
 import TransitionProperties from './TransitionProperties'
 import BezierPath from '../util/BezierPath'
 import ControlPoint from './ControlPoint'
 import Point2D from '../util/Point2D'
 import { useTheme } from 'next-themes'
+import { CarTaxiFront } from 'lucide-react'
+import { contextIsolated } from 'process'
 
 function Transition({
   id,
   properties,
   priority,
   isSelected,
+  canvasRef,
   setPath,
   setCondition,
   addSelection,
@@ -20,12 +23,17 @@ function Transition({
   properties: TransitionProperties
   priority: number
   isSelected: boolean
+  canvasRef: RefObject<HTMLCanvasElement>
   setPath: (newPath: BezierPath) => void
   setCondition: (condition: string) => void
   addSelection: () => void
   uniqueSelection: () => void
   showContextMenu: (position: Point2D) => void
 }): JSX.Element {
+  const context = canvasRef.current?.getContext("2d")
+  if (!context) {
+    return <></>
+  }
   const [isEditing, setIsEditing] = useState(false)
   const [localCondition, setLocalCondition] = useState(properties.condition)
   const { resolvedTheme, theme } = useTheme()
@@ -60,8 +68,17 @@ function Transition({
   )
 
   const path = properties.path
+  const defaultColor = (resolvedTheme ?? theme) == 'dark' ? 'white' : 'black';
+  const color = isSelected ? 'rgb(58, 58, 228)' : defaultColor
+  context.lineWidth = 15
+  context.beginPath()
+  context.moveTo(path.source.x, path.source.y)
+  context.bezierCurveTo(
+    path.control0.x, path.control0.y, path.control1.x, path.control1.y, path.target.x, path.target.y
+  )
+  context.strokeStyle = color
+  context.stroke()
   const condition = properties.condition
-  const color = (resolvedTheme ?? theme) == 'dark' ? 'white' : 'black';
   const focus = useCallback(
     (e) => {
       e.preventDefault()
@@ -86,12 +103,6 @@ function Transition({
   const conditionX = path.control0.x + (path.control1.x - path.control0.x) / 2
   const conditionY = path.control0.y + (path.control1.y - path.control0.y) / 2
   const relativeOffset = new Point2D(-boundingBox.x + padding / 2, -boundingBox.y + padding / 2)
-  const relativeCurve = new BezierPath(
-    new Point2D(path.source.x + relativeOffset.x, path.source.y + relativeOffset.y),
-    new Point2D(path.target.x + relativeOffset.x, path.target.y + relativeOffset.y),
-    new Point2D(path.control0.x + relativeOffset.x, path.control0.y + relativeOffset.y),
-    new Point2D(path.control1.x + relativeOffset.x, path.control1.y + relativeOffset.y)
-  )
   const parentStyle = {
     position: 'absolute' as 'absolute',
     left: boundingBox.x - padding / 2,
@@ -102,11 +113,7 @@ function Transition({
     left: `calc(${conditionX + relativeOffset.x}px - 0.2em * ${condition.length})`,
     top: `calc(${conditionY + relativeOffset.y}px - 0.5em)`,
     textAlign: 'center' as 'center',
-    color: isSelected ? 'rgb(58, 58, 228)' : color
-  }
-  const svgStyle = {
-    width: `${boundingBox.width + padding}px`,
-    height: `${boundingBox.height + padding}px`
+    color: color
   }
   return (
     <div style={parentStyle} onClick={focus} onContextMenu={contextMenu}>
@@ -123,53 +130,6 @@ function Transition({
         )}
         {!isEditing && properties.condition}
       </div>
-      <svg style={svgStyle}>
-        <defs>
-          <marker
-            id={`${id}${priority}strokes`}
-            orient="auto"
-            markerWidth={max * 2 + gap}
-            markerHeight={max * 2 + gap}
-            refX="0"
-            refY={max}
-          >
-            <path d={str} stroke={isSelected ? 'rgb(58, 58, 228)' : color} />
-            {/* <path d='M2,4 L2,8' stroke={isSelected ? 'blue' : color} />
-                        <path d='M4,2 L4,10' stroke={isSelected ? 'blue' : color} />
-                        <path d='M6,0 L6,12' stroke={isSelected ? 'blue' : color} /> */}
-          </marker>
-          {/* <marker id='strokes' orient="auto"
-                        markerWidth='12' markerHeight='20'
-                        refX="0" refY={6}
-                    >
-                        <path d='M2,4 L2,8' stroke={isSelected ? 'blue' : color} />
-                        <path d='M4,2 L4,10' stroke={isSelected ? 'blue' : color} />
-                        <path d='M6,0 L6,12' stroke={isSelected ? 'blue' : color} />
-                    </marker> */}
-          <marker
-            id={`${id}${priority}head`}
-            orient="auto"
-            markerWidth="6"
-            markerHeight="8"
-            refX="0.2"
-            refY="2"
-          >
-            <path d="M0,0 V4 L4,2 Z" fill={isSelected ? 'rgb(58, 58, 228)' : color} />
-          </marker>
-        </defs>
-        <path
-          d={`M ${relativeCurve.source.x},${relativeCurve.source.y} C ${relativeCurve.control0.x},${relativeCurve.control0.y} ${relativeCurve.control1.x},${relativeCurve.control1.y} ${relativeCurve.target.x},${relativeCurve.target.y}`}
-          className="transition"
-          stroke={isSelected ? 'rgb(58, 58, 228)' : color}
-          fill={'transparent'}
-          strokeWidth={2}
-          strokeLinejoin={'round'}
-          strokeLinecap={'round'}
-          markerEnd={`url(#${id}${priority}head)`}
-          markerStart={`url(#${id}${priority}strokes)`}
-          onDoubleClick={enableEditing}
-        />
-      </svg>
       <ControlPoints
         curve={path}
         isSelected={isSelected}

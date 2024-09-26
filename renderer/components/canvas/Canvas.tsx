@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import State from '../states/State'
 import { v4 as uuidv4 } from 'uuid'
 import StateInformation from '../states/StateInformation'
@@ -31,6 +31,7 @@ export default function Canvas({
   const [transitionContextMenuPosition, setTransitionContextMenuPosition] = useState<
     [Point2D, string] | undefined
   >(undefined)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const addSelection = useCallback(
     (id: string) => {
       setFocusedObjects((focusedObjects) => {
@@ -205,6 +206,7 @@ export default function Canvas({
   )
   return (
     <div className="bg-background w-full h-full" onContextMenu={showContextMenu}>
+      <canvas className="-z-10" ref={canvasRef}></canvas>
       {Object.keys(machine.transitions).map((id) => {
         const transition = machine.transitions[id]
         const priority = Math.max(
@@ -218,6 +220,7 @@ export default function Canvas({
             properties={transition}
             priority={priority}
             isSelected={focusedObjects.has(id)}
+            canvasRef={canvasRef}
             setPath={(newPath: BezierPath) => setPath(id, newPath)}
             setCondition={(condition: string) => setCondition(id, condition)}
             addSelection={() => addSelection(id)}
