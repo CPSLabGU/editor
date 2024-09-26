@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { Button } from "../ui/button"
-import { Card, CardContent } from "../ui/card"
+import { Card, CardContent, CardHeader } from "../ui/card"
 
 interface WelcomeArgs {
   openArrangement: () => void
@@ -16,10 +16,10 @@ export default function Welcome({
   createMachine
 }: WelcomeArgs): JSX.Element {
   return (
-    <Card className="p-4 h-[calc(100vh-2rem)]">
-      <CardContent>
-        <div className="h-[calc(100vh-4rem)] w-full flex flex-col justify-center">
-          <div className="h-full w-full flex flex-row items-center gap-4 justify-center">
+    <Card className="p-4 h-full overflow-clip">
+      <CardContent className="h-full p-0">
+        <div className="h-full flex flex-col justify-center">
+          <div className="flex flex-row items-center gap-4 justify-center">
             <div className="flex flex-row items-end justify-end">
               {/* Logo */}
               <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" className="iconify iconify--logos" height="120" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 228">
