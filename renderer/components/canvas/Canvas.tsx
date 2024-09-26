@@ -204,7 +204,7 @@ export default function Canvas({
     [machine, setMachine]
   )
   return (
-    <div className="bg-background w-full h-full" onContextMenu={showContextMenu}>
+    <div className="bg-background p w-full h-full bg-gradient-to-r from-neutral-500 from-[0.12rem] to-transparent to-[0.12rem] bg-length[2.5rem_2.5rem]" onContextMenu={showContextMenu}>
       {Object.keys(machine.transitions).map((id) => {
         const transition = machine.transitions[id]
         const priority = Math.max(
