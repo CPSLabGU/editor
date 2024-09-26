@@ -204,7 +204,7 @@ export default function Canvas({
     [machine, setMachine]
   )
   return (
-    <div className="bg-background w-full h-full bg-[length:4rem_4rem] bg-gradient-to-b from-[hsl(var(--secondary))_0.06rem] text-transparent to-[transparent_0.1rem]" onContextMenu={showContextMenu}>
+    <div className="relative bg-background w-full h-full bg-[length:4rem_4rem] bg-gradient-to-b from-[hsl(var(--secondary))_0.06rem] text-transparent to-[transparent_0.1rem]" onContextMenu={showContextMenu}>
       <div className="w-full h-full bg-[length:4rem_4rem] bg-gradient-to-r from-[hsl(var(--secondary))_0.06rem] text-transparent to-[transparent_0.1rem]">
         {Object.keys(machine.transitions).map((id) => {
           const transition = machine.transitions[id]
