@@ -213,7 +213,11 @@ export default function Canvas({
   const [canvasWidth, setCanvasWidth] = useState(0)
   const [canvasHeight, setCanvasHeight] = useState(0)
   useEffect(() => {
-    if (!canvasContainer.current) return
+    if (!canvasContainer.current) {
+      setCanvasWidth(0)
+      setCanvasHeight(0)
+      return
+    }
     const resizeObserver = new ResizeObserver(() => {
       setCanvasWidth(canvasContainer.current.offsetWidth)
       setCanvasHeight(canvasContainer.current.offsetHeight)
