@@ -14,6 +14,7 @@ import CanvasSidePanel from '../panels/CanvasSidePanel'
 import Machine from '../machines/Machine'
 import TransitionContextMenu from '../context_menus/TransitionContextMenu'
 import StateProperties from '../states/StateProperties'
+import Transitions from '../transitions/Transitions'
 
 export default function Canvas({
   machine,
@@ -31,7 +32,6 @@ export default function Canvas({
   const [transitionContextMenuPosition, setTransitionContextMenuPosition] = useState<
     [Point2D, string] | undefined
   >(undefined)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
   const addSelection = useCallback(
     (id: string) => {
       setFocusedObjects((focusedObjects) => {
@@ -204,9 +204,14 @@ export default function Canvas({
     },
     [machine, setMachine]
   )
+  const priorities: { [id: string]: number } = {}
+  Object.keys(machine.transitions).forEach((id) => {
+    const transition = machine.transitions[id]
+    priorities[id] = Math.max(machine.states[transition.source].properties.transitions.indexOf(id), 0)
+  })
   return (
     <div className="bg-background w-full h-full bg-" style={{backgroundSize: "4rem 4rem", backgroundImage: "linear-gradient(to right, hsl(var(--secondary)) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--secondary)) 1px, transparent 1px)"}} onContextMenu={showContextMenu}>
-      <canvas className="-z-10" ref={canvasRef}></canvas>
+      <Transitions transitions={machine.transitions} priorities={priorities} focusedObjects={focusedObjects} />
       {Object.keys(machine.transitions).map((id) => {
         const transition = machine.transitions[id]
         const priority = Math.max(
@@ -220,7 +225,6 @@ export default function Canvas({
             properties={transition}
             priority={priority}
             isSelected={focusedObjects.has(id)}
-            canvasRef={canvasRef}
             setPath={(newPath: BezierPath) => setPath(id, newPath)}
             setCondition={(condition: string) => setCondition(id, condition)}
             addSelection={() => addSelection(id)}

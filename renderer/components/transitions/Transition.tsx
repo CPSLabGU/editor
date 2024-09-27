@@ -12,28 +12,23 @@ function Transition({
   properties,
   priority,
   isSelected,
-  canvasRef,
   setPath,
   setCondition,
   addSelection,
   uniqueSelection,
-  showContextMenu
+  showContextMenu,
 }: {
   id: string
   properties: TransitionProperties
   priority: number
   isSelected: boolean
-  canvasRef: RefObject<HTMLCanvasElement>
   setPath: (newPath: BezierPath) => void
   setCondition: (condition: string) => void
   addSelection: () => void
   uniqueSelection: () => void
   showContextMenu: (position: Point2D) => void
 }): JSX.Element {
-  const context = canvasRef.current?.getContext("2d")
-  if (!context) {
-    return <></>
-  }
+  
   const [isEditing, setIsEditing] = useState(false)
   const [localCondition, setLocalCondition] = useState(properties.condition)
   const { resolvedTheme, theme } = useTheme()
@@ -66,18 +61,9 @@ function Transition({
     },
     [showContextMenu]
   )
-
   const path = properties.path
   const defaultColor = (resolvedTheme ?? theme) == 'dark' ? 'white' : 'black';
   const color = isSelected ? 'rgb(58, 58, 228)' : defaultColor
-  context.lineWidth = 15
-  context.beginPath()
-  context.moveTo(path.source.x, path.source.y)
-  context.bezierCurveTo(
-    path.control0.x, path.control0.y, path.control1.x, path.control1.y, path.target.x, path.target.y
-  )
-  context.strokeStyle = color
-  context.stroke()
   const condition = properties.condition
   const focus = useCallback(
     (e) => {
