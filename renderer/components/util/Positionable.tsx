@@ -72,9 +72,11 @@ function EnabledView({
       if (!isDragging) return
       currentPosition.x += e.movementX
       currentPosition.y += e.movementY
-      setMousePosition(new Point2D(currentPosition.x, currentPosition.y))
+      const newPoint = new Point2D(currentPosition.x, currentPosition.y)
+      setMousePosition(newPoint)
+      setPosition(newPoint)
     },
-    [isDragging, currentPosition, setMousePosition]
+    [isDragging, currentPosition, setMousePosition, setPosition]
   )
   const endDrag = useCallback(
     (e) => {
