@@ -54,9 +54,6 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
 import { useEffect, useRef } from "react";
-import BezierPath from "../util/BezierPath";
-import Point2D from "../util/Point2D";
-import Transition from "./Transition";
 import TransitionProperties from "./TransitionProperties";
 import { useTheme } from "next-themes";
 
@@ -84,6 +81,7 @@ export default function Transitions({
         return
       }
       const context = canvas.getContext("2d")
+      // clear canvas.
       context.clearRect(0, 0, canvas.width, canvas.height);
       context.lineWidth = 1
       Object.keys(transitions).forEach((id) => {
@@ -93,18 +91,93 @@ export default function Transitions({
           return
         }
         const path = transition.path
+        const color = focusedObjects.has(id) ? 'rgb(58, 58, 228)' : defaultColor
+        // Transitions Line.
         context.beginPath()
         context.moveTo(path.source.x, path.source.y)
-        console.log(
-          "Creating bezier curve from", path.source, "to", path.target, "with control points", path.control0, "and", path.control1
-        )
         context.bezierCurveTo(
           path.control0.x, path.control0.y, path.control1.x, path.control1.y, path.target.x, path.target.y
         )
-        context.strokeStyle = focusedObjects.has(id) ? 'rgb(58, 58, 228)' : defaultColor
+        context.strokeStyle = color
         context.stroke()
-        
+
+        // Arrow Tip.
+        const pointNearEnd = getCubicBezierXYatT(
+          {x: path.source.x, y: path.source.y},
+          {x: path.control0.x, y: path.control0.y},
+          {x: path.control1.x, y: path.control1.y},
+          {x: path.target.x, y: path.target.y},
+          0.99
+        )
+        const dx = path.target.x - pointNearEnd.x;
+        const dy = path.target.y - pointNearEnd.y;
+        const endingAngle = Math.atan2(dy,dx);
+        const size = context.lineWidth * 2.5
+        context.fillStyle = color
+        context.beginPath()
+        context.save()
+        context.translate(path.target.x, path.target.y)
+        context.rotate(endingAngle)
+        context.moveTo(0, 0)
+        context.lineTo(-size * 3, -size * 2)
+        context.lineTo(-size * 2, 0)
+        context.lineTo(-size * 3, size * 2)
+        context.lineTo(0, 0)
+        context.closePath()
+        context.fill()
+        context.restore()
+
+        // Strokes.
+        const priority = priorities[id]
+        if (!priority) {
+          console.log("No priority!")
+          return
+        }
+        if (priority <= 0) return
+        console.log("Priority: " + priority)
+        const dS = 0.025
+        const strokeSize = 4
+        for (let i = 1; i <= priority; i++) {
+          const pointNearStart = getCubicBezierXYatT(
+            {x: path.source.x, y: path.source.y},
+            {x: path.control0.x, y: path.control0.y},
+            {x: path.control1.x, y: path.control1.y},
+            {x: path.target.x, y: path.target.y},
+            dS * i
+          )
+          const dx = pointNearStart.x - path.source.x
+          const dy = pointNearStart.y - path.source.y
+          const startAngle = Math.atan2(dy,dx);
+          console.log("Start point: " + pointNearStart.x + ", " + pointNearStart.y)
+          console.log("Start Angle: " + startAngle)
+          context.beginPath()
+          context.save()
+          context.translate(pointNearStart.x, pointNearStart.y)
+          context.rotate(startAngle)
+          context.moveTo(0, 0)
+          context.lineTo(0, strokeSize + strokeSize * 0.5 * (i - 1))
+          context.moveTo(0, 0)
+          context.lineTo(0, -strokeSize - strokeSize * 0.5 * (i - 1))
+          context.stroke()
+          context.restore()
+        }
       })
     }, [canvasRef, canvasRef.current, transitions, focusedObjects, defaultColor, priorities])
     return (<canvas width={width} height={height} ref={canvasRef}></canvas>)
+}
+
+function getCubicBezierXYatT(startPt,controlPt1,controlPt2,endPt,T){
+  var x=CubicN(T,startPt.x,controlPt1.x,controlPt2.x,endPt.x);
+  var y=CubicN(T,startPt.y,controlPt1.y,controlPt2.y,endPt.y);
+  return({x:x,y:y});
+}
+
+// cubic helper formula at T distance
+function CubicN(T, a,b,c,d) {
+  var t2 = T * T;
+  var t3 = t2 * T;
+  return a + (-a * 3 + T * (3 * a - a * T)) * T
+  + (3 * b + T * (-6 * b + b * 3 * T)) * T
+  + (c * 3 - c * 3 * T) * t2
+  + d * t3;
 }
