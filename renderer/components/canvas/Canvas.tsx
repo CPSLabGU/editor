@@ -183,8 +183,25 @@ export default function Canvas({
     (id: string, newPosition: Point2D): void => {
       const state = machine.states[id]?.copy
       if (!state) return
+      const dx = newPosition.x - state.position.x
+      const dy = newPosition.y - state.position.y
       state.position = newPosition
-      setMachine(machine.setState(id, state))
+      const transitions = machine.transitions
+      const newTransitions: { [id: string]: TransitionProperties } = {}
+      Object.keys(transitions).forEach((transitionID) => {
+        const transition = transitions[transitionID].copy
+        if (transition.source == id) {
+          transition.path.source.x += dx
+          transition.path.source.y += dy
+        }
+        if (transition.target == id) {
+          transition.path.target.x += dx
+          transition.path.target.y += dy
+        }
+        newTransitions[transitionID] = transition
+      })
+      const newMachine = machine.setTransitions(newTransitions)
+      setMachine(newMachine.setState(id, state))
     },
     [machine, setMachine]
   )
@@ -192,10 +209,45 @@ export default function Canvas({
     (id: string, newPosition: Point2D, newDimensions: Point2D): void => {
       const state = machine.states[id]?.copy
       if (!state) return
+      const originalPosition = state.position
+      const originalProperties = state.properties
+      const dx = newPosition.x - originalPosition.x
+      const dy = newPosition.y - originalPosition.y
+      const dW = newDimensions.x - originalProperties.w
+      const dH = newDimensions.y - originalProperties.h
       state.position = newPosition
       state.properties.w = newDimensions.x
       state.properties.h = newDimensions.y
-      setMachine(machine.setState(id, state))
+      const newTransitions: { [id: string]: TransitionProperties } = {}
+      Object.keys(machine.transitions).forEach((transitionID) => {
+        const transition = machine.transitions[transitionID].copy
+        if (transition.source == id) {
+          if (transition.path.source.x < originalPosition.x) {
+            transition.path.source.x += dx
+          } else {
+            transition.path.source.x += dx + dW
+          }
+          if (transition.path.source.y < originalPosition.y) {
+            transition.path.source.y += dy
+          } else {
+            transition.path.source.y += dy + dH
+          }
+        }
+        if (transition.target == id) {
+          if (transition.path.target.x < originalPosition.x) {
+            transition.path.target.x += dx
+          } else {
+            transition.path.target.x += dx + dW
+          }
+          if (transition.path.target.y < originalPosition.y) {
+            transition.path.target.y += dy
+          } else {
+            transition.path.target.y += dy + dH
+          }
+        }
+        newTransitions[transitionID] = transition
+      })
+      setMachine(machine.setTransitions(newTransitions).setState(id, state))
     },
     [machine, setMachine]
   )
