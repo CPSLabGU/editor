@@ -53,7 +53,15 @@ export default function Canvas({
     (id: string, newPath: BezierPath) => {
       const transition = machine.transitions[id]?.shallowCopy
       if (!transition) return
-      transition.path = newPath.copy
+      const source = machine.states[transition.source]
+      const target = machine.states[transition.target]
+      if (!source || !target) return
+      const path = newPath.copy
+      const sourceBox = boundingBox(source)
+      path.source = normalise(sourceBox, newPath.source)
+      const targetBox = boundingBox(target)
+      path.target = normalise(targetBox, newPath.target)
+      transition.path = path
       setMachine(machine.setTransition(id, transition))
     },
     [machine, setMachine]
@@ -390,4 +398,23 @@ function calculateEdge(source: BoundingBox, target: BoundingBox): BezierPath {
     new Point2D(sourcePoint.x + dx / 3, sourcePoint.y + dy / 3),
     new Point2D(sourcePoint.x + (2 * dx) / 3, sourcePoint.y + (2 * dy) / 3)
   )
+}
+
+function normalise(within: BoundingBox, point: Point2D): Point2D {
+  const newPoint = point.copy
+  const centre = within.centre
+  const buffer = 5
+  if (newPoint.x < centre.x && newPoint.y < within.y + within.height && newPoint.y > within.y) {
+    newPoint.x = Math.min(Math.max(within.x - buffer, newPoint.x), within.x)
+  } else if (newPoint.x > centre.x && newPoint.y < within.y + within.height && newPoint.y > within.y) {
+    newPoint.x = Math.min(Math.max(within.x + within.width, newPoint.x), within.x + within.width + buffer)
+  } else if (newPoint.y < centre.y && newPoint.x < within.x + within.width && newPoint.x > within.x) {
+    newPoint.y = Math.min(Math.max(within.y - buffer, newPoint.y), within.y)
+  } else if (newPoint.y > centre.y && newPoint.x < within.x + within.width && newPoint.x > within.x) {
+    newPoint.y = Math.min(Math.max(within.y + within.height, newPoint.y), within.y + within.height + buffer)
+  } else {
+    newPoint.x = Math.max(within.x - buffer, Math.min(within.x + within.width + buffer, newPoint.x))
+    newPoint.y = Math.max(within.y - buffer, Math.min(within.y + within.height + buffer, newPoint.y))
+  }
+  return newPoint
 }
