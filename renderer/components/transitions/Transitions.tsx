@@ -65,25 +65,27 @@ export default function Transitions({
     transitions,
     priorities,
     focusedObjects,
+    width,
+    height
   }: {
     transitions: { [id: string]: TransitionProperties }
     priorities: { [id: string]: number }
     focusedObjects: Set<string>
+    width: number
+    height: number
   }): JSX.Element {
     const { resolvedTheme, theme } = useTheme()
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const defaultColor = (resolvedTheme ?? theme) == 'dark' ? 'white' : 'black';
     useEffect(() => {
-      const context = canvasRef.current?.getContext("2d")
-      if (!context) {
-        console.log("Context is null!")
+      const canvas = canvasRef.current
+      if (!canvas) {
+        console.log("Canvas is null!")
         return
       }
-      context.fillStyle = '#000000'
-      context.strokeStyle = '#000000'
-      context.beginPath()
-      context.arc(0, 0, 20, 0, 2*Math.PI)
-      context.fill()
+      const context = canvas.getContext("2d")
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.lineWidth = 1
       Object.keys(transitions).forEach((id) => {
         const transition = transitions[id]
         if (!transition) {
@@ -91,9 +93,11 @@ export default function Transitions({
           return
         }
         const path = transition.path
-        context.lineWidth = 15
         context.beginPath()
         context.moveTo(path.source.x, path.source.y)
+        console.log(
+          "Creating bezier curve from", path.source, "to", path.target, "with control points", path.control0, "and", path.control1
+        )
         context.bezierCurveTo(
           path.control0.x, path.control0.y, path.control1.x, path.control1.y, path.target.x, path.target.y
         )
@@ -102,5 +106,5 @@ export default function Transitions({
         
       })
     }, [canvasRef, canvasRef.current, transitions, focusedObjects, defaultColor, priorities])
-    return (<canvas className="w-full h-full" ref={canvasRef}></canvas>)
+    return (<canvas width={width} height={height} ref={canvasRef}></canvas>)
 }

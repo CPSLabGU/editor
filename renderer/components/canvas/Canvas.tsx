@@ -23,6 +23,7 @@ export default function Canvas({
   machine: Machine
   setMachine: (newMachine: Machine) => void
 }): JSX.Element {
+  const canvasContainer = useRef<HTMLDivElement>(null)
   const [focusedObjects, setFocusedObjects] = useState(new Set<string>())
   const [contextState, setContextState] = useState<string | undefined>(undefined)
   const [stateContextMenuPosition, setStateContextMenuPosition] = useState<
@@ -209,9 +210,22 @@ export default function Canvas({
     const transition = machine.transitions[id]
     priorities[id] = Math.max(machine.states[transition.source].properties.transitions.indexOf(id), 0)
   })
+  const [canvasWidth, setCanvasWidth] = useState(0)
+  const [canvasHeight, setCanvasHeight] = useState(0)
+  useEffect(() => {
+    if (!canvasContainer.current) return
+    const resizeObserver = new ResizeObserver(() => {
+      setCanvasWidth(canvasContainer.current.offsetWidth)
+      setCanvasHeight(canvasContainer.current.offsetHeight)
+    })
+    resizeObserver.observe(canvasContainer.current)
+    return (): void => {
+      resizeObserver.disconnect()
+    }
+  }, [canvasContainer.current, setCanvasWidth, setCanvasHeight])
   return (
-    <div className="bg-background w-full h-full bg-" style={{backgroundSize: "4rem 4rem", backgroundImage: "linear-gradient(to right, hsl(var(--secondary)) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--secondary)) 1px, transparent 1px)"}} onContextMenu={showContextMenu}>
-      <Transitions transitions={machine.transitions} priorities={priorities} focusedObjects={focusedObjects} />
+    <div ref={canvasContainer} className="bg-background w-full h-full bg-" style={{backgroundSize: "4rem 4rem", backgroundImage: "linear-gradient(to right, hsl(var(--secondary)) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--secondary)) 1px, transparent 1px)"}} onContextMenu={showContextMenu}>
+      <Transitions transitions={machine.transitions} priorities={priorities} focusedObjects={focusedObjects} width={canvasWidth} height={canvasHeight} />
       {Object.keys(machine.transitions).map((id) => {
         const transition = machine.transitions[id]
         const priority = Math.max(
