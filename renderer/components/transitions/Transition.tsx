@@ -159,7 +159,7 @@ function ControlPoints({
       ></ControlPoint>
       <ControlPoint
         position={new Point2D(curve.target.x + offset.x, curve.target.y + offset.y)}
-        color="yellow"
+        color="purple"
         isFilled={false}
         setPosition={(newPosition) => {
           setCurve(
