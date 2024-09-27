@@ -228,91 +228,93 @@ export default function Canvas({
     }
   }, [canvasContainer.current, setCanvasWidth, setCanvasHeight])
   return (
-    <div ref={canvasContainer} className="bg-background w-full h-full bg-" style={{backgroundSize: "4rem 4rem", backgroundImage: "linear-gradient(to right, hsl(var(--secondary)) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--secondary)) 1px, transparent 1px)"}} onContextMenu={showContextMenu}>
-      <Transitions transitions={machine.transitions} priorities={priorities} focusedObjects={focusedObjects} width={canvasWidth} height={canvasHeight} />
-      {Object.keys(machine.transitions).map((id) => {
-        const transition = machine.transitions[id]
-        const priority = Math.max(
-          machine.states[transition.source].properties.transitions.indexOf(id),
-          0
-        )
-        return (
-          <Transition
-            key={id}
-            id={id}
-            properties={transition}
-            priority={priority}
-            isSelected={focusedObjects.has(id)}
-            setPath={(newPath: BezierPath) => setPath(id, newPath)}
-            setCondition={(condition: string) => setCondition(id, condition)}
-            addSelection={() => addSelection(id)}
-            uniqueSelection={() => uniqueSelection(id)}
-            showContextMenu={(position: Point2D) =>
-              setTransitionContextMenuPosition([position, id])
-            }
+    <div ref={canvasContainer} className="relative bg-background w-full h-full bg-[length:4rem_4rem] bg-gradient-to-b from-[hsl(var(--secondary))_0.06rem] text-transparent to-[transparent_0.1rem]" onContextMenu={showContextMenu}>
+      <div className="w-full h-full bg-[length:4rem_4rem] bg-gradient-to-r from-[hsl(var(--secondary))_0.06rem] text-transparent to-[transparent_0.1rem]">
+        <Transitions transitions={machine.transitions} priorities={priorities} focusedObjects={focusedObjects} width={canvasWidth} height={canvasHeight} />
+        {Object.keys(machine.transitions).map((id) => {
+          const transition = machine.transitions[id]
+          const priority = Math.max(
+            machine.states[transition.source].properties.transitions.indexOf(id),
+            0
+          )
+          return (
+            <Transition
+              key={id}
+              id={id}
+              properties={transition}
+              priority={priority}
+              isSelected={focusedObjects.has(id)}
+              setPath={(newPath: BezierPath) => setPath(id, newPath)}
+              setCondition={(condition: string) => setCondition(id, condition)}
+              addSelection={() => addSelection(id)}
+              uniqueSelection={() => uniqueSelection(id)}
+              showContextMenu={(position: Point2D) =>
+                setTransitionContextMenuPosition([position, id])
+              }
+            />
+          )
+        })}
+        {Object.keys(machine.states).map((id) => {
+          const state = machine.states[id]
+          return (
+            <State
+              key={id}
+              properties={state.properties}
+              position={state.position}
+              setPosition={(newPosition: Point2D): void => setStatePosition(id, newPosition)}
+              setDimensions={(newPosition: Point2D, newDimensions: Point2D): void =>
+                setStateDimensions(id, newPosition, newDimensions)
+              }
+              isSelected={focusedObjects.has(id)}
+              addSelection={() => addSelection(id)}
+              uniqueSelection={() => uniqueSelection(id)}
+              showContextMenu={(position: Point2D) => showStateContextMenu(position, id)}
+              onDoubleClick={() => setEdittingState(id)}
+            />
+          )
+        })}
+        {contextMenuPosition !== undefined && (
+          <WindowContextMenu
+            position={contextMenuPosition!}
+            createState={() => createState(contextMenuPosition)}
           />
-        )
-      })}
-      {Object.keys(machine.states).map((id) => {
-        const state = machine.states[id]
-        return (
-          <State
-            key={id}
-            properties={state.properties}
-            position={state.position}
-            setPosition={(newPosition: Point2D): void => setStatePosition(id, newPosition)}
-            setDimensions={(newPosition: Point2D, newDimensions: Point2D): void =>
-              setStateDimensions(id, newPosition, newDimensions)
-            }
-            isSelected={focusedObjects.has(id)}
-            addSelection={() => addSelection(id)}
-            uniqueSelection={() => uniqueSelection(id)}
-            showContextMenu={(position: Point2D) => showStateContextMenu(position, id)}
-            onDoubleClick={() => setEdittingState(id)}
+        )}
+        {stateContextMenuPosition !== undefined && (
+          <StateContextMenu
+            position={stateContextMenuPosition![0]}
+            states={Object.keys(machine.states).map(
+              (id: string) => new StateIdentifier(id, machine.states[id].properties.name)
+            )}
+            createTransition={(stateID: string) => createTransition(stateID, contextState!)}
+            deleteState={() => deleteState(stateContextMenuPosition![1])}
+            setInitialState={() => {
+              if (!contextState) return
+              setMachine(machine.setInitialState(contextState))
+            }}
+            setSuspendedState={() => {
+              setMachine(machine.setSuspendedState(contextState))
+            }}
           />
-        )
-      })}
-      {contextMenuPosition !== undefined && (
-        <WindowContextMenu
-          position={contextMenuPosition!}
-          createState={() => createState(contextMenuPosition)}
-        />
-      )}
-      {stateContextMenuPosition !== undefined && (
-        <StateContextMenu
-          position={stateContextMenuPosition![0]}
-          states={Object.keys(machine.states).map(
-            (id: string) => new StateIdentifier(id, machine.states[id].properties.name)
-          )}
-          createTransition={(stateID: string) => createTransition(stateID, contextState!)}
-          deleteState={() => deleteState(stateContextMenuPosition![1])}
-          setInitialState={() => {
-            if (!contextState) return
-            setMachine(machine.setInitialState(contextState))
-          }}
-          setSuspendedState={() => {
-            setMachine(machine.setSuspendedState(contextState))
-          }}
-        />
-      )}
-      {transitionContextMenuPosition !== undefined && (
-        <TransitionContextMenu
-          position={transitionContextMenuPosition![0]}
-          id={transitionContextMenuPosition![1]}
-          transitions={
-            machine.states[machine.transitions[transitionContextMenuPosition![1]].source].properties
-              .transitions
-          }
-          setTransitions={(newTransitions: string[]) =>
-            setStateTransitions(
-              machine.transitions[transitionContextMenuPosition![1]].source,
-              newTransitions
-            )
-          }
-          deleteTransition={() => deleteTransition(transitionContextMenuPosition![1])}
-        />
-      )}
-      <CanvasSidePanel machine={machine} setMachine={setMachine} />
+        )}
+        {transitionContextMenuPosition !== undefined && (
+          <TransitionContextMenu
+            position={transitionContextMenuPosition![0]}
+            id={transitionContextMenuPosition![1]}
+            transitions={
+              machine.states[machine.transitions[transitionContextMenuPosition![1]].source].properties
+                .transitions
+            }
+            setTransitions={(newTransitions: string[]) =>
+              setStateTransitions(
+                machine.transitions[transitionContextMenuPosition![1]].source,
+                newTransitions
+              )
+            }
+            deleteTransition={() => deleteTransition(transitionContextMenuPosition![1])}
+          />
+        )}
+        <CanvasSidePanel machine={machine} setMachine={setMachine} />
+      </div>
     </div>
   )
 }

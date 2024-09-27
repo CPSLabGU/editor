@@ -73,16 +73,15 @@ export default function App(): JSX.Element {
       setDidSave({ id: id, path: path, type: type })
     })
   }, [setDidSave])
-  if (!appState.root) {
-    return (
-      <Welcome
+  return (
+    <div className="w-screen h-screen">
+      {appState.root && appState.canvasSwitcher(setAppState)}
+      {!appState.root && <Welcome
         openArrangement={openArrangement}
         openMachine={openMachine}
         createArrangement={createArrangement}
         createMachine={createMachine}
-      />
-    )
-  } else {
-    return appState.canvasSwitcher(setAppState)
-  }
+      />}
+    </div>
+  );
 }

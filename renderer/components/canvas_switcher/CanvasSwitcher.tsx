@@ -63,7 +63,7 @@ export default function CanvasSwitcher({
           <TreeView root={treeItem} />
         </HiddenView>
         <div className="w-full h-full">
-          <div className="relative w-full h-full">
+          <div className="w-full h-full">
             {selectedView !== undefined && <LoadingView subView={selectedView} />}
           </div>
           <div className="clear-both"></div>
