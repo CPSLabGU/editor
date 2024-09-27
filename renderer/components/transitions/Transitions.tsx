@@ -130,11 +130,9 @@ export default function Transitions({
         // Strokes.
         const priority = priorities[id]
         if (!priority) {
-          console.log("No priority!")
           return
         }
         if (priority <= 0) return
-        console.log("Priority: " + priority)
         const dS = 0.025
         const strokeSize = 4
         for (let i = 1; i <= priority; i++) {
@@ -148,8 +146,6 @@ export default function Transitions({
           const dx = pointNearStart.x - path.source.x
           const dy = pointNearStart.y - path.source.y
           const startAngle = Math.atan2(dy,dx);
-          console.log("Start point: " + pointNearStart.x + ", " + pointNearStart.y)
-          console.log("Start Angle: " + startAngle)
           context.beginPath()
           context.save()
           context.translate(pointNearStart.x, pointNearStart.y)
