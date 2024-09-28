@@ -291,6 +291,25 @@ export default function Canvas({
     <div ref={canvasContainer} className="relative bg-background w-full h-full bg-[length:4rem_4rem] bg-gradient-to-b from-[hsl(var(--secondary))_0.06rem] text-transparent to-[transparent_0.1rem]" onContextMenu={showContextMenu}>
       <div className="w-full h-full bg-[length:4rem_4rem] bg-gradient-to-r from-[hsl(var(--secondary))_0.06rem] text-transparent to-[transparent_0.1rem]">
         <Transitions transitions={machine.transitions} priorities={priorities} focusedObjects={focusedObjects} width={canvasWidth} height={canvasHeight} />
+        {Object.keys(machine.states).map((id) => {
+          const state = machine.states[id]
+          return (
+            <State
+              key={id}
+              properties={state.properties}
+              position={state.position}
+              setPosition={(newPosition: Point2D): void => setStatePosition(id, newPosition)}
+              setDimensions={(newPosition: Point2D, newDimensions: Point2D): void =>
+                setStateDimensions(id, newPosition, newDimensions)
+              }
+              isSelected={focusedObjects.has(id)}
+              addSelection={() => addSelection(id)}
+              uniqueSelection={() => uniqueSelection(id)}
+              showContextMenu={(position: Point2D) => showStateContextMenu(position, id)}
+              onDoubleClick={() => setEdittingState(id)}
+            />
+          )
+        })}
         {Object.keys(machine.transitions).map((id) => {
           const transition = machine.transitions[id]
           const priority = Math.max(
@@ -311,25 +330,6 @@ export default function Canvas({
               showContextMenu={(position: Point2D) =>
                 setTransitionContextMenuPosition([position, id])
               }
-            />
-          )
-        })}
-        {Object.keys(machine.states).map((id) => {
-          const state = machine.states[id]
-          return (
-            <State
-              key={id}
-              properties={state.properties}
-              position={state.position}
-              setPosition={(newPosition: Point2D): void => setStatePosition(id, newPosition)}
-              setDimensions={(newPosition: Point2D, newDimensions: Point2D): void =>
-                setStateDimensions(id, newPosition, newDimensions)
-              }
-              isSelected={focusedObjects.has(id)}
-              addSelection={() => addSelection(id)}
-              uniqueSelection={() => uniqueSelection(id)}
-              showContextMenu={(position: Point2D) => showStateContextMenu(position, id)}
-              onDoubleClick={() => setEdittingState(id)}
             />
           )
         })}
@@ -404,13 +404,13 @@ function normalise(within: BoundingBox, point: Point2D): Point2D {
   const newPoint = point.copy
   const centre = within.centre
   const buffer = 5
-  if (newPoint.x < centre.x && newPoint.y < within.y + within.height && newPoint.y > within.y) {
+  if (newPoint.x < centre.x && newPoint.y < within.y + within.height - buffer && newPoint.y > within.y + buffer) {
     newPoint.x = Math.min(Math.max(within.x - buffer, newPoint.x), within.x)
-  } else if (newPoint.x > centre.x && newPoint.y < within.y + within.height && newPoint.y > within.y) {
+  } else if (newPoint.x > centre.x && newPoint.y < within.y + within.height - buffer && newPoint.y > within.y + buffer) {
     newPoint.x = Math.min(Math.max(within.x + within.width, newPoint.x), within.x + within.width + buffer)
-  } else if (newPoint.y < centre.y && newPoint.x < within.x + within.width && newPoint.x > within.x) {
+  } else if (newPoint.y < centre.y && newPoint.x < within.x + within.width - buffer && newPoint.x > within.x + buffer) {
     newPoint.y = Math.min(Math.max(within.y - buffer, newPoint.y), within.y)
-  } else if (newPoint.y > centre.y && newPoint.x < within.x + within.width && newPoint.x > within.x) {
+  } else if (newPoint.y > centre.y && newPoint.x < within.x + within.width - buffer && newPoint.x > within.x + buffer) {
     newPoint.y = Math.min(Math.max(within.y + within.height, newPoint.y), within.y + within.height + buffer)
   } else {
     newPoint.x = Math.max(within.x - buffer, Math.min(within.x + within.width + buffer, newPoint.x))
