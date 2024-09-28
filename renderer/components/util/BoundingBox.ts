@@ -18,6 +18,9 @@ export default class BoundingBox {
     this.height = height
     this.findIntersection = this.findIntersection.bind(this)
     this.adjustToFit = this.adjustToFit.bind(this)
+    this.normalise = this.normalise.bind(this)
+    this.contains = this.contains.bind(this)
+    this.normaliseWithin = this.normaliseWithin.bind(this)
   }
 
   findIntersection(angle: number): Point2D {
@@ -54,5 +57,45 @@ export default class BoundingBox {
     this.width = this.width + width
     this.y -= height / 2
     this.height = this.height + height
+  }
+
+  contains(point: Point2D): boolean {
+    return point.x >= this.x && point.x <= this.x + this.width && point.y >= this.y && point.y <= this.y + this.height
+  }
+
+  normalise(point: Point2D, buffer: number = 5): Point2D {
+    const newPoint = point.copy
+    const centre = this.centre
+    if (newPoint.x < centre.x && newPoint.y < this.y + this.height - buffer && newPoint.y > this.y + buffer) {
+      newPoint.x = Math.min(Math.max(this.x - buffer, newPoint.x), this.x)
+    } else if (newPoint.x > centre.x && newPoint.y < this.y + this.height - buffer && newPoint.y > this.y + buffer) {
+      newPoint.x = Math.min(Math.max(this.x + this.width, newPoint.x), this.x + this.width + buffer)
+    } else if (newPoint.y < centre.y && newPoint.x < this.x + this.width - buffer && newPoint.x > this.x + buffer) {
+      newPoint.y = Math.min(Math.max(this.y - buffer, newPoint.y), this.y)
+    } else if (newPoint.y > centre.y && newPoint.x < this.x + this.width - buffer && newPoint.x > this.x + buffer) {
+      newPoint.y = Math.min(Math.max(this.y + this.height, newPoint.y), this.y + this.height + buffer)
+    } else {
+      newPoint.x = Math.max(this.x - buffer, Math.min(this.x + this.width + buffer, newPoint.x))
+      newPoint.y = Math.max(this.y - buffer, Math.min(this.y + this.height + buffer, newPoint.y))
+    }
+    return newPoint
+  }
+
+  normaliseWithin(point: Point2D, buffer: number = 5): Point2D {
+    const newPoint = point.copy
+    const centre = this.centre
+    if (newPoint.x < centre.x && newPoint.y < this.y + this.height - buffer && newPoint.y > this.y + buffer) {
+      newPoint.x = this.x + buffer
+    } else if (newPoint.x > centre.x && newPoint.y < this.y + this.height - buffer && newPoint.y > this.y + buffer) {
+      newPoint.x = this.x + this.width - buffer
+    } else if (newPoint.y < centre.y && newPoint.x < this.x + this.width - buffer && newPoint.x > this.x + buffer) {
+      newPoint.y = this.y + buffer
+    } else if (newPoint.y > centre.y && newPoint.x < this.x + this.width - buffer && newPoint.x > this.x + buffer) {
+      newPoint.y = this.y + this.height - buffer
+    } else {
+      newPoint.x = Math.max(this.x + buffer, Math.min(this.x + this.width - buffer, newPoint.x))
+      newPoint.y = Math.max(this.y + buffer, Math.min(this.y + this.height - buffer, newPoint.y))
+    }
+    return newPoint
   }
 }

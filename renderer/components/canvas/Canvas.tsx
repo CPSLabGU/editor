@@ -15,6 +15,7 @@ import Machine from '../machines/Machine'
 import TransitionContextMenu from '../context_menus/TransitionContextMenu'
 import StateProperties from '../states/StateProperties'
 import Transitions from '../transitions/Transitions'
+import StateSwitcher from '../states/StateSwitcher'
 
 export default function Canvas({
   machine,
@@ -58,9 +59,9 @@ export default function Canvas({
       if (!source || !target) return
       const path = newPath.copy
       const sourceBox = boundingBox(source)
-      path.source = normalise(sourceBox, newPath.source)
+      path.source = sourceBox.normalise(newPath.source)
       const targetBox = boundingBox(target)
-      path.target = normalise(targetBox, newPath.target)
+      path.target = targetBox.normalise(newPath.target)
       transition.path = path
       setMachine(machine.setTransition(id, transition))
     },
@@ -317,7 +318,7 @@ export default function Canvas({
         {Object.keys(machine.states).map((id) => {
           const state = machine.states[id]
           return (
-            <State
+            <StateSwitcher
               key={id}
               properties={state.properties}
               position={state.position}
@@ -421,23 +422,4 @@ function calculateEdge(source: BoundingBox, target: BoundingBox): BezierPath {
     new Point2D(sourcePoint.x + dx / 3, sourcePoint.y + dy / 3),
     new Point2D(sourcePoint.x + (2 * dx) / 3, sourcePoint.y + (2 * dy) / 3)
   )
-}
-
-function normalise(within: BoundingBox, point: Point2D): Point2D {
-  const newPoint = point.copy
-  const centre = within.centre
-  const buffer = 5
-  if (newPoint.x < centre.x && newPoint.y < within.y + within.height - buffer && newPoint.y > within.y + buffer) {
-    newPoint.x = Math.min(Math.max(within.x - buffer, newPoint.x), within.x)
-  } else if (newPoint.x > centre.x && newPoint.y < within.y + within.height - buffer && newPoint.y > within.y + buffer) {
-    newPoint.x = Math.min(Math.max(within.x + within.width, newPoint.x), within.x + within.width + buffer)
-  } else if (newPoint.y < centre.y && newPoint.x < within.x + within.width - buffer && newPoint.x > within.x + buffer) {
-    newPoint.y = Math.min(Math.max(within.y - buffer, newPoint.y), within.y)
-  } else if (newPoint.y > centre.y && newPoint.x < within.x + within.width - buffer && newPoint.x > within.x + buffer) {
-    newPoint.y = Math.min(Math.max(within.y + within.height, newPoint.y), within.y + within.height + buffer)
-  } else {
-    newPoint.x = Math.max(within.x - buffer, Math.min(within.x + within.width + buffer, newPoint.x))
-    newPoint.y = Math.max(within.y - buffer, Math.min(within.y + within.height + buffer, newPoint.y))
-  }
-  return newPoint
 }
