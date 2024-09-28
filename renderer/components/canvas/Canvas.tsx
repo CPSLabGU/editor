@@ -388,6 +388,7 @@ export default function Canvas({
               machine.states[machine.transitions[transitionContextMenuPosition![1]].source].properties
                 .transitions
             }
+            properties={machine.transitions}
             setTransitions={(newTransitions: string[]) =>
               setStateTransitions(
                 machine.transitions[transitionContextMenuPosition![1]].source,
@@ -395,6 +396,7 @@ export default function Canvas({
               )
             }
             deleteTransition={() => deleteTransition(transitionContextMenuPosition![1])}
+            setPath={setPath}
           />
         )}
         <CanvasSidePanel machine={machine} setMachine={setMachine} />

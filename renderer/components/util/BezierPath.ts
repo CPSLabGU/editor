@@ -35,6 +35,16 @@ export default class BezierPath {
     }
   }
 
+  get straightened(): BezierPath {
+    let dx = this.target.x - this.source.x
+    let dy = this.target.y - this.source.y
+    let c0x = this.source.x + dx / 3
+    let c0y = this.source.y + dy / 3
+    let c1x = this.source.x + 2 * dx / 3
+    let c1y = this.source.y + 2 * dy / 3
+    return new BezierPath(this.source, this.target, new Point2D(c0x, c0y), new Point2D(c1x, c1y))
+  }
+
   constructor(source: Point2D, target: Point2D, control0: Point2D, control1: Point2D) {
     this.source = source
     this.target = target

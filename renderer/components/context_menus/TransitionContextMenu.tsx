@@ -54,6 +54,8 @@
 // Fifth Floor, Boston, MA  02110-1301, USA.
 //
 
+import TransitionProperties from '../transitions/TransitionProperties'
+import BezierPath from '../util/BezierPath'
 import Point2D from '../util/Point2D'
 import ContextMenu from './ContextMenu'
 import MenuItem from './MenuItem'
@@ -62,14 +64,18 @@ export default function TransitionContextMenu({
   position,
   id,
   transitions,
+  properties,
   setTransitions,
-  deleteTransition
+  deleteTransition,
+  setPath
 }: {
   position: Point2D
   id: string
   transitions: string[]
+  properties: { [id: string]: TransitionProperties }
   setTransitions: (newTransitions: string[]) => void
   deleteTransition: () => void
+  setPath: (transition: string, path: BezierPath) => void
 }): JSX.Element {
   const menuItems: MenuItem[] = []
   function calculateMenuItems(): void {
@@ -99,6 +105,14 @@ export default function TransitionContextMenu({
     }
   }
   calculateMenuItems()
+  menuItems.push(new MenuItem(`${id}-straighten-transition`, 'Straighten', () => {
+    transitions.forEach((t) => {
+      const property = properties[t]
+      if (!property) return
+      const path = property.path.straightened
+      setPath(t, path)
+    })
+  }))
   menuItems.push(new MenuItem(`${id}-delete-transition`, 'Delete', deleteTransition))
   return <ContextMenu position={position} menuItems={menuItems} />
 }
