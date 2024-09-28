@@ -53,9 +53,11 @@
 // or write to the Free Software Foundation, Inc., 51 Franklin Street,
 // Fifth Floor, Boston, MA  02110-1301, USA.
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import TransitionProperties from "./TransitionProperties";
 import { useTheme } from "next-themes";
+import Positionable from "../util/Positionable";
+import Point2D from "../util/Point2D";
 
 
 export default function Transitions({
@@ -63,13 +65,15 @@ export default function Transitions({
     priorities,
     focusedObjects,
     width,
-    height
+    height,
+    setCanvasPosition
   }: {
     transitions: { [id: string]: TransitionProperties }
     priorities: { [id: string]: number }
     focusedObjects: Set<string>
     width: number
     height: number
+    setCanvasPosition: (offset: Point2D) => void
   }): JSX.Element {
     const { resolvedTheme, theme } = useTheme()
     const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -159,7 +163,11 @@ export default function Transitions({
         }
       })
     }, [canvasRef, canvasRef.current, transitions, focusedObjects, defaultColor, priorities])
-    return (<canvas width={width} height={height} ref={canvasRef}></canvas>)
+    return (
+      <Positionable position={new Point2D(0, 0)} setPosition={setCanvasPosition}>
+        <canvas width={width} height={height} ref={canvasRef}></canvas>
+      </Positionable>
+    )
 }
 
 function getCubicBezierXYatT(startPt,controlPt1,controlPt2,endPt,T){

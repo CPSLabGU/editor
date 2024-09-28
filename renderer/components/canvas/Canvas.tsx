@@ -213,6 +213,29 @@ export default function Canvas({
     },
     [machine, setMachine]
   )
+  const dragCanvasElements = useCallback((point: Point2D) => {
+    const newStates: { [id: string]: StateInformation } = {}
+    Object.keys(machine.states).forEach((stateID) => {
+      const state = machine.states[stateID].copy
+      state.position.x -= point.x
+      state.position.y -= point.y
+      newStates[stateID] = state
+    })
+    const newTransitions: { [id: string]: TransitionProperties } = {}
+    Object.keys(machine.transitions).forEach((transitionID) => {
+      const transition = machine.transitions[transitionID].copy
+      transition.path.source.x -= point.x
+      transition.path.source.y -= point.y
+      transition.path.control0.x -= point.x
+      transition.path.control0.y -= point.y
+      transition.path.control1.x -= point.x
+      transition.path.control1.y -= point.y
+      transition.path.target.x -= point.x
+      transition.path.target.y -= point.y
+      newTransitions[transitionID] = transition
+    })
+    setMachine(machine.setStates(newStates).setTransitions(newTransitions))
+  }, [machine, setMachine])
   const setStateDimensions = useCallback(
     (id: string, newPosition: Point2D, newDimensions: Point2D): void => {
       const state = machine.states[id]?.copy
@@ -290,7 +313,7 @@ export default function Canvas({
   return (
     <div ref={canvasContainer} className="relative bg-background w-full h-full bg-[length:4rem_4rem] bg-gradient-to-b from-[hsl(var(--secondary))_0.06rem] text-transparent to-[transparent_0.1rem]" onContextMenu={showContextMenu}>
       <div className="w-full h-full bg-[length:4rem_4rem] bg-gradient-to-r from-[hsl(var(--secondary))_0.06rem] text-transparent to-[transparent_0.1rem]">
-        <Transitions transitions={machine.transitions} priorities={priorities} focusedObjects={focusedObjects} width={canvasWidth} height={canvasHeight} />
+        <Transitions transitions={machine.transitions} priorities={priorities} focusedObjects={focusedObjects} width={canvasWidth} height={canvasHeight} setCanvasPosition={dragCanvasElements} />
         {Object.keys(machine.states).map((id) => {
           const state = machine.states[id]
           return (
