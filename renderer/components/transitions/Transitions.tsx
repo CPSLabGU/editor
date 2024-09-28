@@ -164,7 +164,7 @@ export default function Transitions({
       })
     }, [canvasRef, canvasRef.current, transitions, focusedObjects, defaultColor, priorities])
     return (
-      <Positionable position={new Point2D(0, 0)} setPosition={setCanvasPosition}>
+      <Positionable position={new Point2D(0, 0)} setPosition={setCanvasPosition} grabCursor="default" grabbingCursor="default">
         <canvas width={width} height={height} ref={canvasRef}></canvas>
       </Positionable>
     )

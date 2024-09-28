@@ -5,6 +5,8 @@ function Positionable({
   position,
   setPosition,
   enabled = true,
+  grabCursor = 'grab',
+  grabbingCursor = 'grabbing',
   onClick = (e: any) => {},
   onContextMenu = (e) => {},
   onDoubleClick = () => {},
@@ -26,6 +28,8 @@ function Positionable({
       <EnabledView
         position={position}
         setPosition={setPosition}
+        grabCursor={grabCursor}
+        grabbingCursor={grabbingCursor}
         onClick={onClick}
         onContextMenu={onContextMenu}
         onDoubleClick={onDoubleClick}
@@ -59,6 +63,8 @@ function DisabledView({
 function EnabledView({
   position,
   setPosition,
+  grabCursor,
+  grabbingCursor,
   onClick = (e: any) => {},
   onContextMenu = (e) => {},
   onDoubleClick = () => {},
@@ -108,10 +114,10 @@ function EnabledView({
     left: isDragging ? mousePosition.x : position.x,
     top: isDragging ? mousePosition.y : position.y,
     position: 'absolute' as 'absolute',
-    cursor: isDragging ? 'grabbing' : 'grab'
+    cursor: isDragging ? grabbingCursor : grabCursor
   }
   const dragStyle = {
-    cursor: isDragging ? 'grabbing' : 'grab'
+    cursor: isDragging ? grabbingCursor : grabCursor
   }
   return (
     <div
