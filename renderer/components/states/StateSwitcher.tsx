@@ -110,18 +110,19 @@ function HiddenState({ position, name, buffer }: {position: Point2D, name: strin
     const { resolvedTheme, theme } = useTheme()
     const color = (resolvedTheme ?? theme == 'dark') ? 'text-black' : 'text-white'
     const span = useRef<HTMLSpanElement>(null)
-    const [offset, setOffset] = useState(0)
+    const [offset, setOffset] = useState(new Point2D(buffer, buffer))
     useEffect(() => {
         const currentSpan = span.current
-        if (!currentSpan || position.x <= buffer) {
-            setOffset(0)
+        if (!currentSpan) {
+            setOffset(new Point2D(buffer, buffer))
             return
         }
-        const width = currentSpan.offsetWidth
-        setOffset(-width)
+        const x = position.x > buffer ? -currentSpan.offsetWidth - buffer : 0
+        const y = position.y > buffer ? -currentSpan.offsetHeight - buffer : 0
+        setOffset(new Point2D(x, y))
     }, [span.current, setOffset])
     return (
-        <div style={{position: 'absolute', left: position.x + offset, top: position.y}}>
+        <div style={{position: 'absolute', left: position.x + offset.x, top: position.y + offset.y}}>
             <span ref={span} className={`cursor-default bg-transparent ${color} italic`}>{name}</span>
         </div>
     )
