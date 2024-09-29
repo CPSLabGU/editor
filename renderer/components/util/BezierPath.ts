@@ -23,7 +23,7 @@ export default class BezierPath {
   }
 
   get copy(): BezierPath {
-    return new BezierPath(this.source, this.target, this.control0, this.control1)
+    return new BezierPath(this.source.copy, this.target.copy, this.control0.copy, this.control1.copy)
   }
 
   get toModel(): BezierPathModel {
