@@ -103,7 +103,7 @@ function Transition({
   }
   return (
     <div style={parentStyle} onClick={focus} onContextMenu={contextMenu}>
-      <div className="transition-condition text-sm" style={conditionStyle} onDoubleClick={enableEditing}>
+      <div className="transition-condition text-sm text-nowrap" style={conditionStyle} onDoubleClick={enableEditing}>
         {isEditing && (
           <form onSubmit={disableEditing}>
             <input
