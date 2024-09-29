@@ -42,7 +42,7 @@ export default class BezierPath {
     const c0y = this.source.y + dy
     const c1x = this.source.x + 2 * dx
     const c1y = this.source.y + 2 * dy
-    return new BezierPath(this.source, this.target, new Point2D(c0x, c0y), new Point2D(c1x, c1y))
+    return new BezierPath(this.source.copy, this.target.copy, new Point2D(c0x, c0y), new Point2D(c1x, c1y))
   }
 
   constructor(source: Point2D, target: Point2D, control0: Point2D, control1: Point2D) {
