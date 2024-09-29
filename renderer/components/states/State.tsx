@@ -45,7 +45,7 @@ function State({
     [showContextMenu]
   )
   const child = (
-    <div onClick={focus} className={`h-full text-sm text-center m-2 mx-auto text-ellipsis whitespace-nowrap`}>
+    <div onClick={focus} className={`w-full h-full text-sm text-center mx-auto text-ellipsis whitespace-nowrap`}>
       {properties.expanded ? <ExpandedState isSelected={isSelected} {...properties} /> : <CollapsedState isSelected={isSelected} {...properties} />}
     </div>
   )
@@ -75,8 +75,8 @@ function State({
 
 function CollapsedState({ name, w, h, expanded, isSelected }: StatePropertiesInterface & { isSelected: boolean }): JSX.Element {
   return (
-    <Card className={`h-[calc(100%-1rem)] overflow:hidden ${isSelected ? 'text-blue-700 border-blue-700' : ''}`}>
-      <CardHeader className="h-full justify-center">
+    <Card className={`p-0 h-full overflow:hidden ${isSelected ? 'text-blue-700 border-blue-700' : ''}`}>
+      <CardHeader className="p-0 h-full justify-center">
         <CardTitle>{name}</CardTitle>
       </CardHeader>
     </Card>
@@ -85,8 +85,8 @@ function CollapsedState({ name, w, h, expanded, isSelected }: StatePropertiesInt
 
 function ExpandedState({ name, w, h, expanded, isSelected }: StatePropertiesInterface & { isSelected: boolean }): JSX.Element {
   return (
-    <Card className={`h-[calc(100%-1rem)] overflow:hidden ${isSelected ? 'text-blue-700 border-blue-700' : ''}`}>
-      <CardHeader className="h-full justify-center">
+    <Card className={`p-0 h-full overflow:hidden ${isSelected ? 'text-blue-700 border-blue-700' : ''}`}>
+      <CardHeader className="p-0 h-full justify-center">
         <CardTitle>{name}</CardTitle>
       </CardHeader>
     </Card>
