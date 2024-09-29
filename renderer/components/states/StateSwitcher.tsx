@@ -108,7 +108,6 @@ export default function StateSwitcher(
 
 function HiddenState({ position, name, buffer }: {position: Point2D, name: string, buffer: number}): JSX.Element {
     const { resolvedTheme, theme } = useTheme()
-    const color = (resolvedTheme ?? theme == 'dark') ? 'text-black' : 'text-white'
     const span = useRef<HTMLSpanElement>(null)
     const [offset, setOffset] = useState(new Point2D(0, 0))
     useEffect(() => {
@@ -123,7 +122,7 @@ function HiddenState({ position, name, buffer }: {position: Point2D, name: strin
     }, [span.current, setOffset])
     return (
         <div style={{position: 'absolute', left: position.x + offset.x, top: position.y + offset.y}}>
-            <span ref={span} className={`cursor-default bg-transparent ${color} italic`}>{name}</span>
+            <span ref={span} className={`cursor-default bg-transparent text-foreground italic`}>{name}</span>
         </div>
     )
 }
