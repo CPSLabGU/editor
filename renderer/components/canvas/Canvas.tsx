@@ -16,6 +16,7 @@ import TransitionContextMenu from '../context_menus/TransitionContextMenu'
 import StateProperties from '../states/StateProperties'
 import Transitions from '../transitions/Transitions'
 import StateSwitcher from '../states/StateSwitcher'
+import { useTheme } from 'next-themes'
 
 export default function Canvas({
   machine,
@@ -24,6 +25,7 @@ export default function Canvas({
   machine: Machine
   setMachine: (newMachine: Machine) => void
 }): JSX.Element {
+  const { resolvedTheme, theme } = useTheme();
   const canvasContainer = useRef<HTMLDivElement>(null)
   const [focusedObjects, setFocusedObjects] = useState(new Set<string>())
   const [contextState, setContextState] = useState<string | undefined>(undefined)
@@ -312,7 +314,7 @@ export default function Canvas({
     }
   }, [canvasContainer.current, setCanvasWidth, setCanvasHeight])
   return (
-    <div ref={canvasContainer} className="relative bg-background w-full h-full bg-[length:4rem_4rem] bg-gradient-to-b from-[hsl(var(--secondary))_0.06rem] text-transparent to-[transparent_0.1rem]" onContextMenu={showContextMenu}>
+    <div ref={canvasContainer} className="select-none relative bg-background w-full h-full bg-[length:4rem_4rem] bg-gradient-to-b from-[hsl(var(--secondary))_0.06rem] text-transparent to-[transparent_0.1rem]" onContextMenu={showContextMenu}>
       <div className="w-full h-full bg-[length:4rem_4rem] bg-gradient-to-r from-[hsl(var(--secondary))_0.06rem] text-transparent to-[transparent_0.1rem]">
         <Transitions transitions={machine.transitions} priorities={priorities} focusedObjects={focusedObjects} width={canvasWidth} height={canvasHeight} setCanvasPosition={dragCanvasElements} />
         {Object.keys(machine.states).map((id) => {

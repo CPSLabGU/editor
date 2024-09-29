@@ -9,6 +9,7 @@ import { MenuBar, MenuBarLeftItems, MenuBarRightItems } from '../menu_bar/MenuBa
 import { ScrollArea } from '../ui/scroll-area'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { useTheme } from 'next-themes'
+import { cn } from '@/lib/utils'
 
 export type ItemDictionary<T> = { [key: string]: T }
 
@@ -43,30 +44,35 @@ export default function CanvasSwitcher({
   const selectedKey = getSelected()
   const selectedView: (() => JSX.Element | null) | undefined =
     selectedKey !== null ? item.findChild(selectedKey)?.view : undefined
+  // const mainViewHeight = `h-[calc(100vh-${(allowTogglingVisibilty ? 44 : 0) + 20}px)]`;
+  const mainViewHeight = 'calc(100vh - ' + `${(allowTogglingVisibilty ? 44 : 0) + 20}` + 'px)';
+  console.error(mainViewHeight);
   return <>
     <div className="h-screen overflow-clip">
-      <MenuBar>
-        <MenuBarLeftItems>
-          <HiddenView hidden={!allowTogglingVisibilty}>
-            <HiddenView hidden={sidePanelVisible}>
-              <Button variant="ghost" className="p-1 hover:bg-background" onClick={() => setSidePanelVisible(true)}>
-                <PanelLeftOpen className="text-secondary-foreground" />
-              </Button>
+      <HiddenView hidden={!allowTogglingVisibilty}>
+        <MenuBar>
+          <MenuBarLeftItems>
+            <HiddenView hidden={!allowTogglingVisibilty}>
+              <HiddenView hidden={sidePanelVisible}>
+                <Button variant="ghost" className="p-1 hover:bg-background" onClick={() => setSidePanelVisible(true)}>
+                  <PanelLeftOpen className="text-secondary-foreground" />
+                </Button>
+              </HiddenView>
+              <HiddenView hidden={!sidePanelVisible}>
+                <Button variant="ghost" className="p-1 hover:bg-background" onClick={() => setSidePanelVisible(false)}>
+                  <PanelLeftClose className="text-secondary-foreground" />
+                </Button>
+              </HiddenView>
             </HiddenView>
-            <HiddenView hidden={!sidePanelVisible}>
-              <Button variant="ghost" className="p-1 hover:bg-background" onClick={() => setSidePanelVisible(false)}>
-                <PanelLeftClose className="text-secondary-foreground" />
-              </Button>
-            </HiddenView>
-          </HiddenView>
-        </MenuBarLeftItems>
-      </MenuBar>
-      <div className="flex flex-row items-start w-full h-[calc(100vh-64px)]">
+          </MenuBarLeftItems>
+        </MenuBar>
+      </HiddenView>
+      <div className="flex flex-row items-start w-full">
         <HiddenView hidden={!sidePanelVisible}>
           <TreeView root={treeItem} />
         </HiddenView>
-        <ScrollArea aria-orientation='vertical' className="h-[calc(100vh-64px)] p-4 w-full *:h-full">
-          <div className="w-full h-[calc(100vh-64px)]">
+        <ScrollArea aria-orientation='vertical' className="w-full h-full" style={{height: mainViewHeight}}>
+          <div className="w-full" style={{height: mainViewHeight}}>
             {selectedView !== undefined && <LoadingView subView={selectedView} />}
           </div>
         </ScrollArea>

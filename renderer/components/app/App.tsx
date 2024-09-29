@@ -5,7 +5,6 @@ import { useTheme } from 'next-themes'
 
 export default function App(): JSX.Element {
   const [appState, setAppState] = useState(new AppState())
-  const { theme, resolvedTheme } = useTheme();
   const [updateData, setUpdateData] = useState<string | null | undefined>(undefined)
   const [load, setLoad] = useState<{ data: string; url: string; type: string } | undefined>(
     undefined
@@ -13,7 +12,7 @@ export default function App(): JSX.Element {
   const [didSave, setDidSave] = useState<{ id: string; path: string; type: string } | undefined>(
     undefined
   )
-
+  const { resolvedTheme, theme } = useTheme();
   const openArrangement = useCallback((): void => {
     window.ipc.openArrangement()
   }, [])
@@ -74,7 +73,7 @@ export default function App(): JSX.Element {
     })
   }, [setDidSave])
   return (
-    <div className="w-screen h-screen">
+    <div className={"w-screen h-screen" + ((resolvedTheme ?? theme) == 'dark' ? ' dark' : '')}>
       {appState.root && appState.canvasSwitcher(setAppState)}
       {!appState.root && <Welcome
         openArrangement={openArrangement}
