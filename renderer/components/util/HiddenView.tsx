@@ -1,9 +1,9 @@
 interface HiddenViewArgs {
   hidden: boolean
-  children: JSX.Element
+  children?: JSX.Element | JSX.Element[] | string | boolean | number
 }
 
-export default function HiddenView({ hidden = false, children }: HiddenViewArgs): JSX.Element {
+export default function HiddenView({ hidden = false, children }: HiddenViewArgs): JSX.Element | JSX.Element[] | string | boolean | number {
   if (hidden) {
     return <></>
   } else {

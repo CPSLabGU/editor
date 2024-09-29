@@ -47,15 +47,17 @@ export default function CanvasSwitcher({
     <div className="h-screen overflow-clip">
       <MenuBar>
         <MenuBarLeftItems>
-          <HiddenView hidden={sidePanelVisible}>
-            <Button variant="ghost" className="p-1 hover:bg-background" onClick={() => setSidePanelVisible(true)}>
-              <PanelLeftOpen className="text-secondary-foreground" />
-            </Button>
-          </HiddenView>
-          <HiddenView hidden={!sidePanelVisible}>
-            <Button variant="ghost" className="p-1 hover:bg-background" onClick={() => setSidePanelVisible(false)}>
-              <PanelLeftClose className="text-secondary-foreground" />
-            </Button>
+          <HiddenView hidden={!allowTogglingVisibilty}>
+            <HiddenView hidden={sidePanelVisible}>
+              <Button variant="ghost" className="p-1 hover:bg-background" onClick={() => setSidePanelVisible(true)}>
+                <PanelLeftOpen className="text-secondary-foreground" />
+              </Button>
+            </HiddenView>
+            <HiddenView hidden={!sidePanelVisible}>
+              <Button variant="ghost" className="p-1 hover:bg-background" onClick={() => setSidePanelVisible(false)}>
+                <PanelLeftClose className="text-secondary-foreground" />
+              </Button>
+            </HiddenView>
           </HiddenView>
         </MenuBarLeftItems>
       </MenuBar>
