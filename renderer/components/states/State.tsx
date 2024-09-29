@@ -61,7 +61,7 @@ function State({
       <Resizable
         dimensions={{
           dimensions: new Point2D(properties.w, properties.h),
-          minDimensions: new Point2D(200, 100),
+          minDimensions: new Point2D(100, 50),
           maxDimensions: new Point2D(400, 400)
         }}
         setDimensions={setDimensions}
