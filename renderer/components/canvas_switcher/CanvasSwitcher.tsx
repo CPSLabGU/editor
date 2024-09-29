@@ -61,12 +61,12 @@ export default function CanvasSwitcher({
           </HiddenView>
         </MenuBarLeftItems>
       </MenuBar>
-      <div className="flex flex-row items-start w-full h-[length:calc(100vh-64px)]">
+      <div className="flex flex-row items-start w-full h-[calc(100vh-64px)]">
         <HiddenView hidden={!sidePanelVisible}>
           <TreeView root={treeItem} />
         </HiddenView>
-        <ScrollArea className="h-[length:calc(100vh-64px)] p-4 w-full">
-          <div className="block">
+        <ScrollArea aria-orientation='vertical' className="h-[calc(100vh-64px)] p-4 w-full *:h-full">
+          <div className="w-full h-[calc(100vh-64px)]">
             {selectedView !== undefined && <LoadingView subView={selectedView} />}
           </div>
         </ScrollArea>
