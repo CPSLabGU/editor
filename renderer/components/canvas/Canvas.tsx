@@ -313,8 +313,17 @@ export default function Canvas({
       resizeObserver.disconnect()
     }
   }, [canvasContainer.current, setCanvasWidth, setCanvasHeight])
+  const [bounds, setBounds] = useState(new BoundingBox(0, 0, 0, 0));
+  const onCanvasResize = useCallback(() => {
+    if (!canvasContainer.current) {
+      setBounds(new BoundingBox(0, 0, 0, 0));
+    } else {
+      setBounds(new BoundingBox(0, 0, canvasContainer.current.offsetWidth, canvasContainer.current.offsetHeight));
+    }
+  }, [canvasContainer, setBounds]);
+  useEffect(onCanvasResize, [canvasContainer.current]);
   return (
-    <div ref={canvasContainer} className="select-none relative bg-background w-full h-full bg-[length:4rem_4rem] bg-gradient-to-b from-[hsl(var(--secondary))_0.06rem] text-transparent to-[transparent_0.1rem]" onContextMenu={showContextMenu}>
+    <div ref={canvasContainer} onResize={onCanvasResize} className="select-none relative bg-background w-full h-full bg-[length:4rem_4rem] bg-gradient-to-b from-[hsl(var(--secondary))_0.06rem] text-transparent to-[transparent_0.1rem]" onContextMenu={showContextMenu}>
       <div className="w-full h-full bg-[length:4rem_4rem] bg-gradient-to-r from-[hsl(var(--secondary))_0.06rem] text-transparent to-[transparent_0.1rem]">
         <Transitions transitions={machine.transitions} priorities={priorities} focusedObjects={focusedObjects} width={canvasWidth} height={canvasHeight} setCanvasPosition={dragCanvasElements} />
         {Object.keys(machine.states).map((id) => {
@@ -322,6 +331,7 @@ export default function Canvas({
           return (
             <StateSwitcher
               key={id}
+              windowBox={bounds}
               properties={state.properties}
               position={state.position}
               setPosition={(newPosition: Point2D): void => setStatePosition(id, newPosition)}

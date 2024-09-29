@@ -62,6 +62,7 @@ import { useEffect, useRef, useState } from "react";
 
 export default function StateSwitcher(
   {
+    windowBox,
     properties,
     position,
     setPosition,
@@ -72,6 +73,7 @@ export default function StateSwitcher(
     showContextMenu,
     onDoubleClick = () => {}
   }: {
+    windowBox: BoundingBox,
     properties: StateProperties
     position: Point2D
     setPosition: (newPosition: Point2D) => void
@@ -83,7 +85,6 @@ export default function StateSwitcher(
     onDoubleClick: () => void
   }
 ): JSX.Element {
-  const windowBox = new BoundingBox(0, 0, window.innerWidth, window.innerHeight)
   const center = position.copy
   center.x += properties.w / 2
   center.y += properties.h / 2
@@ -122,7 +123,7 @@ function HiddenState({ position, name, buffer }: {position: Point2D, name: strin
     }, [span.current, setOffset])
     return (
         <div style={{position: 'absolute', left: position.x + offset.x, top: position.y + offset.y}}>
-            <span ref={span} className={`cursor-default bg-transparent text-foreground italic`}>{name}</span>
+            <span ref={span} className={`cursor-default bg-transparent text-foreground italic text-sm`}>{name}</span>
         </div>
     )
 }
