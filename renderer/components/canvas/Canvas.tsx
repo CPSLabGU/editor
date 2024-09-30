@@ -314,7 +314,7 @@ export default function Canvas({
       resizeObserver.disconnect()
     }
   }, [canvasContainer.current, setCanvasWidth, setCanvasHeight])
-  const [bounds, setBounds] = useDebounce(new BoundingBox(0, 0, 0, 0), 30);
+  const [bounds, setBounds] = useDebounce(new BoundingBox(0, 0, 0, 0), 33);
   const onCanvasResize = useCallback(() => {
     if (!canvasContainer.current) {
       setBounds(new BoundingBox(0, 0, 0, 0));
