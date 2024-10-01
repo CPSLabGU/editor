@@ -1,26 +1,20 @@
-import HiddenView from '../util/HiddenView'
 import SidePanel from './SidePanel'
-import { useState } from 'react'
 import PanelChildView from './PanelChildView'
 import Machine from '../machines/Machine'
 import Clock from '../clocks/Clock'
 import ClockView from '../clocks/ClockView'
 import { Button } from '../ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'
-import { PanelRightClose, PanelRightOpen } from 'lucide-react'
 
 export default function CanvasSidePanel({
-  hidden,
   machine,
   setMachine
 }: {
-  hidden: boolean;
   machine: Machine;
   setMachine: (newMachine: Machine) => void;
 }): JSX.Element {
   return (
     <div className="h-full" onContextMenu={(e) => e.stopPropagation()}>
-      <HiddenView hidden={hidden}>
         <SidePanel>
           <div className="mt-2">
             <h2>State Information</h2>
@@ -101,7 +95,6 @@ export default function CanvasSidePanel({
             }}
           />
         </SidePanel>
-      </HiddenView>
     </div>
   )
 }

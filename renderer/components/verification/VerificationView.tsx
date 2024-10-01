@@ -32,12 +32,11 @@ export default function VerificationView({ id, machine, setMachine }: Verificati
               </div>
             </div>
             <div>
-              
-                <CodeEditor
-                  language="tctl"
-                  sourcecode={machine.spec}
-                  setSourceCode={(val: string) => setMachine(machine.setSpec(val))}
-                />
+              <CodeEditor
+                language="tctl"
+                sourcecode={machine.spec}
+                setSourceCode={(val: string) => setMachine(machine.setSpec(val))}
+              />
             </div>
           </ScrollArea>
         </ResizablePanel>

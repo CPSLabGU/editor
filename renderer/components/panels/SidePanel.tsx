@@ -2,8 +2,8 @@ import { ScrollArea } from "../ui/scroll-area";
 
 export default function SidePanel({ children }: { children: JSX.Element[] }): JSX.Element {
   return (
-    <div className="h-full bg-secondary text-secondary-foreground">
-      <ScrollArea className="flex space-y-4 h-full p-4">
+    <div className="bg-secondary text-secondary-foreground h-full">
+      <ScrollArea className="px-4 h-full">
         {children}
       </ScrollArea>
     </div>

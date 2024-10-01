@@ -6,6 +6,8 @@ import CodeView from '../states/CodeView'
 import Machine from './Machine'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import VerificationView from '../verification/VerificationView'
+import CanvasSidePanel from '../panels/CanvasSidePanel'
+import HiddenView from '../util/HiddenView'
 
 export type StateDictionary = { [id: string]: StateInformation }
 
@@ -98,7 +100,12 @@ export default function MachineView({ id, machine, setMachine, sidePanelHidden }
           <TabsTrigger value="spec">Verification</TabsTrigger>
         </TabsList>
         <TabsContent value="canvas" className="w-full bg-background" style={{height: 'calc(100% - 2.5rem)'}}>
-          <Canvas machine={machine} setMachine={setMachine} sidePanelHidden={sidePanelHidden} />
+          <div className="flex flex-row items-start gap-0 w-full h-full">
+            <Canvas machine={machine} setMachine={setMachine} />
+            <HiddenView hidden={sidePanelHidden}>
+              <CanvasSidePanel machine={machine} setMachine={setMachine} />
+            </HiddenView>
+          </div>
         </TabsContent>
         <TabsContent value="spec" className="w-full bg-background" style={{height: 'calc(100% - 2.5rem)'}}>
           <VerificationView id={id} machine={machine} setMachine={setMachine} />
