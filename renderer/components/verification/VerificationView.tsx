@@ -20,7 +20,7 @@ export default function VerificationView({ id, machine, setMachine }: Verificati
         <ResizablePanel>{machine.kripkeStructure && <GraphView svgData={machine.kripkeStructure} />}</ResizablePanel>
         <ResizableHandle />
         <ResizablePanel>
-          <ScrollArea className="w-full h-full p-2">
+          <ScrollArea className="w-full h-full p-2 px-3">
             <div className="flex flex-row items-center gap-0 w-full py-2">
               <div className="flex flex-row items-start gap-1 w-full">
                 <h1>Specification</h1>
