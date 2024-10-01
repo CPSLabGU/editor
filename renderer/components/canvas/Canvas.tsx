@@ -16,8 +16,7 @@ import TransitionContextMenu from '../context_menus/TransitionContextMenu'
 import StateProperties from '../states/StateProperties'
 import Transitions from '../transitions/Transitions'
 import StateSwitcher from '../states/StateSwitcher'
-import { useTheme } from 'next-themes'
-import { useDebounce } from '../util/useDebounce'
+import { useDebounce } from '../../hooks/useDebounce'
 
 export default function Canvas({
   machine,

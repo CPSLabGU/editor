@@ -92,7 +92,7 @@ export default function MachineView({ machine, setMachine, sidePanelHidden }: Ma
         onValueChange={(value) => setMachine(machine.setSelectedTab(value as 'canvas' | 'spec'))}
         className="h-full bg-secondary"
       >
-        <TabsList className="h-8">
+        <TabsList className="h-8 text-secondary-foreground">
           <TabsTrigger value="canvas">Editor</TabsTrigger>
           <TabsTrigger value="spec">Verification</TabsTrigger>
         </TabsList>

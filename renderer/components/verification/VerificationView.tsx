@@ -29,9 +29,9 @@ export default function VerificationView({ machine, setMachine }: VerificationVi
             </div>
             <div>
               <CodeEditor
-                  language="tctl"
-                  sourcecode={machine.spec}
-                  setSourceCode={(val: string) => setMachine(machine.setSpec(val))}
+                language="tctl"
+                sourcecode={machine.spec}
+                setSourceCode={(val: string) => setMachine(machine.setSpec(val))}
               />
             </div>
           </div>
