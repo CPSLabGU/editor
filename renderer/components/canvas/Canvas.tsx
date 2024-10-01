@@ -313,19 +313,28 @@ export default function Canvas({
     }
   }, [canvasContainer.current, setCanvasWidth, setCanvasHeight])
   const [bounds, setBounds] = useDebounce(new BoundingBox(0, 0, 0, 0), 33);
-  const onCanvasResize = useCallback(() => {
-    if (!canvasContainer.current) {
-      setBounds(new BoundingBox(0, 0, 0, 0));
-    } else {
-      setBounds(new BoundingBox(0, 0, canvasContainer.current.offsetWidth, canvasContainer.current.offsetHeight));
-    }
-  }, [canvasContainer.current, setBounds]);
   useEffect(() => {
     if (!canvasContainer.current) return;
-    const observer = new ResizeObserver(onCanvasResize);
-    observer.observe(canvasContainer.current);
-    return () => observer.disconnect();
-  }, [canvasContainer.current, onCanvasResize]);
+    let stop = false;
+    let timeout: NodeJS.Timeout;
+    const poll = () => {
+      if (stop) return;
+      if (!canvasContainer.current) {
+        if (bounds.x != 0 || bounds.y != 0 || bounds.width != 0 || bounds.height != 0)
+          setBounds(new BoundingBox(0, 0, 0, 0));
+      } else {
+        const newBounds = new BoundingBox(0, 0, canvasContainer.current.offsetWidth, canvasContainer.current.offsetHeight);
+        if (bounds.x != newBounds.x || bounds.y != newBounds.y || bounds.width != newBounds.width || bounds.height != newBounds.height)
+          setBounds(newBounds);
+      }
+      timeout = setTimeout(poll, 200);
+    }
+    poll();
+    return () => {
+      stop = true;
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [canvasContainer.current, bounds, setBounds]);
   return (
     <div className="w-full h-full flex flex-row items-start gap-0">
       <div ref={canvasContainer} className="overflow-clip select-none relative bg-background w-full h-full bg-[length:4rem_4rem] bg-gradient-to-b from-[hsl(var(--secondary))_0.06rem] text-transparent to-[transparent_0.1rem]" onContextMenu={showContextMenu}>
