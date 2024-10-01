@@ -25,6 +25,9 @@ const handler = {
   didLoad() {
     ipcRenderer.send('didLoad');
   },
+  consoleMessage(callback: (e: IpcRendererEvent, id: string, timestamp: string, type: 'stdin' | 'stdout' | 'stderr', message: string) => void) {
+    ipcRenderer.on('consoleMessage', callback);
+  },
   didGenerateKripkeStructure(callback: (e: IpcRendererEvent, path: string, type: string, svg: string) => void) {
     ipcRenderer.on('didGenerateKripkeStructure', callback);
   },

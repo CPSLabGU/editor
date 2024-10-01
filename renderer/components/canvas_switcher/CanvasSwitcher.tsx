@@ -3,7 +3,7 @@ import LoadingView from '../util/LoadingView'
 import TreeView from '../treeview/TreeView'
 import TreeViewItem from '../treeview/TreeViewItem'
 import HiddenView from '../util/HiddenView'
-import { MoonIcon, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, SunIcon, SunMoon } from 'lucide-react'
+import { MoonIcon, PanelBottomClose, PanelBottomOpen, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, SunIcon, SunMoon } from 'lucide-react'
 import { Button } from '../ui/button'
 import { MenuBar, MenuBarLeftItems, MenuBarRightItems } from '../menu_bar/MenuBar'
 import { ScrollArea } from '../ui/scroll-area'
@@ -32,7 +32,7 @@ export default function CanvasSwitcher({ appState, setAppState }: CanvasSwitcher
     (key: string, expanded: boolean) => setAppState(appState.setExpanded({ ...appState.expanded, [key]: expanded }))
   )
   const { setTheme } = useTheme();
-  const showTopBar = appState.allowSidePanelTogglingVisibility || appState.allowTreeViewTogglingVisiblity;
+  const showTopBar = appState.allowConsoleTogglingVisibility || appState.allowSidePanelTogglingVisibility || appState.allowTreeViewTogglingVisiblity;
   const mainViewHeight = 'calc(100vh - ' + `${(showTopBar ? 44 : 0) + 20}` + 'px)';
   const child = appState.root.id === appState.selected ? appState.root : appState.root?.findChild(appState.selected);
   const arrangement = appState.arrangements[child.id];
@@ -56,6 +56,18 @@ export default function CanvasSwitcher({ appState, setAppState }: CanvasSwitcher
             </HiddenView>
           </MenuBarLeftItems>
           <MenuBarRightItems>
+            <HiddenView hidden={!appState.allowConsoleTogglingVisibility}>
+              <HiddenView hidden={appState.consoleVisible}>
+                <Button variant="ghost" className="p-1 hover:bg-background" onClick={() => setAppState(appState.setConsoleVisible(true))}>
+                  <PanelBottomOpen className="text-secondary-foreground" />
+                </Button>
+              </HiddenView>
+              <HiddenView hidden={!appState.consoleVisible}>
+                <Button variant="ghost" className="p-1 hover:bg-background" onClick={() => setAppState(appState.setConsoleVisible(false))}>
+                  <PanelBottomClose className="text-secondary-foreground" />
+                </Button>
+              </HiddenView>
+            </HiddenView>
             <HiddenView hidden={!appState.allowSidePanelTogglingVisibility}>
               <HiddenView hidden={appState.sidePanelVisible}>
                 <Button variant="ghost" className="p-1 hover:bg-background" onClick={() => setAppState(appState.setSidePanelVisible(true))}>
@@ -75,8 +87,8 @@ export default function CanvasSwitcher({ appState, setAppState }: CanvasSwitcher
         <HiddenView hidden={!appState.treeViewVisible}>
           <TreeView root={treeItem} />
         </HiddenView>
-        <ScrollArea aria-orientation='vertical' className="w-full h-full" style={{height: mainViewHeight}}>
-          <div className="w-full" style={{height: mainViewHeight}}>
+        <div className="w-full flex flex-col items-start gap-0" style={{height: mainViewHeight}}>
+          <div className="w-full h-full">
             {arrangement && <ArrangementView
               arrangement={arrangement}
               setArrangement={(arrangement: Arrangement) => {
@@ -89,7 +101,22 @@ export default function CanvasSwitcher({ appState, setAppState }: CanvasSwitcher
               sidePanelHidden={!appState.sidePanelVisible}
             />}
           </div>
-        </ScrollArea>
+          <div className="w-full">
+            <HiddenView hidden={!appState.consoleVisible}>
+              <ScrollArea aria-orientation='vertical' className="w-full h-full min-h-10 max-h-24 p-2 bg-primary text-primary-foreground">
+                <div className="flex flex-col items-start gap-1 w-full h-full text-xs font-mono">
+                  {appState.consoleMessages.map((message) => {
+                    return <>
+                      {message.type === 'stdin' && <div key={message.id}>$ [{message.timestamp}] {message.message}</div>}
+                      {message.type === 'stderr' && <div key={message.id} className="text-red-600">{message.message}</div>}
+                      {message.type === 'stdout' && <div key={message.id}>{message.message}</div>}
+                    </>;
+                  })}
+                </div>
+              </ScrollArea>
+            </HiddenView>
+          </div>
+        </div>
       </div>
       <MenuBar variant="sm">
         <MenuBarRightItems>

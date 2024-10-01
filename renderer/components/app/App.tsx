@@ -55,6 +55,11 @@ export default function App(): JSX.Element {
     setDidSave(undefined)
     setAppState(appState.addID(didSave.id, didSave.path))
   }, [didSave, setDidSave, appState, setAppState])
+  useEffect(() => {
+    window.ipc.consoleMessage((e, id, timestamp, type, message) => {
+      setAppState(appState.addConsoleMessage({ id, timestamp, type, message }).setConsoleVisible(true));
+    });
+  }, [appState, setAppState]);
 
   useEffect(() => {
     window.ipc.updateData((e, path) => {

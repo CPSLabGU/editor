@@ -4,6 +4,7 @@ import serve from 'electron-serve'
 import { createWindow } from './helpers'
 import { exec } from 'child_process'
 import fs from 'fs/promises';
+import { randomUUID } from 'crypto'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -178,22 +179,29 @@ async function openFileDialog(window: BrowserWindow, type: string): Promise<void
   generateFileMenus(window, filePath[0], newType)
 }
 
-async function asyncExec(command: string): Promise<string> {
+async function asyncExec(command: string, window: BrowserWindow): Promise<string> {
   return await new Promise<string>((resolve, reject) => {
+    window.webContents.send('consoleMessage', randomUUID(), new Date().toISOString(), 'stdin', command);
     exec(command, (error, stdout, stderr) => {
       if (error) {
+        window.webContents.send('consoleMessage', randomUUID(), new Date().toISOString(), 'stderr', `${error}`);
         reject(error);
         return;
       }
-      console.error(stderr);
+      if (stdout !== '') {
+        window.webContents.send('consoleMessage', randomUUID(), new Date().toISOString(), 'stdout', stdout);
+      }
+      if (stderr !== '') {
+        window.webContents.send('consoleMessage', randomUUID(), new Date().toISOString(), 'stderr', stderr);
+      }
       resolve(stdout);
     })
   });
 }
 
-async function generateKripkeStructure(machinePath: string): Promise<string> {
-  await asyncExec(`llfsm-verify ${machinePath} ${machinePath}/spec.tctl --write-graphviz`);
-  return await asyncExec(`dot -Tsvg ${machinePath}/build/verification/graph.dot`);
+async function generateKripkeStructure(machinePath: string, window: BrowserWindow): Promise<string> {
+  await asyncExec(`llfsm-verify ${machinePath} ${machinePath}/spec.tctl --write-graphviz`, window);
+  return await asyncExec(`dot -Tsvg ${machinePath}/build/verification/graph.dot`, window);
 }
 
 function generateFileMenus(window: BrowserWindow, path: string | null, type: string): void {
@@ -222,14 +230,7 @@ function generateFileMenus(window: BrowserWindow, path: string | null, type: str
     fileMenus.push({
       label: 'Export to Machine',
       click: async (): Promise<void> => {
-        exec('llfsmgenerate model ' + path, (error, stdout, stderr) => {
-          if (error) {
-            console.error(`exec error: ${error}`)
-            return
-          }
-          console.log(`stdout: ${stdout}`)
-          console.error(`stderr: ${stderr}`)
-        })
+        asyncExec('llfsmgenerate model ' + path, window);
       },
     });
   }
@@ -241,33 +242,19 @@ function generateFileMenus(window: BrowserWindow, path: string | null, type: str
     const runMenus = [{
       label: 'Generate VHDL',
       click: async (): Promise<void> => {
-        exec('llfsmgenerate vhdl ' + path, (error, stdout, stderr) => {
-          if (error) {
-            console.error(`exec error: ${error}`)
-            return
-          }
-          console.log(`stdout: ${stdout}`)
-          console.error(`stderr: ${stderr}`)
-        })
+        asyncExec('llfsmgenerate vhdl ' + path, window)
       }
     }];
     runMenus.push({
       label: 'Create Kripke Structure Generator',
       click: async (): Promise<void> => {
-        exec('llfsmgenerate vhdl --include-kripke-structure ' + path, (error, stdout, stderr) => {
-          if (error) {
-            console.error(`exec error: ${error}`)
-            return
-          }
-          console.log(`stdout: ${stdout}`)
-          console.error(`stderr: ${stderr}`)
-        })
+        asyncExec('llfsmgenerate vhdl --include-kripke-structure ' + path, window)
       }
     })
     runMenus.push({
       label: 'Verify',
       click: async (): Promise<void> => {
-        const svg = await generateKripkeStructure(path);
+        const svg = await generateKripkeStructure(path, window);
         window.webContents.send('didGenerateKripkeStructure', path, type, svg);
       }
     })

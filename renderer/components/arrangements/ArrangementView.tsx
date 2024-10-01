@@ -7,6 +7,7 @@ import ClockView from '../clocks/ClockView'
 import MachineReference from '../machine_reference/MachineReference'
 import MachineReferenceView from '../machine_reference/MachineReferenceView'
 import { machine } from 'os'
+import { ScrollArea } from '../ui/scroll-area'
 
 interface ArrangementViewArgs {
   arrangement: Arrangement
@@ -86,37 +87,39 @@ export default function ArrangementView({
     []
   )
   return (
-    <div className="p-4">
-      <form onSubmit={(e) => e.preventDefault()}>
-        <ManageListView
-          list={arrangement.clocks}
-          setList={changeClocks}
-          emptyElement={emptyClock}
-          titleView={titleViewForClocks}
-          triggerView={triggerViewForClock}
-          view={viewForClock}
-        />
-        <h2>External Variables</h2>
-        <CodeEditor
-          language={arrangement.language}
-          sourcecode={arrangement.externalVariables}
-          setSourceCode={changeExternalVariables}
-        />
-        <h2>Global Variables</h2>
-        <CodeEditor
-          language={arrangement.language}
-          sourcecode={arrangement.globalVariables}
-          setSourceCode={changeGlobalVariables}
-        />
-        <ManageListView
-          titleView={titleViewForMachines}
-          list={arrangement.machines}
-          setList={changeMachines}
-          emptyElement={emptyMachine}
-          triggerView={triggerViewForMachine}
-          view={viewForMachine}
-        />
-      </form>
-    </div>
+    <ScrollArea className="w-full h-full">
+      <div className="p-4 w-full h-full">
+        <form onSubmit={(e) => e.preventDefault()}>
+          <ManageListView
+            list={arrangement.clocks}
+            setList={changeClocks}
+            emptyElement={emptyClock}
+            titleView={titleViewForClocks}
+            triggerView={triggerViewForClock}
+            view={viewForClock}
+          />
+          <h2>External Variables</h2>
+          <CodeEditor
+            language={arrangement.language}
+            sourcecode={arrangement.externalVariables}
+            setSourceCode={changeExternalVariables}
+          />
+          <h2>Global Variables</h2>
+          <CodeEditor
+            language={arrangement.language}
+            sourcecode={arrangement.globalVariables}
+            setSourceCode={changeGlobalVariables}
+          />
+          <ManageListView
+            titleView={titleViewForMachines}
+            list={arrangement.machines}
+            setList={changeMachines}
+            emptyElement={emptyMachine}
+            triggerView={triggerViewForMachine}
+            view={viewForMachine}
+          />
+        </form>
+      </div>
+    </ScrollArea>
   )
 }

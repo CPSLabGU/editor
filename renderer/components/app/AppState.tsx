@@ -9,6 +9,13 @@ import ArrangementView from '../arrangements/ArrangementView'
 
 type ListData<T> = { [id: string]: T }
 
+interface ConsoleMessage {
+  id: string;
+  timestamp: string;
+  message: string;
+  type: 'stdin' | 'stdout' | 'stderr';
+}
+
 export default class AppState {
   private _ids: { [url: string]: string }
   private _urls: { [id: string]: string }
@@ -17,8 +24,11 @@ export default class AppState {
   private _root: CanvasSwitcherItem | null
   private _selected: string | null
   private _expanded: ItemDictionary<boolean>
-  private _treeViewVisible: boolean
+  private _consoleMessages: ConsoleMessage[];
+  private _consoleVisible: boolean
   private _sidePanelVisible: boolean
+  private _treeViewVisible: boolean
+  private _allowConsoleTogglingVisibility: boolean
   private _allowSidePanelTogglingVisibility: boolean
   private _allowTreeViewTogglingVisibility: boolean
   private _theme: 'dark' | 'light';
@@ -51,12 +61,24 @@ export default class AppState {
     return this._expanded
   }
 
+  get consoleMessages(): ConsoleMessage[] {
+    return this._consoleMessages
+  }
+
+  get consoleVisible(): boolean {
+    return this._consoleVisible
+  }
+
   get sidePanelVisible(): boolean {
     return this._sidePanelVisible
   }
 
   get treeViewVisible(): boolean {
     return this._treeViewVisible
+  }
+
+  get allowConsoleTogglingVisibility(): boolean {
+    return this._allowConsoleTogglingVisibility
   }
 
   get allowSidePanelTogglingVisibility(): boolean {
@@ -91,8 +113,11 @@ export default class AppState {
     newState._root = this._root
     newState._selected = this._selected
     newState._expanded = { ...this._expanded }
+    newState._consoleMessages = [ ...this.consoleMessages ];
+    newState._consoleVisible = this._consoleVisible
     newState._sidePanelVisible = this._sidePanelVisible
     newState._treeViewVisible = this._treeViewVisible
+    newState._allowConsoleTogglingVisibility = this.allowConsoleTogglingVisibility
     newState._allowSidePanelTogglingVisibility = this._allowSidePanelTogglingVisibility
     newState._allowTreeViewTogglingVisibility = this._allowTreeViewTogglingVisibility
     return newState
@@ -106,8 +131,11 @@ export default class AppState {
     this._root = null
     this._selected = null
     this._expanded = {}
+    this._consoleMessages = []
+    this._consoleVisible = false
     this._sidePanelVisible = false
     this._treeViewVisible = false
+    this._allowConsoleTogglingVisibility = false
     this._allowSidePanelTogglingVisibility = false
     this._allowTreeViewTogglingVisibility = false
     this._theme = 'light';
@@ -190,8 +218,11 @@ export default class AppState {
       machineItems,
       () => null
     )
+    newState._allowConsoleTogglingVisibility = true
     newState._allowSidePanelTogglingVisibility = false
     newState._allowTreeViewTogglingVisibility = true
+    newState._consoleMessages = []
+    newState._consoleVisible = false
     newState._sidePanelVisible = false
     newState._treeViewVisible = false
     newState._selected = id
@@ -216,8 +247,11 @@ export default class AppState {
       () => null
     )
     newState._selected = id
+    newState._allowConsoleTogglingVisibility = true
     newState._allowSidePanelTogglingVisibility = true
     newState._allowTreeViewTogglingVisibility = false
+    newState._consoleMessages = []
+    newState._consoleVisible = false
     newState._sidePanelVisible = false
     newState._treeViewVisible = false
     return newState
@@ -253,6 +287,27 @@ export default class AppState {
     return newState
   }
 
+  addConsoleMessage(newMessage: ConsoleMessage): AppState {
+    const newState = this.copy
+    newState._consoleMessages = [ ...this._consoleMessages, { ...newMessage } ];
+    if (newState._consoleMessages.length > 1024) {
+      newState._consoleMessages.splice(0, newState._consoleMessages.length - 1024);
+    }
+    return newState
+  }
+
+  setConsoleMessages(newMessages: ConsoleMessage[]): AppState {
+    const newState = this.copy
+    newState._consoleMessages = [ ...newMessages ];
+    return newState
+  }
+
+  setConsoleVisible(visible: boolean): AppState {
+    const newState = this.copy
+    newState._consoleVisible = visible
+    return newState
+  }
+
   setSidePanelVisible(visible: boolean): AppState {
     const newState = this.copy
     newState._sidePanelVisible = visible
@@ -262,6 +317,12 @@ export default class AppState {
   setTreeViewVisible(visible: boolean): AppState {
     const newState = this.copy
     newState._treeViewVisible = visible
+    return newState
+  }
+
+  setAllowConsoleTogglingVisibility(allow: boolean): AppState {
+    const newState = this.copy
+    newState._allowConsoleTogglingVisibility = allow
     return newState
   }
 
