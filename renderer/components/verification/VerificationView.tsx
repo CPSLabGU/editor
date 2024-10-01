@@ -4,6 +4,7 @@ import GraphView from "../graph/GraphView";
 import Machine from "../machines/Machine";
 import { Button } from "../ui/button";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../ui/resizeable";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface VerificationViewParameters {
   id: string,
@@ -19,7 +20,7 @@ export default function VerificationView({ id, machine, setMachine }: Verificati
         <ResizablePanel>{machine.kripkeStructure && <GraphView svgData={machine.kripkeStructure} />}</ResizablePanel>
         <ResizableHandle />
         <ResizablePanel>
-          <div className="p-2">
+          <ScrollArea className="w-full h-full p-2">
             <div className="flex flex-row items-center gap-0 w-full py-2">
               <div className="flex flex-row items-start gap-1 w-full">
                 <h1>Specification</h1>
@@ -31,13 +32,14 @@ export default function VerificationView({ id, machine, setMachine }: Verificati
               </div>
             </div>
             <div>
-              <CodeEditor
-                language="tctl"
-                sourcecode={machine.spec}
-                setSourceCode={(val: string) => setMachine(machine.setSpec(val))}
-              />
+              
+                <CodeEditor
+                  language="tctl"
+                  sourcecode={machine.spec}
+                  setSourceCode={(val: string) => setMachine(machine.setSpec(val))}
+                />
             </div>
-          </div>
+          </ScrollArea>
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
