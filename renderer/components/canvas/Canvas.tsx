@@ -290,23 +290,6 @@ export default function Canvas({
     const transition = machine.transitions[id]
     priorities[id] = Math.max(machine.states[transition.source].properties.transitions.indexOf(id), 0)
   })
-  const [canvasWidth, setCanvasWidth] = useState(0)
-  const [canvasHeight, setCanvasHeight] = useState(0)
-  useEffect(() => {
-    if (!canvasContainer.current) {
-      setCanvasWidth(0)
-      setCanvasHeight(0)
-      return
-    }
-    const resizeObserver = new ResizeObserver(() => {
-      setCanvasWidth(canvasContainer.current.offsetWidth)
-      setCanvasHeight(canvasContainer.current.offsetHeight)
-    })
-    resizeObserver.observe(canvasContainer.current)
-    return (): void => {
-      resizeObserver.disconnect()
-    }
-  }, [canvasContainer.current, setCanvasWidth, setCanvasHeight])
   const [bounds, setBounds] = useDebounce(new BoundingBox(0, 0, 0, 0), 33);
   useEffect(() => {
     if (!canvasContainer.current) return;
@@ -333,7 +316,7 @@ export default function Canvas({
   return (
     <div ref={canvasContainer} className="overflow-clip select-none relative bg-background w-full h-full bg-[length:4rem_4rem] bg-gradient-to-b from-[hsl(var(--secondary))_0.06rem] text-transparent to-[transparent_0.1rem]" onContextMenu={showContextMenu}>
       <div className="w-full h-full bg-[length:4rem_4rem] bg-gradient-to-r from-[hsl(var(--secondary))_0.06rem] text-transparent to-[transparent_0.1rem]">
-        <Transitions transitions={machine.transitions} priorities={priorities} focusedObjects={focusedObjects} width={canvasWidth} height={canvasHeight} setCanvasPosition={dragCanvasElements} />
+        <Transitions transitions={machine.transitions} priorities={priorities} focusedObjects={focusedObjects} width={bounds.width} height={bounds.height} setCanvasPosition={dragCanvasElements} />
         {Object.keys(machine.states).map((id) => {
           const state = machine.states[id]
           return (
