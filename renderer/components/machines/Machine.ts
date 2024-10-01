@@ -475,7 +475,7 @@ export default class Machine {
 
   setSelectedTab(selectedTab: 'canvas' | 'spec'): Machine {
     const newMachine = this.shallowCopy
-    newMachine._selectedTab = this._selectedTab
+    newMachine._selectedTab = selectedTab
     return newMachine
   }
 
