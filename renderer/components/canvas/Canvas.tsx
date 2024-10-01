@@ -28,7 +28,6 @@ export default function Canvas({
   setMachine: (newMachine: Machine) => void
   sidePanelHidden: boolean
 }): JSX.Element {
-  const { resolvedTheme, theme } = useTheme();
   const canvasContainer = useRef<HTMLDivElement>(null)
   const [focusedObjects, setFocusedObjects] = useState(new Set<string>())
   const [contextState, setContextState] = useState<string | undefined>(undefined)
