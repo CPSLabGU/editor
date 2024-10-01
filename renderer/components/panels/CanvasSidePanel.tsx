@@ -10,31 +10,18 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '..
 import { PanelRightClose, PanelRightOpen } from 'lucide-react'
 
 export default function CanvasSidePanel({
+  hidden,
   machine,
   setMachine
 }: {
-  machine: Machine
-  setMachine: (newMachine: Machine) => void
+  hidden: boolean;
+  machine: Machine;
+  setMachine: (newMachine: Machine) => void;
 }): JSX.Element {
-  const [hidden, setHidden] = useState(true)
   return (
     <div className="h-full" onContextMenu={(e) => e.stopPropagation()}>
-      <HiddenView hidden={!hidden}>
-        <div className="mr-4">
-          <div className="flex items-center">
-            <Button className="p-1" variant="ghost" onClick={() => setHidden(!hidden)}>
-              <PanelRightOpen />
-            </Button>
-          </div>
-        </div>
-      </HiddenView>
       <HiddenView hidden={hidden}>
         <SidePanel>
-          <div className="mr-4">
-            <Button className="p-1" variant="link" onClick={() => setHidden(!hidden)}>
-              <PanelRightClose />
-            </Button>
-          </div>
           <div className="mt-2">
             <h2>State Information</h2>
             <div>

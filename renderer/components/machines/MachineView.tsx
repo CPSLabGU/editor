@@ -12,9 +12,10 @@ export type TransitionDictionary = { [id: string]: TransitionProperties }
 interface MachineViewArgs {
   machine: Machine
   setMachine: (newMachine: Machine) => void
+  sidePanelHidden: boolean
 }
 
-export default function MachineView({ machine, setMachine }: MachineViewArgs): JSX.Element {
+export default function MachineView({ machine, setMachine, sidePanelHidden }: MachineViewArgs): JSX.Element {
   const setStateName = useCallback(
     (id: string, name: string) => {
       const state = machine.states[id]?.copy
@@ -82,6 +83,6 @@ export default function MachineView({ machine, setMachine }: MachineViewArgs): J
       />
     )
   } else {
-    return <Canvas machine={machine} setMachine={setMachine} />
+    return <Canvas machine={machine} setMachine={setMachine} sidePanelHidden={sidePanelHidden} />
   }
 }

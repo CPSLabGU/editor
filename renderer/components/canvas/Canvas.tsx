@@ -21,10 +21,12 @@ import { useDebounce } from '../util/useDebounce'
 
 export default function Canvas({
   machine,
-  setMachine
+  setMachine,
+  sidePanelHidden,
 }: {
   machine: Machine
   setMachine: (newMachine: Machine) => void
+  sidePanelHidden: boolean
 }): JSX.Element {
   const { resolvedTheme, theme } = useTheme();
   const canvasContainer = useRef<HTMLDivElement>(null)
@@ -122,10 +124,6 @@ export default function Canvas({
       window.removeEventListener('click', deselectAll)
     }
   }, [keyDown, deselectAll])
-  // const clickMeCB = useCallback(() => {
-  //   setCounter(counter + 1);
-  //   console.log(`clicked me ${counter} times!`)
-  // }, [counter, setCounter]);
   const createState = useCallback(
     (position: Point2D) => {
       const newUUID = uuidv4()
@@ -421,7 +419,7 @@ export default function Canvas({
         </div>
       </div>
       <div className="h-full">
-        <CanvasSidePanel machine={machine} setMachine={setMachine} />
+        <CanvasSidePanel hidden={sidePanelHidden} machine={machine} setMachine={setMachine} />
       </div>
     </div>
   )

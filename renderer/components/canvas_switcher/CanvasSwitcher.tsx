@@ -3,77 +3,91 @@ import LoadingView from '../util/LoadingView'
 import TreeView from '../treeview/TreeView'
 import TreeViewItem from '../treeview/TreeViewItem'
 import HiddenView from '../util/HiddenView'
-import { MoonIcon, PanelLeftClose, PanelLeftOpen, SunIcon, SunMoon } from 'lucide-react'
+import { MoonIcon, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, SunIcon, SunMoon } from 'lucide-react'
 import { Button } from '../ui/button'
 import { MenuBar, MenuBarLeftItems, MenuBarRightItems } from '../menu_bar/MenuBar'
 import { ScrollArea } from '../ui/scroll-area'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
+import AppState from '../app/AppState'
+import ArrangementView from '../arrangements/ArrangementView'
+import Arrangement from '../arrangements/Arrangement'
+import Machine from '../machines/Machine'
+import MachineView from '../machines/MachineView'
+import { useEffect, useState } from 'react'
 
 export type ItemDictionary<T> = { [key: string]: T }
 
 interface CanvasSwitcherArgs {
-  item: CanvasSwitcherItem
-  allowTogglingVisibilty: boolean
-  sidePanelVisible: boolean
-  setSidePanelVisible: (visible: boolean) => void
-  getSelected: () => string | null
-  setSelected: (key: string) => void
-  getExpanded: () => ItemDictionary<boolean>
-  setExpanded: (dictionary: ItemDictionary<boolean>) => void
+  appState: AppState;
+  setAppState: (newAppState: AppState) => void;
 }
 
-export default function CanvasSwitcher({
-  item,
-  allowTogglingVisibilty,
-  sidePanelVisible,
-  setSidePanelVisible,
-  getSelected,
-  setSelected,
-  getExpanded,
-  setExpanded
-}: CanvasSwitcherArgs): JSX.Element {
-  const treeItem: TreeViewItem = item.treeViewItem(
-    (key: string) => getSelected() === key,
-    (key: string) => setSelected(key),
-    (key: string) => getExpanded()[key] === true,
-    (key: string, expanded: boolean) => setExpanded({ ...getExpanded(), [key]: expanded })
+export default function CanvasSwitcher({ appState, setAppState }: CanvasSwitcherArgs): JSX.Element {
+  const treeItem: TreeViewItem = appState.root.treeViewItem(
+    (key: string) => appState.selected === key,
+    (key: string) => setAppState(appState.setSelected(key)),
+    (key: string) => appState.expanded[key] === true,
+    (key: string, expanded: boolean) => setAppState(appState.setExpanded({ ...appState.expanded, [key]: expanded }))
   )
   const { setTheme } = useTheme();
-  const selectedKey = getSelected()
-  const selectedView: (() => JSX.Element | null) | undefined =
-    selectedKey !== null ? item.findChild(selectedKey)?.view : undefined
-  // const mainViewHeight = `h-[calc(100vh-${(allowTogglingVisibilty ? 44 : 0) + 20}px)]`;
-  const mainViewHeight = 'calc(100vh - ' + `${(allowTogglingVisibilty ? 44 : 0) + 20}` + 'px)';
-  console.error(mainViewHeight);
+  const showTopBar = appState.allowSidePanelTogglingVisibility || appState.allowTreeViewTogglingVisiblity;
+  const mainViewHeight = 'calc(100vh - ' + `${(showTopBar ? 44 : 0) + 20}` + 'px)';
+  const child = appState.root.id === appState.selected ? appState.root : appState.root?.findChild(appState.selected);
+  const arrangement = appState.arrangements[child.id];
+  const machine = appState.machines[child.id];
   return <>
     <div className="h-screen overflow-clip">
-      <HiddenView hidden={!allowTogglingVisibilty}>
+      <HiddenView hidden={!showTopBar}>
         <MenuBar>
           <MenuBarLeftItems>
-            <HiddenView hidden={!allowTogglingVisibilty}>
-              <HiddenView hidden={sidePanelVisible}>
-                <Button variant="ghost" className="p-1 hover:bg-background" onClick={() => setSidePanelVisible(true)}>
+            <HiddenView hidden={!appState.allowTreeViewTogglingVisiblity}>
+              <HiddenView hidden={appState.treeViewVisible}>
+                <Button variant="ghost" className="p-1 hover:bg-background" onClick={() => setAppState(appState.setTreeViewVisible(true))}>
                   <PanelLeftOpen className="text-secondary-foreground" />
                 </Button>
               </HiddenView>
-              <HiddenView hidden={!sidePanelVisible}>
-                <Button variant="ghost" className="p-1 hover:bg-background" onClick={() => setSidePanelVisible(false)}>
+              <HiddenView hidden={!appState.treeViewVisible}>
+                <Button variant="ghost" className="p-1 hover:bg-background" onClick={() => setAppState(appState.setTreeViewVisible(false))}>
                   <PanelLeftClose className="text-secondary-foreground" />
                 </Button>
               </HiddenView>
             </HiddenView>
           </MenuBarLeftItems>
+          <MenuBarRightItems>
+            <HiddenView hidden={!appState.allowSidePanelTogglingVisibility}>
+              <HiddenView hidden={appState.sidePanelVisible}>
+                <Button variant="ghost" className="p-1 hover:bg-background" onClick={() => setAppState(appState.setSidePanelVisible(true))}>
+                  <PanelRightOpen className="text-secondary-foreground" />
+                </Button>
+              </HiddenView>
+              <HiddenView hidden={!appState.sidePanelVisible}>
+                <Button variant="ghost" className="p-1 hover:bg-background" onClick={() => setAppState(appState.setSidePanelVisible(false))}>
+                  <PanelRightClose className="text-secondary-foreground" />
+                </Button>
+              </HiddenView>
+            </HiddenView>
+          </MenuBarRightItems>
         </MenuBar>
       </HiddenView>
       <div className="flex flex-row items-start w-full">
-        <HiddenView hidden={!sidePanelVisible}>
+        <HiddenView hidden={!appState.treeViewVisible}>
           <TreeView root={treeItem} />
         </HiddenView>
         <ScrollArea aria-orientation='vertical' className="w-full h-full" style={{height: mainViewHeight}}>
           <div className="w-full" style={{height: mainViewHeight}}>
-            {selectedView !== undefined && <LoadingView subView={selectedView} />}
+            {arrangement && <ArrangementView
+              arrangement={arrangement}
+              setArrangement={(arrangement: Arrangement) => {
+                setAppState(appState.setArrangement(child.id, arrangement.shallowCopy))
+              }}
+            />}
+            {machine&& <MachineView
+              machine={machine}
+              setMachine={(machine: Machine) => setAppState(appState.setMachine(child.id, machine.shallowCopy))}
+              sidePanelHidden={!appState.sidePanelVisible}
+            />}
           </div>
         </ScrollArea>
       </div>

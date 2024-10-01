@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import AppState from './AppState'
 import Welcome from '../welcome/Welcome'
 import { useTheme } from 'next-themes'
+import CanvasSwitcher from '../canvas_switcher/CanvasSwitcher'
 
 export default function App(): JSX.Element {
   const [appState, setAppState] = useState(new AppState())
@@ -20,10 +21,10 @@ export default function App(): JSX.Element {
     window.ipc.openMachine()
   }, [])
   const createArrangement = useCallback((): void => {
-    setAppState(appState.newRootArrangement('vhdl', setAppState))
+    setAppState(appState.newRootArrangement('vhdl'))
   }, [appState, setAppState])
   const createMachine = useCallback((): void => {
-    setAppState(appState.newRootMachine(setAppState))
+    setAppState(appState.newRootMachine())
   }, [appState, setAppState])
 
   useEffect(() => {
@@ -35,18 +36,17 @@ export default function App(): JSX.Element {
     window.ipc.save(id, updateData, data, type)
   }, [updateData, setUpdateData, appState])
   useEffect(() => {
-    console.error((resolvedTheme ?? theme));
     if ((resolvedTheme ?? theme) == appState.theme) return;
     if ((resolvedTheme ?? theme) == 'system') return;
-    setAppState(appState.setTheme((resolvedTheme ?? theme) as 'dark' | 'light', setAppState));
+    setAppState(appState.setTheme((resolvedTheme ?? theme) as 'dark' | 'light'));
   }, [resolvedTheme, theme, setAppState, appState]);
   useEffect(() => {
     if (load === undefined) return
     setLoad(undefined)
     if (load.type == 'machine') {
-      setAppState(appState.loadRootMachine(load.data, load.url, setAppState))
+      setAppState(appState.loadRootMachine(load.data, load.url))
     } else if (load.type == 'arrangement') {
-      setAppState(appState.loadRootArrangement(load.data, load.url, setAppState))
+      setAppState(appState.loadRootArrangement(load.data, load.url))
     }
     window.ipc.didLoad();
   }, [load, setLoad, appState, setAppState])
@@ -67,14 +67,13 @@ export default function App(): JSX.Element {
     })
   }, [setLoad])
   useEffect(() => {
-    console.log('useEffect', appState.selected)
     window.ipc.didSave((e, id, path, type) => {
       setDidSave({ id: id, path: path, type: type })
     })
   }, [setDidSave])
   return (
     <div className={"w-screen h-screen" + ((resolvedTheme ?? theme) == 'dark' ? ' dark' : '')}>
-      {appState.root && appState.canvasSwitcher(setAppState)}
+      {appState.root && <CanvasSwitcher appState={appState} setAppState={setAppState} />}
       {!appState.root && <Welcome
         openArrangement={openArrangement}
         openMachine={openMachine}

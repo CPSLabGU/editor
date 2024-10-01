@@ -17,8 +17,10 @@ export default class AppState {
   private _root: CanvasSwitcherItem | null
   private _selected: string | null
   private _expanded: ItemDictionary<boolean>
+  private _treeViewVisible: boolean
   private _sidePanelVisible: boolean
   private _allowSidePanelTogglingVisibility: boolean
+  private _allowTreeViewTogglingVisibility: boolean
   private _theme: 'dark' | 'light';
 
   get ids(): { [url: string]: string } {
@@ -53,29 +55,20 @@ export default class AppState {
     return this._sidePanelVisible
   }
 
+  get treeViewVisible(): boolean {
+    return this._treeViewVisible
+  }
+
   get allowSidePanelTogglingVisibility(): boolean {
     return this._allowSidePanelTogglingVisibility
   }
 
-  get theme(): 'dark' | 'light' {
-    return this._theme;
+  get allowTreeViewTogglingVisiblity(): boolean {
+    return this._allowTreeViewTogglingVisibility
   }
 
-  canvasSwitcher(setAppState: (newState: AppState) => void): JSX.Element {
-    return (
-      <CanvasSwitcher
-        item={this.root!}
-        allowTogglingVisibilty={this.allowSidePanelTogglingVisibility}
-        sidePanelVisible={this.sidePanelVisible}
-        setSidePanelVisible={(visible: boolean) => setAppState(this.setSidePanelVisible(visible))}
-        getSelected={() => this.selected}
-        setSelected={(key: string) => setAppState(this.setSelected(key))}
-        getExpanded={() => this.expanded}
-        setExpanded={(dictionary: ItemDictionary<boolean>) =>
-          setAppState(this.setExpanded(dictionary))
-        }
-      />
-    )
+  get theme(): 'dark' | 'light' {
+    return this._theme;
   }
 
   get selectedData(): [string, string, string] | undefined {
@@ -93,12 +86,15 @@ export default class AppState {
     const newState = new AppState()
     newState._ids = { ...this._ids }
     newState._urls = { ...this._urls }
+    newState._arrangements = { ...this._arrangements }
     newState._machines = { ...this._machines }
     newState._root = this._root
     newState._selected = this._selected
     newState._expanded = { ...this._expanded }
     newState._sidePanelVisible = this._sidePanelVisible
+    newState._treeViewVisible = this._treeViewVisible
     newState._allowSidePanelTogglingVisibility = this._allowSidePanelTogglingVisibility
+    newState._allowTreeViewTogglingVisibility = this._allowTreeViewTogglingVisibility
     return newState
   }
 
@@ -111,7 +107,9 @@ export default class AppState {
     this._selected = null
     this._expanded = {}
     this._sidePanelVisible = false
+    this._treeViewVisible = false
     this._allowSidePanelTogglingVisibility = false
+    this._allowTreeViewTogglingVisibility = false
     this._theme = 'light';
   }
 
@@ -122,19 +120,6 @@ export default class AppState {
     return newState
   }
 
-  arrangementView(id: string, setAppState: (newState: AppState) => void): JSX.Element {
-    const arrangement = this.arrangements[id]
-    if (!arrangement) return <div></div>
-    return (
-      <ArrangementView
-        arrangement={this.arrangements[id]}
-        setArrangement={(newArrangement: Arrangement) =>
-          setAppState(this.setArrangement(id, newArrangement, setAppState))
-        }
-      />
-    )
-  }
-
   id(url: string): string | undefined {
     return this._ids[url]
   }
@@ -142,67 +127,48 @@ export default class AppState {
   loadRootArrangement(
     data: string,
     url: string,
-    setAppState: (newState: AppState) => void
   ): AppState {
     const arrangement = Arrangement.fromData(data)
     if (!arrangement) return this
-    return this.setNewRootArrangement(arrangement, url, setAppState)
+    return this.setNewRootArrangement(arrangement, url)
   }
 
-  loadRootMachine(data: string, url: string, setAppState: (newState: AppState) => void): AppState {
+  loadRootMachine(data: string, url: string): AppState {
     const machine = Machine.fromData(data, this._theme)
     if (!machine) return this
-    return this.setNewRootMachine(machine, url, setAppState)
+    return this.setNewRootMachine(machine, url)
   }
 
-  machineView(id: string, setAppState: (newState: AppState) => void): JSX.Element {
-    const machine = this.machines[id]
-    if (!machine) return <div></div>
-    return (
-      <MachineView
-        machine={machine}
-        setMachine={(newMachine: Machine) => {
-          setAppState(this.setMachine(id, newMachine, setAppState))
-        }}
-      />
-    )
-  }
-
-  newRootArrangement(language: string, setAppState: (newState: AppState) => void): AppState {
+  newRootArrangement(language: string): AppState {
     const arrangement = new Arrangement(language, {}, '', {}, '')
-    return this.setNewRootArrangement(arrangement, null, setAppState)
+    return this.setNewRootArrangement(arrangement, null)
   }
 
-  newRootMachine(setAppState: (newState: AppState) => void): AppState {
+  newRootMachine(): AppState {
     const machine = Machine.defaultMachine(this._theme);
-    return this.setNewRootMachine(machine, null, setAppState)
+    return this.setNewRootMachine(machine, null)
   }
 
   setArrangement(
     id: string,
     arrangement: Arrangement,
-    setAppState: (newState: AppState) => void
   ): AppState {
     const newState = this.copy
     newState._arrangements[id] = arrangement
-    newState.updateArrangementView(id, setAppState)
     return newState
   }
 
   setArrangements(
     arrangements: ListData<Arrangement>,
-    setAppState: (newState: AppState) => void
   ): AppState {
     const newState = this.copy
     newState._arrangements = arrangements
-    newState.updateAllArrangementViews(setAppState)
     return newState
   }
 
   setNewRootArrangement(
     arrangement: Arrangement,
     url: string | null,
-    setAppState: (newState: AppState) => void
   ): AppState {
     const newState = new AppState()
     const id = uuidv4()
@@ -224,17 +190,17 @@ export default class AppState {
       machineItems,
       () => null
     )
-    newState._allowSidePanelTogglingVisibility = true
+    newState._allowSidePanelTogglingVisibility = false
+    newState._allowTreeViewTogglingVisibility = true
     newState._sidePanelVisible = false
+    newState._treeViewVisible = false
     newState._selected = id
-    newState.updateArrangementView(id, setAppState)
     return newState
   }
 
   setNewRootMachine(
     machine: Machine,
     url: string | null,
-    setAppState: (newState: AppState) => void
   ): AppState {
     const id = uuidv4()
     const newState = new AppState()
@@ -250,23 +216,22 @@ export default class AppState {
       () => null
     )
     newState._selected = id
-    newState._allowSidePanelTogglingVisibility = false
+    newState._allowSidePanelTogglingVisibility = true
+    newState._allowTreeViewTogglingVisibility = false
     newState._sidePanelVisible = false
-    newState.updateMachineView(id, setAppState)
+    newState._treeViewVisible = false
     return newState
   }
 
-  setMachine(id: string, machine: Machine, setAppState: (newState: AppState) => void): AppState {
+  setMachine(id: string, machine: Machine): AppState {
     const newState = this.copy
     newState._machines[id] = machine
-    newState.updateMachineView(id, setAppState)
     return newState
   }
 
-  setMachines(machines: ListData<Machine>, setAppState: (newState: AppState) => void): AppState {
+  setMachines(machines: ListData<Machine>): AppState {
     const newState = this.copy
     newState._machines = machines
-    newState.updateAllMachineViews(setAppState)
     return newState
   }
 
@@ -294,68 +259,28 @@ export default class AppState {
     return newState
   }
 
+  setTreeViewVisible(visible: boolean): AppState {
+    const newState = this.copy
+    newState._treeViewVisible = visible
+    return newState
+  }
+
   setAllowSidePanelTogglingVisibility(allow: boolean): AppState {
     const newState = this.copy
     newState._allowSidePanelTogglingVisibility = allow
     return newState
   }
 
-  setTheme(theme: 'dark' | 'light', setAppState: (newState: AppState) => void): AppState {
+  setAllowTreeViewTogglingVisibility(allow: boolean): AppState {
+    const newState = this.copy
+    newState._allowTreeViewTogglingVisibility = allow
+    return newState
+  }
+
+  setTheme(theme: 'dark' | 'light'): AppState {
     const newState = this.copy;
     newState._theme = theme;
-    newState.updateAllMachineViews(setAppState);
     return newState;
-  }
-
-  private updateAllArrangementViews(setAppState: (newAppState: AppState) => void): void {
-    for (const id in this.arrangements) {
-      this.updateArrangementView(id, setAppState)
-    }
-  }
-
-  private updateAllMachineViews(setAppState: (newAppState: AppState) => void): void {
-    for (const id in this.machines) {
-      this.updateMachineView(id, setAppState)
-    }
-  }
-
-  private updateArrangementView(id: string, setAppState: (newAppState: AppState) => void): void {
-    const item = this.root?.findChild(id)
-    if (!item) return
-    const arrangement = this.arrangements[id]
-    const arrangementView = arrangement
-      ? (): JSX.Element => this.arrangementView(id, setAppState)
-      : (): JSX.Element => <div></div>
-    if (this.root?.id == id) {
-      const root = this.root
-      const newRoot = new CanvasSwitcherItem(root.id, root.title, root.children, arrangementView)
-      this._root = newRoot
-    } else {
-      const root = this.root as CanvasSwitcherItem
-      const newRoot = new CanvasSwitcherItem(root.id, root.title, root.children, root.view)
-      const newItem = new CanvasSwitcherItem(item.id, item.title, item.children, arrangementView)
-      newRoot.replaceChild(id, newItem)
-      this._root = newRoot
-    }
-  }
-
-  private updateMachineView(id: string, setAppState: (newAppState: AppState) => void): void {
-    const machine = this.machines[id]
-    if (!machine) return
-    const machineView = (): JSX.Element => this.machineView(id, setAppState)
-    const item = this.root?.findChild(id)
-    if (!item) return
-    if (this.root?.id == id) {
-      const root = this.root
-      const newRoot = new CanvasSwitcherItem(root.id, root.title, root.children, machineView)
-      this._root = newRoot
-    } else {
-      const root = this.root as CanvasSwitcherItem
-      const newRoot = new CanvasSwitcherItem(root.id, root.title, root.children, root.view)
-      const newItem = new CanvasSwitcherItem(item.id, item.title, item.children, machineView)
-      newRoot.replaceChild(id, newItem)
-      this._root = newRoot
-    }
   }
 
   url(id: string): string | undefined {
