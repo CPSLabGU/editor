@@ -19,6 +19,9 @@ const handler = {
   openMachine() {
     ipcRenderer.send('openMachine');
   },
+  saveSpecAndVerify(path: string, spec: string) {
+    ipcRenderer.send('saveSpecAndVerify', path, spec);
+  },
   load(callback: (e: IpcRendererEvent, data: string, url: string, type: string, spec?: string) => void) {
     ipcRenderer.on('load', callback)
   },
@@ -34,8 +37,8 @@ const handler = {
   updateData(callback: (e: IpcRendererEvent, path: string | null, type: string) => void) {
     ipcRenderer.on('updateData', callback)
   },
-  save(id: string, path: string | null, data: string, type: string) {
-    ipcRenderer.send('save', id, path, data, type)
+  save(id: string, path: string | null, data: string, type: string, spec: string) {
+    ipcRenderer.send('save', id, path, data, type, spec)
   },
   didSave(callback: (e: IpcRendererEvent, id: string, path: string, type: string) => void) {
     ipcRenderer.on('didSave', callback)

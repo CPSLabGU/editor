@@ -95,7 +95,8 @@ export default function CanvasSwitcher({ appState, setAppState }: CanvasSwitcher
                 setAppState(appState.setArrangement(child.id, arrangement.shallowCopy))
               }}
             />}
-            {machine&& <MachineView
+            {machine && <MachineView
+              id={child.id}
               machine={machine}
               setMachine={(machine: Machine) => setAppState(appState.setMachine(child.id, machine.shallowCopy))}
               sidePanelHidden={!appState.sidePanelVisible}

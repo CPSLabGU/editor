@@ -12,12 +12,13 @@ export type StateDictionary = { [id: string]: StateInformation }
 export type TransitionDictionary = { [id: string]: TransitionProperties }
 
 interface MachineViewArgs {
+  id: string,
   machine: Machine
   setMachine: (newMachine: Machine) => void
   sidePanelHidden: boolean
 }
 
-export default function MachineView({ machine, setMachine, sidePanelHidden }: MachineViewArgs): JSX.Element {
+export default function MachineView({ id, machine, setMachine, sidePanelHidden }: MachineViewArgs): JSX.Element {
   const setStateName = useCallback(
     (id: string, name: string) => {
       const state = machine.states[id]?.copy
@@ -100,7 +101,7 @@ export default function MachineView({ machine, setMachine, sidePanelHidden }: Ma
           <Canvas machine={machine} setMachine={setMachine} sidePanelHidden={sidePanelHidden} />
         </TabsContent>
         <TabsContent value="spec" className="w-full bg-background" style={{height: 'calc(100% - 2.5rem)'}}>
-          <VerificationView machine={machine} setMachine={setMachine} />
+          <VerificationView id={id} machine={machine} setMachine={setMachine} />
         </TabsContent>
       </Tabs>
     );

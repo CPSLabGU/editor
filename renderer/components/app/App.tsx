@@ -3,6 +3,7 @@ import AppState from './AppState'
 import Welcome from '../welcome/Welcome'
 import { useTheme } from 'next-themes'
 import CanvasSwitcher from '../canvas_switcher/CanvasSwitcher'
+import { useTriggerVerification } from '@/hooks/useTriggerVerification'
 
 export default function App(): JSX.Element {
   const [appState, setAppState] = useState(new AppState())
@@ -13,6 +14,7 @@ export default function App(): JSX.Element {
   const [didSave, setDidSave] = useState<{ id: string; path: string; type: string } | undefined>(
     undefined
   )
+  const { verification, reset } = useTriggerVerification();
   const { resolvedTheme, theme } = useTheme();
   const openArrangement = useCallback((): void => {
     window.ipc.openArrangement()
@@ -28,12 +30,26 @@ export default function App(): JSX.Element {
   }, [appState, setAppState])
 
   useEffect(() => {
+    if (verification === undefined || verification.type !== 'machine') {
+      reset();
+      return;
+    }
+    const url = appState.url(verification.id);
+    if (url === undefined) {
+      reset();
+      return;
+    }
+    window.ipc.saveSpecAndVerify(url, verification.spec);
+    reset();
+  }, [verification]);
+
+  useEffect(() => {
     if (updateData === undefined) return
     setUpdateData(undefined)
     const result = appState.selectedData
     if (!result) return
-    const [id, data, type] = result
-    window.ipc.save(id, updateData, data, type)
+    const [id, data, type, spec] = result
+    window.ipc.save(id, updateData, data, type, spec)
   }, [updateData, setUpdateData, appState])
   useEffect(() => {
     if ((resolvedTheme ?? theme) == appState.theme) return;

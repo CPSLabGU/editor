@@ -59,27 +59,35 @@ async function createMainWindow(): Promise<void> {
       mainWindow.show();
     }
   }
+  const mainSaveSpecAndVerify = async (event: IpcMainEvent, path: string, spec: string) => {
+    if (event.sender.id != mainId) return;
+    await fs.writeFile(path + '/spec.tctl', spec);
+    await generateKripkeStructure(path, mainWindow);
+  }
   const mainSaveListener = async (
     event: IpcMainEvent,
     id: string,
     path: string | null,
     data: string,
-    type: string
+    type: string,
+    spec: string,
   ): Promise<void> => {
     if (event.sender.id != mainId) return;
-    await saveEntity(mainWindow, id, path, data, type);
+    await saveEntity(mainWindow, id, path, data, type, spec);
   }
   ipcMain.addListener('message', mainMessageListener);
   ipcMain.addListener('openArrangement', mainOpenArrangementLisener);
   ipcMain.addListener('openMachine', mainOpenMachineListener);
   ipcMain.addListener('save', mainSaveListener);
   ipcMain.addListener('didLoad', mainDidLoad);
+  ipcMain.addListener('saveSpecAndVerify', mainSaveSpecAndVerify);
   mainWindow.on('closed', () => {
     ipcMain.removeListener('message', mainMessageListener);
     ipcMain.removeListener('openArrangement', mainOpenArrangementLisener);
     ipcMain.removeListener('openMachine', mainOpenMachineListener);
     ipcMain.removeListener('save', mainSaveListener);
     ipcMain.removeListener('didLoad', mainDidLoad);
+    ipcMain.removeListener('saveSpecAndVerify', mainSaveSpecAndVerify);
   })
   const splashOpenArrangementLisener = (event: IpcMainEvent) => {
     if (event.sender.id != splashId) return;
@@ -123,7 +131,8 @@ async function saveEntity(
   id: string,
   path: string | null,
   data: string,
-  type: string
+  type: string,
+  spec: string,
 ) {
   if (path) {
     await fs.writeFile(path + '/model.json', data)
@@ -148,6 +157,9 @@ async function saveEntity(
   }
   await fs.mkdir(filePath, { recursive: true })
   await fs.writeFile(filePath + '/model.json', data)
+  if (type === 'machine') {
+    await fs.writeFile(filePath + '/spec.tctl', spec)
+  }
   generateFileMenus(window, filePath, type)
   window.webContents.send('didSave', id, filePath, type)
 }

@@ -338,7 +338,7 @@ export default class Machine {
       initialState,
       suspendState,
       model.clocks.map(Clock.fromModel),
-      '',
+      spec,
       undefined,
       'canvas'
     )
