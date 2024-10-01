@@ -31,7 +31,6 @@ function Transition({
   
   const [isEditing, setIsEditing] = useState(false)
   const [localCondition, setLocalCondition] = useState(properties.condition)
-  const { resolvedTheme, theme } = useTheme()
   const changeCondition = useCallback(
     (e) => {
       setLocalCondition(e.target.value)
@@ -62,8 +61,6 @@ function Transition({
     [showContextMenu]
   )
   const path = properties.path
-  const defaultColor = (resolvedTheme ?? theme) == 'dark' ? 'white' : 'black';
-  const color = isSelected ? 'rgb(58, 58, 228)' : defaultColor
   const condition = properties.condition
   const focus = useCallback(
     (e) => {
@@ -77,33 +74,23 @@ function Transition({
     },
     [addSelection, uniqueSelection]
   )
-  let str = ''
-  const gap = 2
-  const max = gap * priority
-  for (let i = 1; i <= priority; i++) {
-    str += `M${i * gap},${max - i * gap} L${i * gap},${max + i * gap} `
-  }
   const boundingBox = path.boundingBox
-  boundingBox.add(max * 2, max * 2)
-  const padding = 20
   const conditionX = path.control0.x + (path.control1.x - path.control0.x) / 2
   const conditionY = path.control0.y + (path.control1.y - path.control0.y) / 2
-  const relativeOffset = new Point2D(-boundingBox.x + padding / 2, -boundingBox.y + padding / 2)
+  const relativeOffset = new Point2D(-boundingBox.x, -boundingBox.y)
   const parentStyle = {
     position: 'absolute' as 'absolute',
-    left: boundingBox.x - padding / 2,
-    top: boundingBox.y - padding / 2
+    left: boundingBox.x,
+    top: boundingBox.y
   }
   const conditionStyle = {
     position: 'absolute' as 'absolute',
     left: `calc(${conditionX + relativeOffset.x}px - 0.2em * ${condition.length})`,
-    top: `calc(${conditionY + relativeOffset.y}px - 0.5em)`,
-    textAlign: 'center' as 'center',
-    color: color
+    top: `calc(${conditionY + relativeOffset.y}px - 0.5em)`
   }
   return (
     <div style={parentStyle} onClick={focus} onContextMenu={contextMenu}>
-      <div className="transition-condition text-sm text-nowrap" style={conditionStyle} onDoubleClick={enableEditing}>
+      <div className={`transition-condition text-sm text-nowrap ${isSelected ? 'text-blue-700' : 'text-card-foreground'} text-center`} style={conditionStyle} onDoubleClick={enableEditing}>
         {isEditing && (
           <form onSubmit={disableEditing}>
             <input

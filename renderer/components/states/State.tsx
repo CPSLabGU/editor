@@ -75,7 +75,7 @@ function State({
 
 function CollapsedState({ name, w, h, expanded, isSelected }: StatePropertiesInterface & { isSelected: boolean }): JSX.Element {
   return (
-    <Card className={`p-0 h-full overflow:hidden ${isSelected ? 'text-blue-700 border-blue-700' : ''}`}>
+    <Card className={`p-0 h-full overflow:hidden ${isSelected ? 'text-blue-700 border-blue-700' : 'border-card-foreground'}`}>
       <CardHeader className="p-0 h-full justify-center">
         <CardTitle>{name}</CardTitle>
       </CardHeader>
@@ -85,7 +85,7 @@ function CollapsedState({ name, w, h, expanded, isSelected }: StatePropertiesInt
 
 function ExpandedState({ name, w, h, expanded, isSelected }: StatePropertiesInterface & { isSelected: boolean }): JSX.Element {
   return (
-    <Card className={`p-0 h-full overflow:hidden ${isSelected ? 'text-blue-700 border-blue-700' : ''}`}>
+    <Card className={`p-0 h-full overflow:hidden ${isSelected ? 'text-blue-700 border-blue-700' : 'border-card-foreground'}`}>
       <CardHeader className="p-0 h-full justify-center">
         <CardTitle>{name}</CardTitle>
       </CardHeader>
