@@ -87,19 +87,17 @@ export default function MachineView({ machine, setMachine, sidePanelHidden }: Ma
   } else {
     return (
       <Tabs defaultValue={machine.selectedTab} className="h-full bg-secondary">
-        <TabsList className="bg-transparent">
-          <TabsTrigger value="canvas">Canvas</TabsTrigger>
+        <TabsList className="bg-transparent h-8">
+          <TabsTrigger value="canvas">Editor</TabsTrigger>
           <TabsTrigger value="spec">Verification</TabsTrigger>
         </TabsList>
-        <TabsContent value="canvas" className="w-full h-full bg-background">
+        <TabsContent value="canvas" className="w-full bg-background" style={{height: 'calc(100% - 2.5rem)'}}>
           <Canvas machine={machine} setMachine={setMachine} sidePanelHidden={sidePanelHidden} />
         </TabsContent>
-        <TabsContent value="spec" className="w-full h-full bg-background">
+        <TabsContent value="spec" className="w-full bg-background" style={{height: 'calc(100% - 2.5rem)'}}>
           <VerificationView machine={machine} setMachine={setMachine} />
         </TabsContent>
       </Tabs>
-      
     );
-    return 
   }
 }
