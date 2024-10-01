@@ -25,6 +25,9 @@ const handler = {
   didLoad() {
     ipcRenderer.send('didLoad');
   },
+  didGenerateKripkeStructure(callback: (e: IpcRendererEvent, path: string, type: string, svg: string) => void) {
+    ipcRenderer.on('didGenerateKripkeStructure', callback);
+  },
   updateData(callback: (e: IpcRendererEvent, path: string | null, type: string) => void) {
     ipcRenderer.on('updateData', callback)
   },

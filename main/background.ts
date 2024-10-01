@@ -178,7 +178,26 @@ async function openFileDialog(window: BrowserWindow, type: string): Promise<void
   generateFileMenus(window, filePath[0], newType)
 }
 
+async function asyncExec(command: string): Promise<string> {
+  return await new Promise<string>((resolve, reject) => {
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      console.error(stderr);
+      resolve(stdout);
+    })
+  });
+}
+
+async function generateKripkeStructure(machinePath: string): Promise<string> {
+  await asyncExec(`llfsm-verify ${machinePath} ${machinePath}/spec.tctl --write-graphviz`);
+  return await asyncExec(`dot -Tsvg ${machinePath}/build/verification/graph.dot`);
+}
+
 function generateFileMenus(window: BrowserWindow, path: string | null, type: string): void {
+  const menus = [];
   const fileMenus = [
     {
       label: 'Open',
@@ -199,7 +218,7 @@ function generateFileMenus(window: BrowserWindow, path: string | null, type: str
       window.webContents.send('updateData', null, type)
     }
   })
-  if (path && type == 'machine') {
+  if (type === 'machine' && path !== null) {
     fileMenus.push({
       label: 'Export to Machine',
       click: async (): Promise<void> => {
@@ -211,9 +230,15 @@ function generateFileMenus(window: BrowserWindow, path: string | null, type: str
           console.log(`stdout: ${stdout}`)
           console.error(`stderr: ${stderr}`)
         })
-      }
-    })
-    fileMenus.push({
+      },
+    });
+  }
+  menus.push({
+    label: 'File',
+    submenu: fileMenus,
+  });
+  if (type === 'machine' && path !== null) {
+    const runMenus = [{
       label: 'Generate VHDL',
       click: async (): Promise<void> => {
         exec('llfsmgenerate vhdl ' + path, (error, stdout, stderr) => {
@@ -225,8 +250,8 @@ function generateFileMenus(window: BrowserWindow, path: string | null, type: str
           console.error(`stderr: ${stderr}`)
         })
       }
-    })
-    fileMenus.push({
+    }];
+    runMenus.push({
       label: 'Create Kripke Structure Generator',
       click: async (): Promise<void> => {
         exec('llfsmgenerate vhdl --include-kripke-structure ' + path, (error, stdout, stderr) => {
@@ -239,13 +264,19 @@ function generateFileMenus(window: BrowserWindow, path: string | null, type: str
         })
       }
     })
+    runMenus.push({
+      label: 'Verify',
+      click: async (): Promise<void> => {
+        const svg = await generateKripkeStructure(path);
+        window.webContents.send('didGenerateKripkeStructure', path, type, svg);
+      }
+    })
+    menus.push({
+      label: 'Run',
+      submenu: runMenus,
+    });
   }
-  const menu = Menu.buildFromTemplate([
-    {
-      label: 'File',
-      submenu: fileMenus
-    }
-  ])
+  const menu = Menu.buildFromTemplate(menus);
   Menu.setApplicationMenu(menu)
   return
 }
