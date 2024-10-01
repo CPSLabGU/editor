@@ -103,13 +103,13 @@ export default function CanvasSwitcher({ appState, setAppState }: CanvasSwitcher
           </div>
           <div className="w-full">
             <HiddenView hidden={!appState.consoleVisible}>
-              <ScrollArea aria-orientation='vertical' className="w-full h-full min-h-10 max-h-24 p-2 bg-primary text-primary-foreground">
-                <div className="flex flex-col items-start gap-1 w-full h-full text-xs font-mono">
+              <ScrollArea aria-orientation='vertical' className="w-full h-full min-h-10 max-h-48 p-2 bg-secondary text-secondary-foreground">
+                <div className="flex flex-col items-start gap-1 w-full h-full text-xs font-mono bg-background p-2 text-foreground rounded-sm border-2 border-transparent">
                   {appState.consoleMessages.map((message) => {
                     return <>
-                      {message.type === 'stdin' && <div key={message.id}>$ [{message.timestamp}] {message.message}</div>}
-                      {message.type === 'stderr' && <div key={message.id} className="text-red-600">{message.message}</div>}
-                      {message.type === 'stdout' && <div key={message.id}>{message.message}</div>}
+                      {message.type === 'stdin' && <div key={message.id} className='my-0.5'>$ [{message.timestamp}] {message.message}</div>}
+                      {message.type === 'stderr' && <div key={message.id} className="text-red-600 ml-4">[{message.timestamp}] {message.message}</div>}
+                      {message.type === 'stdout' && <div key={message.id}className="ml-4">[{message.timestamp}] {message.message}</div>}
                     </>;
                   })}
                 </div>
