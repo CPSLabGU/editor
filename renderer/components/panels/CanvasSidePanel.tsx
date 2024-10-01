@@ -18,9 +18,9 @@ export default function CanvasSidePanel({
 }): JSX.Element {
   const [hidden, setHidden] = useState(true)
   return (
-    <div onContextMenu={(e) => e.stopPropagation()}>
+    <div className="h-full" onContextMenu={(e) => e.stopPropagation()}>
       <HiddenView hidden={!hidden}>
-        <div className="fixed top-0 right-0 mr-4">
+        <div className="mr-4">
           <div className="flex items-center">
             <Button className="p-1" variant="ghost" onClick={() => setHidden(!hidden)}>
               <PanelRightOpen />
@@ -30,7 +30,7 @@ export default function CanvasSidePanel({
       </HiddenView>
       <HiddenView hidden={hidden}>
         <SidePanel>
-          <div className="fixed top-0 right-0 mr-4">
+          <div className="mr-4">
             <Button className="p-1" variant="link" onClick={() => setHidden(!hidden)}>
               <PanelRightClose />
             </Button>
