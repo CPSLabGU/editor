@@ -4,6 +4,8 @@ import Canvas from '../canvas/Canvas'
 import { useCallback } from 'react'
 import CodeView from '../states/CodeView'
 import Machine from './Machine'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
+import VerificationView from '../verification/VerificationView'
 
 export type StateDictionary = { [id: string]: StateInformation }
 
@@ -83,6 +85,21 @@ export default function MachineView({ machine, setMachine, sidePanelHidden }: Ma
       />
     )
   } else {
-    return <Canvas machine={machine} setMachine={setMachine} sidePanelHidden={sidePanelHidden} />
+    return (
+      <Tabs defaultValue={machine.selectedTab} className="h-full bg-secondary">
+        <TabsList className="bg-transparent">
+          <TabsTrigger value="canvas">Canvas</TabsTrigger>
+          <TabsTrigger value="spec">Verification</TabsTrigger>
+        </TabsList>
+        <TabsContent value="canvas" className="w-full h-full bg-background">
+          <Canvas machine={machine} setMachine={setMachine} sidePanelHidden={sidePanelHidden} />
+        </TabsContent>
+        <TabsContent value="spec" className="w-full h-full bg-background">
+          <VerificationView machine={machine} setMachine={setMachine} />
+        </TabsContent>
+      </Tabs>
+      
+    );
+    return 
   }
 }

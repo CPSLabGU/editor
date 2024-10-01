@@ -175,7 +175,13 @@ async function openFileDialog(window: BrowserWindow, type: string): Promise<void
     newType = 'machine'
   }
   const data = await fs.readFile(filePath[0] + '/model.json', 'utf-8')
-  window.webContents.send('load', data, filePath[0], newType)
+  let spec: string | undefined;
+  if (newType === 'machine') {
+    try {
+      spec = await fs.readFile(filePath[0] + '/spec.tctl', 'utf-8');
+    } catch {}
+  }
+  window.webContents.send('load', data, filePath[0], newType, spec)
   generateFileMenus(window, filePath[0], newType)
 }
 

@@ -23,6 +23,9 @@ export default class Machine {
   private _initialState: string
   private _suspendedState: string | undefined
   private _clocks: Clock[]
+  private _spec: string
+  private _kripkeStructure: string | undefined
+  private _selectedTab: 'canvas' | 'spec';
 
   get states(): { [id: string]: StateInformation } {
     return this._states
@@ -58,6 +61,18 @@ export default class Machine {
 
   get clocks(): Clock[] {
     return this._clocks
+  }
+
+  get spec(): string {
+    return this._spec
+  }
+
+  get kripkeStructure(): string | undefined {
+    return this._kripkeStructure
+  }
+
+  get selectedTab(): 'canvas' | 'spec' {
+    return this._selectedTab
   }
 
   static defaultMachine(theme: 'light' | 'dark'): Machine {
@@ -128,7 +143,10 @@ export default class Machine {
       '',
       initialState!,
       suspendedState,
-      new Array<Clock>()
+      new Array<Clock>(),
+      '',
+      undefined,
+      'canvas'
     )
     return machine
   }
@@ -143,7 +161,10 @@ export default class Machine {
       this.includes,
       this.initialState,
       this.suspendedState,
-      [...this.clocks]
+      [...this.clocks],
+      this._spec,
+      this._kripkeStructure,
+      this._selectedTab,
     )
   }
 
@@ -230,7 +251,10 @@ export default class Machine {
     includes: string,
     initialState: string,
     suspendedState: string | undefined = undefined,
-    clocks: Clock[]
+    clocks: Clock[],
+    spec: string | undefined = undefined,
+    kripkeStructure: string | undefined = undefined,
+    selectedTab: 'canvas' | 'spec',
   ) {
     this._states = states
     this._transitions = transitions
@@ -241,17 +265,20 @@ export default class Machine {
     this._initialState = initialState
     this._suspendedState = suspendedState
     this._clocks = clocks
+    this._spec = spec ?? ''
+    this._kripkeStructure = kripkeStructure
+    this._selectedTab = selectedTab
   }
 
-  static fromData(data: string, theme: 'dark' | 'light'): Machine | null {
+  static fromData(data: string, theme: 'dark' | 'light', spec?: string): Machine | null {
     const parsedModel = JSON.parse(data)
     if (!(typeof parsedModel === 'object')) return null
     if (!instanceOfMachineModel(parsedModel as object)) return null
     const model = parsedModel as MachineModel
-    return Machine.fromModel(model, theme);
+    return Machine.fromModel(model, theme, spec);
   }
 
-  static fromModel(model: MachineModel, theme: 'light' | 'dark'): Machine {
+  static fromModel(model: MachineModel, theme: 'light' | 'dark', spec?: string): Machine {
     const states: { [id: string]: StateInformation } = {}
     model.states.forEach((stateModel) => {
       const stateID = uuidv4()
@@ -310,7 +337,10 @@ export default class Machine {
       model.includes,
       initialState,
       suspendState,
-      model.clocks.map(Clock.fromModel)
+      model.clocks.map(Clock.fromModel),
+      '',
+      undefined,
+      'canvas'
     )
   }
 
@@ -428,6 +458,24 @@ export default class Machine {
   setClocks(clocks: Clock[]): Machine {
     const newMachine = this.shallowCopy
     newMachine._clocks = clocks
+    return newMachine
+  }
+
+  setSpec(spec: string): Machine {
+    const newMachine = this.shallowCopy
+    newMachine._spec = spec
+    return newMachine
+  }
+
+  setKripkeStructure(kripkeStructure: string): Machine {
+    const newMachine = this.shallowCopy
+    newMachine._kripkeStructure = kripkeStructure
+    return newMachine
+  }
+
+  setSelectedTab(selectedTab: 'canvas' | 'spec'): Machine {
+    const newMachine = this.shallowCopy
+    newMachine._selectedTab = this._selectedTab
     return newMachine
   }
 

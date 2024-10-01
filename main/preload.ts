@@ -19,7 +19,7 @@ const handler = {
   openMachine() {
     ipcRenderer.send('openMachine');
   },
-  load(callback: (e: IpcRendererEvent, data: string, url: string, type: string) => void) {
+  load(callback: (e: IpcRendererEvent, data: string, url: string, type: string, spec?: string) => void) {
     ipcRenderer.on('load', callback)
   },
   didLoad() {

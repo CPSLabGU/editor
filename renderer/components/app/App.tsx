@@ -7,7 +7,7 @@ import CanvasSwitcher from '../canvas_switcher/CanvasSwitcher'
 export default function App(): JSX.Element {
   const [appState, setAppState] = useState(new AppState())
   const [updateData, setUpdateData] = useState<string | null | undefined>(undefined)
-  const [load, setLoad] = useState<{ data: string; url: string; type: string } | undefined>(
+  const [load, setLoad] = useState<{ data: string; url: string; type: string, spec?: string } | undefined>(
     undefined
   )
   const [didSave, setDidSave] = useState<{ id: string; path: string; type: string } | undefined>(
@@ -44,7 +44,7 @@ export default function App(): JSX.Element {
     if (load === undefined) return
     setLoad(undefined)
     if (load.type == 'machine') {
-      setAppState(appState.loadRootMachine(load.data, load.url))
+      setAppState(appState.loadRootMachine(load.data, load.url, load.spec))
     } else if (load.type == 'arrangement') {
       setAppState(appState.loadRootArrangement(load.data, load.url))
     }
@@ -67,8 +67,8 @@ export default function App(): JSX.Element {
     })
   }, [setUpdateData])
   useEffect(() => {
-    window.ipc.load((e, data, url, type) => {
-      setLoad({ data: data, url: url, type: type })
+    window.ipc.load((e, data, url, type, spec) => {
+      setLoad({ data: data, url: url, type: type, spec: spec })
     })
   }, [setLoad])
   useEffect(() => {
