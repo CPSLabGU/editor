@@ -1,11 +1,10 @@
-import path, { resolve } from 'path'
+import path from 'path'
 import { app, BrowserWindow, dialog, ipcMain, IpcMainEvent, Menu } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers'
 import { exec } from 'child_process'
 import fs from 'fs/promises';
 import { randomUUID } from 'crypto'
-import { rejects } from 'assert'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -218,15 +217,13 @@ async function asyncExec(command: string, window: BrowserWindow): Promise<string
   });
 }
 
-async function generateKripkeStructure(machinePath: string, window: BrowserWindow): Promise<boolean> {
-  return await asyncExec(`llfsm-verify --machine ${machinePath} ${machinePath}/spec.tctl --write-graphviz`, window).then(
-    (stdout) => { return true },
-    (error) => {
-      const command = `dot -Tsvg ${machinePath}/build/verification/graph.dot > ${machinePath}/build/verification/graph.svg`
-      // window.webContents.send('consoleMessage', randomUUID(), new Date().toISOString(), 'stdin', command);
-      return asyncExec(command, window).then(() => { return false })
-    }
+async function generateKripkeStructure(machinePath: string, window: BrowserWindow): Promise<string> {
+  await asyncExec(`llfsm-verify --machine ${machinePath} ${machinePath}/spec.tctl --write-graphviz`, window);
+  await asyncExec(
+    `dot -Tsvg ${machinePath}/build/verification/graph.dot > ${machinePath}/build/verification/graph.svg`,
+    window
   )
+  return await fs.readFile(`${machinePath}/build/verification/graph.svg`, { encoding: 'utf-8'})
 }
 
 function generateFileMenus(window: BrowserWindow, path: string | null, type: string): void {
@@ -279,10 +276,7 @@ function generateFileMenus(window: BrowserWindow, path: string | null, type: str
     runMenus.push({
       label: 'Verify',
       click: async (): Promise<void> => {
-        if (await generateKripkeStructure(path, window)) {
-          window.webContents.send('didGenerateKripkeStructure', path, type, '')
-        }
-        const svg = await fs.readFile(path + '/build/verification/graph.svg', { encoding: 'utf-8' });
+        const svg = await generateKripkeStructure(path, window);
         window.webContents.send('didGenerateKripkeStructure', path, type, svg);
       }
     })
