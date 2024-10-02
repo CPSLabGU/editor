@@ -62,7 +62,6 @@ async function createMainWindow(): Promise<void> {
   const mainSaveSpecAndVerify = async (event: IpcMainEvent, path: string, type: string, spec: string) => {
     if (event.sender.id != mainId) return;
     await fs.writeFile(path + '/spec.tctl', spec);
-    await generateKripkeStructure(path, mainWindow);
     if (await generateKripkeStructure(path, mainWindow)) {
       mainWindow.webContents.send('didGenerateKripkeStructure', path, type, '')
     }
