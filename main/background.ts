@@ -219,11 +219,7 @@ async function asyncExec(command: string, window: BrowserWindow): Promise<string
 
 async function generateKripkeStructure(machinePath: string, window: BrowserWindow): Promise<string> {
   await asyncExec(`llfsm-verify --machine ${machinePath} ${machinePath}/spec.tctl --write-graphviz`, window);
-  await asyncExec(
-    `dot -Tsvg ${machinePath}/build/verification/graph.dot > ${machinePath}/build/verification/graph.svg`,
-    window
-  )
-  return await fs.readFile(`${machinePath}/build/verification/graph.svg`, { encoding: 'utf-8'})
+  return await asyncExec(`dot -Tsvg ${machinePath}/build/verification/graph.dot`, window);
 }
 
 function generateFileMenus(window: BrowserWindow, path: string | null, type: string): void {

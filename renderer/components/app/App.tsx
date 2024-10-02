@@ -92,12 +92,6 @@ export default function App(): JSX.Element {
       setDidSave({ id: id, path: path, type: type })
     })
   }, [setDidSave])
-  useEffect(() => {
-    window.ipc.didGenerateKripkeStructure((e, path, type, svg) => {
-      console.log("Got svg: ", svg)
-      setAppState(appState.setKripkeStructure(path, type, svg))
-    })
-  }, [appState, setAppState])
   return (
     <div className={"w-screen h-screen" + ((resolvedTheme ?? theme) == 'dark' ? ' dark' : '')}>
       {appState.root && <CanvasSwitcher appState={appState} setAppState={setAppState} />}

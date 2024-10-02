@@ -14,7 +14,6 @@ interface VerificationViewParameters {
 
 export default function VerificationView({ id, machine, setMachine }: VerificationViewParameters): JSX.Element {
   const { triggerVerification } = useTriggerVerification();
-  console.log('Kripke Structure: ', machine.kripkeStructure)
   return (
     <div className="w-full h-full">
       <ResizablePanelGroup direction="vertical">
