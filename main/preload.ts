@@ -19,8 +19,8 @@ const handler = {
   openMachine() {
     ipcRenderer.send('openMachine');
   },
-  saveSpecAndVerify(path: string, spec: string) {
-    ipcRenderer.send('saveSpecAndVerify', path, spec);
+  saveSpecAndVerify(path: string, type: string, spec: string) {
+    ipcRenderer.send('saveSpecAndVerify', path, type, spec);
   },
   load(callback: (e: IpcRendererEvent, data: string, url: string, type: string, spec?: string) => void) {
     ipcRenderer.on('load', callback)

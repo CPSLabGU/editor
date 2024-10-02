@@ -39,7 +39,7 @@ export default function App(): JSX.Element {
       reset();
       return;
     }
-    window.ipc.saveSpecAndVerify(url, verification.spec);
+    window.ipc.saveSpecAndVerify(url, verification.type, verification.spec);
     reset();
   }, [verification]);
 
@@ -66,6 +66,12 @@ export default function App(): JSX.Element {
     }
     window.ipc.didLoad();
   }, [load, setLoad, appState, setAppState])
+  useEffect(() => {
+    window.ipc.didGenerateKripkeStructure((e, path, type, svg) => {
+    console.log("Got svg: ", svg)
+    setAppState(appState.setKripkeStructure(path, type, svg))
+   })
+  }, [appState, setAppState])
   useEffect(() => {
     if (didSave === undefined) return
     setDidSave(undefined)

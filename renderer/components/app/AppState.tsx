@@ -308,6 +308,24 @@ export default class AppState {
     return newState
   }
 
+  setKripkeStructure(path: string, type: string, svg: string): AppState {
+    const id = this.ids[path]
+    if (!id) return this
+      if (type == 'machine') {
+        const machine = this.machines[id]
+        if (!machine) return this
+          const newMachine = machine.setKripkeStructure(svg)
+          return this.setMachine(id, newMachine)
+        }
+        if (type == 'arrangement') {
+          const arrangement = this.arrangements[id]
+          if (!arrangement) return this
+          const newArrangement = arrangement.setKripkeStructure(svg)
+          return this.setArrangement(id, newArrangement)
+        }
+      return this
+    }
+
   setSidePanelVisible(visible: boolean): AppState {
     const newState = this.copy
     newState._sidePanelVisible = visible
