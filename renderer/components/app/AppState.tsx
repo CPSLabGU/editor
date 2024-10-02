@@ -347,22 +347,4 @@ export default class AppState {
   url(id: string): string | undefined {
     return this._urls[id]
   }
-
-  setKripkeStructure(path: string, type: string, svg: string): AppState {
-    const id = this.ids[path]
-    if (!id) return this
-    if (type == 'machine') {
-      const machine = this.machines[id]
-      if (!machine) return this
-      const newMachine = machine.setKripkeStructure(svg)
-      return this.setMachine(id, newMachine)
-    }
-    if (type == 'arrangement') {
-      const arrangement = this.arrangements[id]
-      if (!arrangement) return this
-      const newArrangement = arrangement.setKripkeStructure(svg)
-      return this.setArrangement(id, newArrangement)
-    }
-    return this
-  }
 }
