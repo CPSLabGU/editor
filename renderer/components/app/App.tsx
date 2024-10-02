@@ -95,6 +95,10 @@ export default function App(): JSX.Element {
   useEffect(() => {
     window.ipc.didGenerateKripkeStructure((e, path, type, svg) => {
       console.log("Got svg: ", svg)
+      if (svg == '') {
+        setAppState(appState.setKripkeStructure(path, type, undefined))
+        return
+      }
       setAppState(appState.setKripkeStructure(path, type, svg))
     })
   }, [appState, setAppState])
