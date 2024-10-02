@@ -10,6 +10,7 @@ export default class Arrangement {
   private _externalVariables: string
   private _machines: { [id: string]: MachineReference }
   private _globalVariables: string
+  private _kripkeStructure: string | undefined
 
   get language(): string {
     return this._language
@@ -21,6 +22,10 @@ export default class Arrangement {
 
   get externalVariables(): string {
     return this._externalVariables
+  }
+
+  get kripkeStructure(): string {
+    return this._kripkeStructure
   }
 
   get machines(): { [id: string]: MachineReference } {
@@ -45,7 +50,8 @@ export default class Arrangement {
       { ...this.clocks },
       this.externalVariables,
       { ...this.machines },
-      this.globalVariables
+      this.globalVariables,
+      this.kripkeStructure
     )
   }
 
@@ -65,13 +71,15 @@ export default class Arrangement {
     clocks: { [id: string]: Clock },
     externalVariables: string,
     machines: { [id: string]: MachineReference },
-    globalVariables: string
+    globalVariables: string,
+    kripkeStructure: string | undefined = null
   ) {
     this._language = language
     this._clocks = clocks
     this._externalVariables = externalVariables
     this._machines = machines
     this._globalVariables = globalVariables
+    this._kripkeStructure = kripkeStructure
   }
 
   static fromData(data: string): Arrangement | null {
@@ -162,6 +170,12 @@ export default class Arrangement {
   setGlobalVariables(globalVariables: string): Arrangement {
     const newArrangement = this.shallowCopy
     newArrangement._globalVariables = globalVariables
+    return newArrangement
+  }
+
+  setKripkeStructure(kripkeStructure: string | undefined): Arrangement {
+    const newArrangement = this.shallowCopy
+    newArrangement._kripkeStructure = kripkeStructure
     return newArrangement
   }
 }
