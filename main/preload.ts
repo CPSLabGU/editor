@@ -22,7 +22,7 @@ const handler = {
   saveSpecAndVerify(path: string, type: string, spec: string) {
     ipcRenderer.send('saveSpecAndVerify', path, type, spec);
   },
-  load(callback: (e: IpcRendererEvent, data: string, url: string, type: string, spec?: string) => void) {
+  load(callback: (e: IpcRendererEvent, data: string, url: string, type: string, spec?: string, kripkeStructure?: string) => void) {
     ipcRenderer.on('load', callback)
   },
   didLoad() {

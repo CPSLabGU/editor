@@ -193,12 +193,14 @@ async function openFileDialog(window: BrowserWindow, type: string): Promise<void
   }
   const data = await fs.readFile(filePath[0] + '/model.json', 'utf-8')
   let spec: string | undefined;
+  let kripkeStructure: string | undefined;
   if (newType === 'machine') {
     try {
       spec = await fs.readFile(filePath[0] + '/spec.tctl', 'utf-8');
+      kripkeStructure = await fs.readFile(`${filePath[0]}/build/verification/graph.svg`, { encoding: 'utf-8'})
     } catch {}
   }
-  window.webContents.send('load', data, filePath[0], newType, spec)
+  window.webContents.send('load', data, filePath[0], newType, spec, kripkeStructure)
   generateFileMenus(window, filePath[0], newType)
 }
 

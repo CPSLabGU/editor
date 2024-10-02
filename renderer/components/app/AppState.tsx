@@ -161,8 +161,8 @@ export default class AppState {
     return this.setNewRootArrangement(arrangement, url)
   }
 
-  loadRootMachine(data: string, url: string, spec?: string): AppState {
-    const machine = Machine.fromData(data, this._theme, spec)
+  loadRootMachine(data: string, url: string, spec?: string, kripkeStructure?: string): AppState {
+    const machine = Machine.fromData(data, this._theme, spec, kripkeStructure)
     if (!machine) return this
     return this.setNewRootMachine(machine, url)
   }

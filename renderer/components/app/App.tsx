@@ -8,7 +8,7 @@ import { useTriggerVerification } from '@/hooks/useTriggerVerification'
 export default function App(): JSX.Element {
   const [appState, setAppState] = useState(new AppState())
   const [updateData, setUpdateData] = useState<string | null | undefined>(undefined)
-  const [load, setLoad] = useState<{ data: string; url: string; type: string, spec?: string } | undefined>(
+  const [load, setLoad] = useState<{ data: string; url: string; type: string, spec?: string, kripkeStructure?: string } | undefined>(
     undefined
   )
   const [didSave, setDidSave] = useState<{ id: string; path: string; type: string } | undefined>(
@@ -60,7 +60,7 @@ export default function App(): JSX.Element {
     if (load === undefined) return
     setLoad(undefined)
     if (load.type == 'machine') {
-      setAppState(appState.loadRootMachine(load.data, load.url, load.spec))
+      setAppState(appState.loadRootMachine(load.data, load.url, load.spec, load.kripkeStructure))
     } else if (load.type == 'arrangement') {
       setAppState(appState.loadRootArrangement(load.data, load.url))
     }
@@ -89,8 +89,8 @@ export default function App(): JSX.Element {
     })
   }, [setUpdateData])
   useEffect(() => {
-    window.ipc.load((e, data, url, type, spec) => {
-      setLoad({ data: data, url: url, type: type, spec: spec })
+    window.ipc.load((e, data, url, type, spec, kripkeStructure) => {
+      setLoad({ data: data, url: url, type: type, spec: spec, kripkeStructure: kripkeStructure })
     })
   }, [setLoad])
   useEffect(() => {

@@ -270,15 +270,15 @@ export default class Machine {
     this._selectedTab = selectedTab
   }
 
-  static fromData(data: string, theme: 'dark' | 'light', spec?: string): Machine | null {
+  static fromData(data: string, theme: 'dark' | 'light', spec?: string, kripkeStructure?: string): Machine | null {
     const parsedModel = JSON.parse(data)
     if (!(typeof parsedModel === 'object')) return null
     if (!instanceOfMachineModel(parsedModel as object)) return null
     const model = parsedModel as MachineModel
-    return Machine.fromModel(model, theme, spec);
+    return Machine.fromModel(model, theme, spec, kripkeStructure);
   }
 
-  static fromModel(model: MachineModel, theme: 'light' | 'dark', spec?: string): Machine {
+  static fromModel(model: MachineModel, theme: 'light' | 'dark', spec?: string, kripkeStructure?: string): Machine {
     const states: { [id: string]: StateInformation } = {}
     model.states.forEach((stateModel) => {
       const stateID = uuidv4()
@@ -339,7 +339,7 @@ export default class Machine {
       suspendState,
       model.clocks.map(Clock.fromModel),
       spec,
-      undefined,
+      kripkeStructure,
       'canvas'
     )
   }
